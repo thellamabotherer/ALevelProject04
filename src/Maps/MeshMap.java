@@ -50,16 +50,13 @@ public class MeshMap {
 			sweepLineY = e.getP().getY();
 			
 			if (e.getType()) {
-				System.out.println("Site Event");
 				handleSite (e.getP());
 			}else {
-				System.out.println("Intersection Event");
 				handleIntersection(e);
 			}
 		}
 		
 		sweepLineY = this.WIDTH + this.HEIGHT; // I have no idea why this bit is happening either, but it didn't work until I copied this in 
-		
 
 		endEdges(root);
 		
@@ -70,25 +67,25 @@ public class MeshMap {
 				edges.get(i).setNeighbour(null);
 			}
 		}
-	
+		
+		System.out.println(this.edges.size());
+		
 		// I did most of this myself and then stackoverflew the last bits when it didn't work 
 		
 	}
 
 	private void endEdges (Parabola p) {
-		if (p.getType()) {
+		
+		if (p.getType() == Parabola.focus) {
+			
 			p = null;
+			
 			return;
-		}  // kills off any remaining focuses leaving only the vertices
+		}
 		
 		double x = getXofEdge(p);
 		
-
-		
-		p.getEdge().setEnd(new Point (x, (p.getEdge().getSlope() * x + p.getEdge().getYint())));
-		
-
-		
+		p.getEdge().setEnd(new Point (x, p.getEdge().getSlope()*x+p.getEdge().getYint()));
 		edges.add(p.getEdge());
 		
 		endEdges(p.getLeftChild());
@@ -96,18 +93,19 @@ public class MeshMap {
 		
 		p = null;
 		
-
 	}
 	
 	private void handleSite (Point p) {
 		
 		if (root == null) {
+			
 			root = new Parabola (p);
 			return;
 		}
 		
 		Parabola para = getParabolaByX(p.getX());
 		if (para.getEvent() != null) {
+			
 			eventQueue.remove(para.getEvent());
 			para.setEvent(null);
 		}
@@ -132,12 +130,11 @@ public class MeshMap {
 
 		checkCircleEvent(p0);
 		checkCircleEvent(p2);
+		
 	}
 	
 	// process circle event
 	private void handleIntersection(Event e) {
-		
-		System.out.println("Intersection Event");
 		
 		// find p0, p1, p2 that generate this event from left to right
 		Parabola p1 = e.getPara();
@@ -157,10 +154,11 @@ public class MeshMap {
 		}
 		
 		Point p = new Point(e.getP().getX(), getY(p1.getPoint(), e.getP().getX())); // new vertex
-	
+		
 		// end edges!
 		xl.getEdge().setEnd(p);
 		xr.getEdge().setEnd(p);
+		//System.out.println(xl.get);
 		edges.add(xl.getEdge());
 		edges.add(xr.getEdge());
 
@@ -196,47 +194,51 @@ public class MeshMap {
 	// adds circle event if foci a, b, c lie on the same circle
 	private void checkCircleEvent(Parabola b) {
 
-		System .out.println("Checking for arc event");
-		
 		Parabola lp = Parabola.getLeftParent(b);
-		//System.out.println(lp);
+
 		Parabola rp = Parabola.getRightParent(b);
-		//System.out.println(rp);
+
 
 		if (lp == null || rp == null) return;
 		
 		Parabola a = Parabola.getLeftChild(lp);
 		Parabola c = Parabola.getRightChild(rp);
-	
-		if (a == null || c == null || a.getPoint() == c.getPoint()) return;
-
-		if (ccw(a.getPoint(),b.getPoint(),c.getPoint()) != 1) return;
 		
+		if (a == null || c == null) return;
+		
+		if (a.getPoint().compareTo(c.getPoint()) == 0) return;
+		
+		if (ccw(a.getPoint(),b.getPoint(),c.getPoint()) != 1) return;
+
 		// edges will intersect to form a vertex for a circle event
 		Point start = getEdgeIntersection(lp.getEdge(), rp.getEdge());
+		
 		if (start == null) return;
 		
 		// compute radius
 		double dx = b.getPoint().getX() - start.getX();
 		double dy = b.getPoint().getY() - start.getY();
 		double d = Math.sqrt((dx*dx) + (dy*dy));
-		if (start.getY() + d < sweepLineY) return; // must be after sweep line
 
+		if (start.getY() + d < sweepLineY) {
+			return; // must be after sweep line
+		}
 		Point ep = new Point(start.getX(), start.getY() + d);
-		//System.out.println("added circle event "+ ep);
-
+		
 		// add circle event
+
 		Event e = new Event (ep, Event.intersectionEvent);
 		e.setPara(b);
 		b.setEvent(e);
 		eventQueue.add(e);
 	}
 
-	// first thing we learned in this class :P
 	public int ccw(Point a, Point b, Point c) {
+		
         double area2 = (b.getX()-a.getX())*(c.getY()-a.getY()) - (b.getY()-a.getY())*(c.getX()-a.getX());
-        if (area2 < 0) return -1;
-        else if (area2 > 0) return 1;
+
+        if (area2 < -0.01) return -1;
+        else if (area2 > 0.01) return 1;
         else return  0;
     }
 

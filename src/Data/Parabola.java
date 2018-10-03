@@ -11,11 +11,13 @@ public class Parabola {
 	private Event event;
 	
 	public void describe () {
-		System.out.println("type = " + this.type + ", true = focus and false = vertex");
-		System.out.println("point = " + this.point);
-		System.out.println("Edge = " + this.edge + " edge follows");
-		this.edge.describe();
-		System.out.println("Event = " + this.event);
+		String lC;
+		String rC;
+		if (this.leftChild != null) {lC = "YES";}
+		else {lC = "NO ";};
+		if (this.rightChild != null) {rC = "YES";}
+		else {rC = "NO ";};
+		System.out.println("Left " + lC + "| Right " + rC);
 	}
 	
 	public Edge getEdge() {
@@ -25,8 +27,9 @@ public class Parabola {
 		this.edge = edge;
 	}
 	private Parabola parent;
-	Parabola leftChild;
-	Parabola rightChild;
+	
+	private Parabola leftChild;
+	private Parabola rightChild;
 	
 	public Parabola () {
 		this.type = Parabola.vertex;
@@ -43,59 +46,57 @@ public class Parabola {
 		p.setParent(this);
 	}
 	
-	public static Parabola getLeft (Parabola p) {
-		return getLeftChild(getLeftParent(p));
-	}public static Parabola getRight (Parabola p) {
-		return getRightChild(getRightParent(p));
-	}
-	
-	public static Parabola getLeftParent (Parabola p) {
-		Parabola parent = p.getParent();
-		if (parent == null) {
-			return null;
+	// returns the closest left site (focus of parabola) 
+		public static Parabola getLeft(Parabola p) {
+			return getLeftChild(getLeftParent(p));
 		}
 		
-		Parabola last = p;
-		while (parent.leftChild == null) {
-			if (parent.parent == null) {
-				return null;
-			}last = parent;
-			parent = parent.parent;
-		}
-		return parent;
-	}public static Parabola getRightParent (Parabola p) {                 // why so many parents, parent no longer looks like a real word
-		Parabola parent = p.getParent();
-		if (parent == null) {
-			return null;
+		// returns closest right site (focus of parabola)
+		public static Parabola getRight(Parabola p) {
+			return getRightChild(getRightParent(p));
 		}
 		
-		Parabola last = p;
-		while (parent.leftChild == null) {                                // parent.parent.parent.parent.parent.parent.parent.parent.parent.parent.parent.parent.parent.parent.aargh
-			if (parent.parent == null) {
-				return null;
-			}last = parent;
-			parent = parent.parent;
+		// returns the closest parent on the left
+		public static Parabola getLeftParent(Parabola p) {
+			Parabola parent = p.parent;
+			if (parent == null) return null;
+			Parabola last = p;
+			while (parent.getLeftChild() == last) {
+				if(parent.parent == null) return null;
+				last = parent;
+				parent = parent.parent;
+			}
+			return parent;
 		}
-		return parent;
-	}
-	
-	public static Parabola getLeftChild (Parabola p) {
-		if (p == null) {
-			return null;
-		}Parabola child = p.leftChild;
-		while (!child.type) {
-			child = child.rightChild;
-		}return child;
-	}
-	public static Parabola getRightChild (Parabola p) {
-		if (p == null) {
-			return null;
-		}Parabola child = p.rightChild;
-		while (!child.type) {
-			child = child.leftChild;
-		}return child;
-	}
-	
+		
+		// returns the closest parent on the right
+		public static Parabola getRightParent(Parabola p) {
+			Parabola parent = p.parent;
+			if (parent == null) return null;
+			Parabola last = p;
+			while (parent.getRightChild() == last) {
+				if(parent.parent == null) return null;
+				last = parent;
+				parent = parent.parent;
+			}
+			return parent;
+		}
+		
+		// returns closest site (focus of another parabola) to the left
+		public static Parabola getLeftChild(Parabola p) {
+			if (p == null) return null;
+			Parabola child = p.getLeftChild();
+			while(child.type == Parabola.vertex) child = child.getRightChild();
+			return child;
+		}
+		
+		// returns closest site (focus of another parabola) to the right
+		public static Parabola getRightChild(Parabola p) {
+			if (p == null) return null;
+			Parabola child = p.getRightChild();
+			while(child.type == Parabola.vertex) child = child.getLeftChild();
+			return child;	
+		}
 	public boolean getType() {
 		return this.type;
 	}public void setType (boolean t) {
@@ -134,6 +135,12 @@ public class Parabola {
 	}
 	public Parabola getRightChild() {
 		return rightChild;
+	}
+	
+	public void leafCheck () {
+		if (this.leftChild == null && this.rightChild == null) {
+			this.type = this.focus;
+		}
 	}
 
 }

@@ -1,20 +1,7 @@
 package Main;
 
+import org.lwjgl.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_LEQUAL;
-import static org.lwjgl.opengl.GL11.GL_NICEST;
-import static org.lwjgl.opengl.GL11.GL_PERSPECTIVE_CORRECTION_HINT;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_SMOOTH;
-import static org.lwjgl.opengl.GL11.glClearDepth;
-import static org.lwjgl.opengl.GL11.glDepthFunc;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glHint;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glShadeModel;
-import static org.lwjgl.opengl.GL11.glTranslatef;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -50,6 +37,16 @@ public class Window {
 		
 		glOrtho(0, Display.getWidth(), 0, Display.getHeight(), 0, 1);
 
+		/*
+		GL11.glMatrixMode(GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GLU.gluPerspective(1, Display.getWidth()/Display.getHeight(), -100, 100);
+		GL11.glMatrixMode(GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		*/
+		
+		//perspectiveGL();
+
 		glTranslatef(0.0f, 0.0f, 0.0f);
 
 		glClearDepth(100.0f);
@@ -59,6 +56,7 @@ public class Window {
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	}
+
 
 	public void beginRender() {
 		GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

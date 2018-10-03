@@ -13,14 +13,14 @@ public class TestRenderer {
 		window.clear();
 		for (int i = 0; i < sites.size(); i++) {
 			window.beginLineRender();
-			window.addVertex(new Vector3f (sites.get(i).getX() - 1, sites.get(i).getY() - 1, 0));
-			window.addVertex(new Vector3f (sites.get(i).getX() - 1, sites.get(i).getY() - 1, 0));
-			window.addVertex(new Vector3f (sites.get(i).getX() + 1, sites.get(i).getY() + 1, 0));
+			window.addVertex(new Vector3f ((float)sites.get(i).getX() - 1, (float)sites.get(i).getY() - 1, 0));
+			window.addVertex(new Vector3f ((float)sites.get(i).getX() - 1, (float)sites.get(i).getY() - 1, 0));
+			window.addVertex(new Vector3f ((float)sites.get(i).getX() + 1, (float)sites.get(i).getY() + 1, 0));
 			window.endRender();
 			window.beginLineRender();
-			window.addVertex(new Vector3f (sites.get(i).getX() + 1, sites.get(i).getY() - 1, 0));
-			window.addVertex(new Vector3f (sites.get(i).getX() - 1, sites.get(i).getY() + 1, 0));
-			window.addVertex(new Vector3f (sites.get(i).getX() + 1, sites.get(i).getY() - 1, 0));
+			window.addVertex(new Vector3f ((float)sites.get(i).getX() + 1, (float)sites.get(i).getY() - 1, 0));
+			window.addVertex(new Vector3f ((float)sites.get(i).getX() - 1, (float)sites.get(i).getY() + 1, 0));
+			window.addVertex(new Vector3f ((float)sites.get(i).getX() + 1, (float)sites.get(i).getY() - 1, 0));
 			window.endRender();
 		}
 		

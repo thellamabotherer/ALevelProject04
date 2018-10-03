@@ -8,7 +8,7 @@ public class Edge {
 	Point rightSite;
 	Point direction;
 	
-	Edge neighbour;
+	private Edge neighbour;
 	
 	double slope;
 	double yint;
@@ -25,14 +25,11 @@ public class Edge {
 	}
 	
 	public void describe () {
-		System.out.println("Start = " + this.start);
-		System.out.println("End = " + this.end);
-		System.out.println("Site (left)  = " + this.leftSite);
-		System.out.println("Site (right) = " + this.rightSite);
+		System.out.println("Left" + "");
 	}
 	
 	public Edge getNeighbour () {
-		return this.getNeighbour();
+		return this.neighbour;
 	}
 
 	public Point getEnd() {
