@@ -20,6 +20,9 @@ public class Instance {
 		
 		Display.update();
 		
+		window.clear();
+		Display.update();
+		
 		if (Display.isCloseRequested()) {
 			return false;
 		}

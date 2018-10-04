@@ -68,14 +68,17 @@ public class Window {
 	public void beginLineRender() {
 		GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		GL11.glBegin(GL_TRIANGLES);
-		GL11.glClear(GL_COLOR_BUFFER_BIT);
-
 	}
 
 	public void clear() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	    glClear(GL_COLOR_BUFFER_BIT);
+	    try {
+			Display.swapBuffers();
+		} catch (LWJGLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void addVertex(Vector3f vertex) {

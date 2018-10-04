@@ -25,7 +25,9 @@ public class Edge {
 	}
 	
 	public void describe () {
-		System.out.println("Left" + "");
+		System.out.println("Start = " + this.start);
+		System.out.println("End = " + this.end);
+		
 	}
 	
 	public Edge getNeighbour () {

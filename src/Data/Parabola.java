@@ -1,5 +1,9 @@
 package Data;
 
+import org.lwjgl.util.vector.Vector3f;
+
+import Main.Window;
+
 public class Parabola {
 	
 	public static boolean focus = true;
@@ -141,6 +145,62 @@ public class Parabola {
 		if (this.leftChild == null && this.rightChild == null) {
 			this.type = this.focus;
 		}
+	}
+	
+	public void draw (Window window, double sweepY) {
+		
+		if (this.type) { // still a curvey boi
+			
+			System.out.println(this.getPoint());
+			
+			for (int x = 0; x < window.getWIDTH() - 1; x++) {
+				
+				// find the y coord
+				
+				int y = (int) ((1/(2*(this.getPoint().getY())-(sweepY)))*(x - this.getPoint().getX()) * (x - this.getPoint().getX()) + (this.getPoint().getY() + sweepY/2));
+				if (y < sweepY) {
+				if (y < window.getHEIGHT()) {
+					// draw a little line at that coord
+					window.beginLineRender();
+					window.addVertex(new Vector3f ((float) x, (float)y , 0));
+					window.addVertex(new Vector3f ((float) x+1, (float)y , 0));
+					window.addVertex(new Vector3f ((float) x, (float)y , 0));
+					window.endRender();
+				}}
+			}
+			
+		}else { // edgey boi
+			
+			this.edge.describe();
+			
+			if (this.getEdge().getEnd() != null) {
+			
+				window.beginLineRender();
+				window.addVertex(new Vector3f((float)this.getEdge().getStart().getX(), (float)this.getEdge().getStart().getY(), 0));
+				window.addVertex(new Vector3f((float)this.getEdge().getEnd().getX(), (float)this.getEdge().getEnd().getY(), 0));
+				window.addVertex(new Vector3f((float)this.getEdge().getStart().getX(), (float)this.getEdge().getStart().getY(), 0));
+				
+			}
+			
+			/*if (!this.getRight(this).getType()) {
+				if (this.getRight(this).getEdge().getStart() != null) {
+					window.addVertex(new Vector3f((float)this.getEdge().getStart().getX(), (float)this.getEdge().getStart().getY(), 0));
+					window.addVertex(new Vector3f((float)this.getRight(this).getEdge().getStart().getX(), (float)this.getRight(this).getEdge().getEnd().getY(), 0));
+					window.addVertex(new Vector3f((float)this.getEdge().getStart().getX(), (float)this.getEdge().getStart().getY(), 0));
+					
+				}
+			}*/
+			
+		}
+		
+		if (this.leftChild != null) {
+			//System.out.println("Left started");
+			this.leftChild.draw(window, sweepY);
+			//System.out.println("Left finished");
+		}if (this.rightChild != null) {
+			this.rightChild.draw(window, sweepY);
+		}
+		
 	}
 
 }

@@ -3,10 +3,14 @@ package Maps;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
+import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector3f;
+
 import Data.Edge;
 import Data.Event;
 import Data.Parabola;
 import Data.Point;
+import Main.Window;
 
 public class MeshMap {
 	
@@ -28,7 +32,7 @@ public class MeshMap {
 	
 	double sweepLineY;
 	
-	public MeshMap (int width, int height, ArrayList<Point> sites) {
+	public MeshMap (int width, int height, ArrayList<Point> sites, Window window) {
 		
 		this.WIDTH = width;
 		this.HEIGHT = height;
@@ -53,6 +57,13 @@ public class MeshMap {
 				handleSite (e.getP());
 			}else {
 				handleIntersection(e);
+			}
+			
+			drawAll(window);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
 			}
 		}
 		
@@ -310,7 +321,31 @@ public class MeshMap {
 		return (a1*x*x + b1*x + c1);
 	}
 	
-
+	private void drawAll (Window window) {
+		
+		window.clear();
+		Display.update();
+		
+		for (Point site : sites) {
+			window.beginLineRender();
+			window.addVertex(new Vector3f ((float)site.getX()-1, (float)site.getY(), 0));
+			window.addVertex(new Vector3f ((float)site.getX()+1, (float)site.getY(), 0));
+			window.addVertex(new Vector3f ((float)site.getX()-1, (float)site.getY(), 0));
+			window.endRender();
+			window.beginLineRender();
+			window.addVertex(new Vector3f ((float)site.getX(), (float)site.getY()-1, 0));
+			window.addVertex(new Vector3f ((float)site.getX(), (float)site.getY()+1, 0));
+			window.addVertex(new Vector3f ((float)site.getX(), (float)site.getY()-1, 0));
+			window.endRender();
+		}
+		System.out.println("drawRoot");
+		this.root.draw(window, this.sweepLineY);
+		
+		Display.update();
+		
+		
+		
+	}
 }
 	
 	

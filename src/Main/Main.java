@@ -1,5 +1,6 @@
 package Main;
 
+import Data.Point;
 import Maps.MeshMap;
 import Maps.TestMap;
 import Renderers.MeshRenderer;
@@ -10,7 +11,7 @@ public class Main {
 	public static int WIDTH = 1000;
 	public static int HEIGHT = 800;
 	
-	public static void main (String args []) {
+	public static void main (String args []) {		
 		
 		Window window = new Window (WIDTH, HEIGHT, "Test Window");
 		Instance instance = new Instance (60, window);
@@ -21,15 +22,18 @@ public class Main {
 			testRenderer.draw(testMap.getSites(), window);
 		}*/
 		
+		Point testPoint1 = new Point (50, 100);
+		
 		double start = System.nanoTime();
 		
-		MeshMap meshMap = new MeshMap(HEIGHT, HEIGHT, testMap.getSites());
+		MeshMap meshMap = new MeshMap(HEIGHT, HEIGHT, testMap.getSites(), window);
 		
 		double end = System.nanoTime();
 		
 		MeshRenderer meshRenderer = new MeshRenderer (meshMap, window);
 		
 		System.out.println(end - start);
+		window.clear();
 		
 		while (instance.run()) {
 			meshRenderer.draw();
