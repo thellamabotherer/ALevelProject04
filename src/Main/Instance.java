@@ -18,14 +18,12 @@ public class Instance {
 	
 	public boolean run () {
 		
-		Display.update();
-		
-		window.clear();
-		Display.update();
-		
 		if (Display.isCloseRequested()) {
 			return false;
 		}
+		
+		Display.update();
+		
 		Display.sync(fps);
 		return true;
 	}
