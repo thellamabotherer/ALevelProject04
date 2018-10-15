@@ -12,6 +12,8 @@ public class Point implements Comparable <Point>{
 	Point leftChild;
 	Point rightChild;
 	
+	private Polygon poly;
+	
 	public Point (double x, double y) {
 		this.x = x;
 		this.y = y;
@@ -39,6 +41,14 @@ public class Point implements Comparable <Point>{
 		
 	}
 	
+	public Polygon getPoly() {
+		return poly;
+	}
+
+	public void setPoly(Polygon poly) {
+		this.poly = poly;
+	}
+
 	public Point getParent() {
 		return parent;
 	}

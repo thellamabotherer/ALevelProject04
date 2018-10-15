@@ -25,7 +25,7 @@ public class Window {
 			Display.setDisplayMode(new DisplayMode(this.WIDTH, this.HEIGHT));
 			Display.setTitle(this.title);
 			Display.create();
-			glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 			glDisable(GL_LIGHTING);
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -61,8 +61,6 @@ public class Window {
 	public void beginRender() {
 		GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		GL11.glBegin(GL_TRIANGLES);
-		GL11.glClear(GL_COLOR_BUFFER_BIT);
-
 	}
 
 	public void beginLineRender() {

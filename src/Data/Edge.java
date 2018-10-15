@@ -27,6 +27,8 @@ public class Edge {
 	public void describe () {
 		System.out.println("Start = " + this.start);
 		System.out.println("End = " + this.end);
+		System.out.println("LeftSite = " + this.leftSite);
+		System.out.println("RightSite = " + this.rightSite);
 		
 	}
 	

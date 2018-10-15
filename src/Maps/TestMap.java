@@ -8,17 +8,15 @@ import Data.Point;
 public class TestMap {
 
 	private ArrayList<Point> sites;
+	private Point root;
 
 	public TestMap(int WIDTH, int HEIGHT, int numSites) {
 
 		this.sites = new ArrayList();
 		Random rand = new Random();
-		Point newSite;
-		boolean isValid;
-		double x;
-		double y;
 
 		Point root = new Point (rand.nextDouble() * WIDTH, rand.nextDouble() * HEIGHT);
+		this.root = root;
 		
 		for (int i = 0; i < numSites; i++) {
 			Point newPoint = new Point (rand.nextDouble() * WIDTH, rand.nextDouble() * HEIGHT);
@@ -27,6 +25,21 @@ public class TestMap {
 		
 		listInOrder(root, this.sites);
 
+	} public TestMap (ArrayList<Point> sites) { // just put them in the tree
+		
+		this.sites = new ArrayList();
+		//Random rand = new Random();
+
+		Point root = new Point (sites.get(0).getX(), sites.get(0).getY());
+		this.root = root;
+		
+		for (int i = 1; i < sites.size(); i++) {
+			Point newPoint = new Point (sites.get(i).getX(), sites.get(i).getY());
+			addToTree(newPoint, root);
+		}
+		
+		listInOrder(root, this.sites);
+		
 	}
 
 	/*public TestMap (TestMap oldMap, int WIDTH, int HEIGHT) {
@@ -48,6 +61,8 @@ public class TestMap {
 	
 	public ArrayList<Point> getSites() {
 		return this.sites;
+	}public Point getRoot () {
+		return this.root;
 	}
 	
 	private static void addToTree (Point point, Point current) {
@@ -65,13 +80,15 @@ public class TestMap {
 				current.setLeftChild(point);
 				return;
 				
-			}addToTree(point, current.getLeftChild());
+			}
+			addToTree(point, current.getLeftChild());
 			return;
 		}if (current.getRightChild() == null) {
 			
 			current.setRightChild(point);
 			return;
-		}addToTree(point, current.getRightChild());
+		}
+		addToTree(point, current.getRightChild());
 		
 	}private static void listInOrder (Point point, ArrayList<Point> list) {
 		
