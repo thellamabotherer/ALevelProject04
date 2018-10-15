@@ -26,25 +26,24 @@ public class Main {
 		Instance instance = new Instance (60, window);
 		
 		double start = System.nanoTime();
+		TestMap testMap = new TestMap (WIDTH, HEIGHT, (5000));
+		double end = System.nanoTime();
 		
-		TestMap testMap = new TestMap (WIDTH, HEIGHT, (500));
+		System.out.println("Test Map time = " + (end - start));
 		
 		/*TestRenderer testRenderer = new TestRenderer();
 		while (instance.run()) {
 			testRenderer.draw(testMap.getSites(), window);
 		}*/
 		
-		
-		
-		MeshMap meshMap = new MeshMap(HEIGHT, HEIGHT, testMap.getSites(), window, false);
-		
-		double end = System.nanoTime();
+		start = System.nanoTime();
+		MeshMap meshMap = new MeshMap(HEIGHT, HEIGHT, testMap.getSites(), window, false, testMap.getRoot());
+		end = System.nanoTime();
 		
 		MeshRenderer meshRenderer = new MeshRenderer (meshMap, window);
 		
-		System.out.println(end - start);
-		
-		System.out.println(meshMap.getEdges().size());
+		System.out.println("fortunes time = " + (end - start));
+
 		
 		while (instance.run()) {
 			meshRenderer.draw();

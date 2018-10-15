@@ -33,7 +33,7 @@ public class MeshMap {
 
 	double sweepLineY;  // He's called Ludwig von Sveepline. 
 
-	public MeshMap(int width, int height, ArrayList<Point> sites, Window window, Boolean drawGen) {
+	public MeshMap(int width, int height, ArrayList<Point> sites, Window window, Boolean drawGen, Point rootSite) {
 
 		this.WIDTH = width;
 		this.HEIGHT = height;
@@ -41,14 +41,17 @@ public class MeshMap {
 		this.edges = new ArrayList<Edge>();
 
 		// this is where fortune's algorithm will run and get me a voronoi
-
+		
 		eventQueue = new PriorityQueue<Event>();
-		for (int i = 0; i < sites.size(); i++) {
+		
+		/*for (int i = 0; i < sites.size(); i++) {
 			eventQueue.add(new Event(sites.get(i), Event.siteEvent)); // fill out the priority queue with events
-		}
+		}*/
 
 		// start going through the priority queue one at a time
 
+		handleSiteOnTree(rootSite, eventQueue);
+		
 		while (!eventQueue.isEmpty()) {
 
 			Event e = eventQueue.remove();
@@ -60,16 +63,17 @@ public class MeshMap {
 				handleIntersection(e);
 			}
 
-			if (drawGen) {
+			/*if (drawGen) {
 				drawAll(window);
-				/*try {
+				try {
 					//Thread.sleep(1);
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
-				}*/
-			}
+				}
+			}*/
 		}
-
+		
+		
 		sweepLineY = this.WIDTH + this.HEIGHT; // I have no idea why this bit is happening either, but it didn't work
 												// until I copied this in
 
@@ -83,11 +87,23 @@ public class MeshMap {
 			}
 		}
 
-		System.out.println(this.edges.size());
-
+		/*for (Edge e: edges) {
+			e.describe();
+		}*/
+		
+		
 		// I did most of this myself and then stackoverflew the last bits when it didn't
 		// work
 
+	}
+	
+	private void handleSiteOnTree (Point site, PriorityQueue<Event> eventQueue) {
+		if (site.getLeftChild() != null) {handleSiteOnTree(site.getLeftChild(), eventQueue);}
+		
+		eventQueue.add(new Event(site, Event.siteEvent));
+		
+		if (site.getRightChild() != null) {handleSiteOnTree(site.getRightChild(), eventQueue);}
+		
 	}
 
 	private void endEdges(Parabola p) {

@@ -8,6 +8,7 @@ import Data.Point;
 public class TestMap {
 
 	private ArrayList<Point> sites;
+	private Point root;
 
 	public TestMap(int WIDTH, int HEIGHT, int numSites) {
 
@@ -19,6 +20,7 @@ public class TestMap {
 		double y;
 
 		Point root = new Point (rand.nextDouble() * WIDTH, rand.nextDouble() * HEIGHT);
+		this.root = root;
 		
 		for (int i = 0; i < numSites; i++) {
 			Point newPoint = new Point (rand.nextDouble() * WIDTH, rand.nextDouble() * HEIGHT);
@@ -48,6 +50,8 @@ public class TestMap {
 	
 	public ArrayList<Point> getSites() {
 		return this.sites;
+	}public Point getRoot () {
+		return this.root;
 	}
 	
 	private static void addToTree (Point point, Point current) {
