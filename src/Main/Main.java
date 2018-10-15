@@ -8,8 +8,8 @@ import Renderers.TestRenderer;
 
 public class Main {
 
-	public static int WIDTH = 1900;
-	public static int HEIGHT = 1000;
+	public static int WIDTH = 1920;
+	public static int HEIGHT = 1080;
 	
 	public static int firstIf = 0;
 	public static int secondIf = 0;
@@ -27,7 +27,7 @@ public class Main {
 		
 		double start = System.nanoTime();
 		
-		TestMap testMap = new TestMap (WIDTH, HEIGHT, (500));
+		TestMap testMap = new TestMap (WIDTH, HEIGHT, (1000));
 		
 		/*TestRenderer testRenderer = new TestRenderer();
 		while (instance.run()) {
@@ -43,8 +43,6 @@ public class Main {
 		MeshRenderer meshRenderer = new MeshRenderer (meshMap, window);
 		
 		System.out.println(end - start);
-		
-		System.out.println(meshMap.getEdges().size());
 		
 		while (instance.run()) {
 			meshRenderer.draw();

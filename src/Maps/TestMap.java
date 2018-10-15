@@ -54,7 +54,7 @@ public class TestMap {
 		
 		if (point.getY() == current.getY()) {
 			
-			point.setY(point.getY() + 0.01);
+			point.setY(point.getY() + 0.001);
 			
 		}
 		

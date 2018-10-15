@@ -62,11 +62,11 @@ public class MeshMap {
 
 			if (drawGen) {
 				drawAll(window);
-				/*try {
-					//Thread.sleep(1);
+				try {
+					Thread.sleep(10);
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
-				}*/
+				}
 			}
 		}
 
@@ -82,9 +82,7 @@ public class MeshMap {
 				edges.get(i).setNeighbour(null);
 			}
 		}
-
-		System.out.println(this.edges.size());
-
+		
 		// I did most of this myself and then stackoverflew the last bits when it didn't
 		// work
 
