@@ -2,45 +2,50 @@ package Data;
 
 import java.util.Random;
 
-public class Point implements Comparable <Point>{
-	
+public class Point implements Comparable<Point> {
+
 	double x;
 	double y;
-	//boolean left; // this is just for the moving points
-	//boolean up;
+	boolean left; // this is just for the moving points
+	boolean up;
 	Point parent;
 	Point leftChild;
 	Point rightChild;
-	
+
 	private Polygon poly;
-	
-	public Point (double x, double y) {
+
+	public Point(double x, double y) {
+		this.x = x;
+		this.y = y;
+		Random rand = new Random ();
+		this.left = rand.nextBoolean();
+		this.up = rand.nextBoolean();
+	}public Point(double x, double y, boolean left, boolean up) {
 		this.x = x;
 		this.y = y;
 		//Random rand = new Random ();
-		//this.left = rand.nextBoolean();
-		//this.up = rand.nextBoolean();
+		this.left = left;
+		this.up = up;
 	}
-	
-	public int compareTo (Point P) {		
-		
+
+	public int compareTo(Point P) {
+
 		if (this.y == P.getY()) {
 			if (this.x == P.getX()) {
 				return 0;
-			}else if (this.x > P.getX()) {
+			} else if (this.x > P.getX()) {
 				return 1;
-			}else {
+			} else {
 				return -1;
 			}
-		}else if (this.y > P.getY()) {
+		} else if (this.y > P.getY()) {
 			return 1;
-		}else {
+		} else {
 			return -1;
 		}
-		
-		
+
 	}
-	
+
 	public Polygon getPoly() {
 		return poly;
 	}
@@ -73,16 +78,18 @@ public class Point implements Comparable <Point>{
 		this.rightChild = rightChild;
 	}
 
-	public String toString () {
+	public String toString() {
 		return ("x = " + this.x + "\ny = " + this.y);
 	}
-	
-	public double getY () {
+
+	public double getY() {
 		return this.y;
-	}public double getX () {
+	}
+
+	public double getX() {
 		return this.x;
 	}
-	
+
 	public void setX(double x) {
 		this.x = x;
 	}
@@ -91,42 +98,45 @@ public class Point implements Comparable <Point>{
 		this.y = y;
 	}
 
-	public void addSmall () {
+	public void addSmall() {
 		this.y = this.y + 0.000000001;
 	}
 
-/*	public void slide (int dist, int WIDTH, int HEIGHT) {  // this method is also useless, avoid it at all costs
-		
+	public void slide(float dist, int WIDTH, int HEIGHT) { // this method is also useless, avoid it at all costs
+
 		if (this.left) {
 			this.x = this.x - dist;
 			if (this.x < 0) {
 				this.x = this.x + dist * 2;
 				this.left = false;
 			}
-		}else {
+		} else {
 			this.x = this.x + dist;
 			if (this.x >= WIDTH) {
 				this.x = this.x - dist * 2;
 				this.left = true;
 			}
 		}
-		
+
 		if (!this.up) {
 			this.y = this.y - dist;
 			if (this.y < 0) {
 				this.y = this.y + dist * 2;
-				this.up = false;
+				this.up = true;
 			}
-		}else {
+		} else {
 			this.y = this.y + dist;
 			if (this.y >= HEIGHT) {
 				this.y = this.y - dist * 2;
-				this.up = true;
+				this.up = false;
 			}
 		}
-		*/
-		
+	}
 	
-
+	public boolean getUp () {
+		return this.up;
+	}public boolean getLeft () {
+		return this.left;
+	}
 
 }

@@ -34,7 +34,7 @@ public class TestMap {
 		this.root = root;
 		
 		for (int i = 1; i < sites.size(); i++) {
-			Point newPoint = new Point (sites.get(i).getX(), sites.get(i).getY());
+			Point newPoint = new Point (sites.get(i).getX(), sites.get(i).getY(), sites.get(i).getLeft(), sites.get(i).getUp());
 			addToTree(newPoint, root);
 		}
 		
@@ -95,6 +95,12 @@ public class TestMap {
 		if (point.getLeftChild() != null) { listInOrder(point.getLeftChild(), list); }
 		list.add(point);
 		if (point.getRightChild() != null) { listInOrder(point.getRightChild(), list); }
+	}
+	
+	public void slideAll (float dist, int WIDTH, int HEIGHT) {
+		for (Point p : this.sites) {
+			p.slide(dist, WIDTH, HEIGHT);
+		}
 	}
 
 }
