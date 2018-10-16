@@ -49,7 +49,7 @@ public class Main {
 		//plateRenderer = new PlateRenderer(plateMap, window);
 		while (instance.run()) {
 			
-			testMap.slideAll(1, WIDTH, HEIGHT);
+			testMap.slideAll(3, WIDTH, HEIGHT);
 			testMap = new TestMap(testMap.getSites());
 			meshMap = new MeshMap(WIDTH, HEIGHT, testMap.getSites(), window, false, testMap.getRoot());
 			meshRenderer = new MeshRenderer (meshMap, window);

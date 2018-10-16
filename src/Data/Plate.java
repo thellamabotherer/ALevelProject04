@@ -29,7 +29,6 @@ public class Plate {
 		this.majorPlate = majorPlate;
 		
 	}public boolean floodFill () {
-		System.out.println("Boop");
 		boolean used = false;
 		ArrayList<Polygon> oldList = new ArrayList();
 		for (Polygon p : this.polys) {

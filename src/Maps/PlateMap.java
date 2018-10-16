@@ -42,7 +42,6 @@ public class PlateMap {
 		boolean majorOnly = true;
 		boolean stillUsed = true;
 		while (stillUsed) {
-			System.out.println("nog");
 			stillUsed = false;
 			for (Plate p : this.plates) {
 				if (p.isMajor() || !majorOnly) {
@@ -50,8 +49,6 @@ public class PlateMap {
 				}
 			}
 		}
-		
-		System.out.println("blerp");
 		for (Plate P : this.plates) {
 			System.out.println(P.getPolys().size());
 		}
