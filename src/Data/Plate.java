@@ -59,5 +59,10 @@ public class Plate {
 	}public ArrayList<Polygon> getPolys () {
 		return this.polys;
 	}
+	public Vector2f getDirection() {
+		return this.direction;
+	}public boolean isContinental () {
+		return this.continental;
+	}
 	
 }

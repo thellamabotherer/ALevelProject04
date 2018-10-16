@@ -75,7 +75,33 @@ public class Polygon {
 				
 				// this polygon is moving towards the polygon on the other side of edge e, compare the plates and figure out what's happening 
 				
+				if (e.leftSite.getPoly() == this) {
+					this.collideWith (e.rightSite.getPoly());
+				}else {
+					this.collideWith (e.getLeftSite().getPoly());
+				}
+				
 			}
+		}
+		
+	}public void collideWith (Polygon P) {
+		
+		Plate plate1 = this.getPlate();
+		Plate plate2 = P.getPlate();
+		
+		double dist = Math.sqrt((this.getSite().x - P.getSite().x)*(this.getSite().x - P.getSite().x) + 
+							   (this.getSite().y - P.getSite().y)*(this.getSite().y - P.getSite().y));
+		double afterDist = Math.sqrt((this.getSite().x - this.getPlate().getDirection().x * 0.0001 - P.getSite().x + P.getPlate().getDirection().x)*(this.getSite().x - this.getPlate().getDirection().x * 0.0001 - P.getSite().x + P.getPlate().getDirection().x) + 
+				(this.getSite().y - this.getPlate().getDirection().y * 0.0001 - P.getSite().y + P.getPlate().getDirection().y)*(this.getSite().y - this.getPlate().getDirection().y * 0.0001 - P.getSite().y + P.getPlate().getDirection().y));
+
+		if ((dist - afterDist) > 0) { // moving towards
+			
+			if ((plate1.isContinental() && plate2.isContinental()) || (!plate1.isContinental() && !plate2.isContinental())) {
+				// produce tall 
+			}
+			
+		}else { // moving away 
+			
 		}
 		
 	}

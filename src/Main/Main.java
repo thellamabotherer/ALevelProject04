@@ -38,7 +38,7 @@ public class Main {
 			
 			newMap (
 					
-					5000, // number of sites
+					50000, // number of sites
 					2, // number of passes of the lloyd relaxation
 					(float) 0.5, // strength of each relaxation
 					4,   6, // range of possible major plate numbers
