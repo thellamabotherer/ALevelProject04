@@ -5,6 +5,7 @@ import Maps.MeshMap;
 import Maps.PlateMap;
 import Maps.PolyMap;
 import Maps.TestMap;
+import Renderers.HeightRenderer;
 import Renderers.MeshRenderer;
 import Renderers.PlateRenderer;
 import Renderers.TestRenderer;
@@ -24,6 +25,7 @@ public class Main {
 	
 	public static MeshRenderer meshRenderer;	
 	public static PlateRenderer plateRenderer;
+	public static HeightRenderer heightRenderer;
 	
 	public static void main (String args []) {			
 			
@@ -38,18 +40,20 @@ public class Main {
 			
 			newMap (
 					
-					100000, // number of sites
+					5000, // number of sites
 					2, // number of passes of the lloyd relaxation
 					(float) 0.5, // strength of each relaxation
-					10,   11, // range of possible major plate numbers
+					20,   25, // range of possible major plate numbers
 					0,   0  // range of possible minor plate numbers
 					);
 		
 		meshRenderer = new MeshRenderer (meshMap, window);
 		plateRenderer = new PlateRenderer(plateMap, window);
+		heightRenderer = new HeightRenderer(window, plateMap);
 		while (instance.run()) {
-			meshRenderer.draw();
+			//meshRenderer.draw();
 			plateRenderer.draw();
+			//heightRenderer.draw();
 		}
 		
 		

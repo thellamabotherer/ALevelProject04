@@ -1,6 +1,7 @@
 package Data;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -14,6 +15,8 @@ public class Polygon {
 	private Point site;
 	private ArrayList<Polygon> adjacencies;
 	private boolean inPlate;
+	
+	private float height;
 	
 	private Plate plate;
 	
@@ -55,7 +58,7 @@ public class Polygon {
 			window.endRender();
 		}
 		
-	}
+	} 
 	
 	public void collide (Vector2f direction) {
 		
@@ -89,6 +92,8 @@ public class Polygon {
 		Plate plate1 = this.getPlate();
 		Plate plate2 = P.getPlate();
 		
+		Random rand = new Random();
+		
 		double dist = Math.sqrt((this.getSite().x - P.getSite().x)*(this.getSite().x - P.getSite().x) + 
 							   (this.getSite().y - P.getSite().y)*(this.getSite().y - P.getSite().y));
 		double afterDist = Math.sqrt((this.getSite().x - this.getPlate().getDirection().x * 0.0001 - P.getSite().x + P.getPlate().getDirection().x)*(this.getSite().x - this.getPlate().getDirection().x * 0.0001 - P.getSite().x + P.getPlate().getDirection().x) + 
@@ -97,11 +102,47 @@ public class Polygon {
 		if ((dist - afterDist) > 0) { // moving towards
 			
 			if ((plate1.isContinental() && plate2.isContinental()) || (!plate1.isContinental() && !plate2.isContinental())) {
-				// produce tall 
+
+				// produce tall mountains (quite steep and regular ridgeline)
+				// low volcanic activity
+				
+				// set a height with semi-random parameters
+				
+				this.height = (float) (this.height + 1.5 + rand.nextFloat());
+				
+				// set ridge irregularity value 
+				
+				float ridgeIrregularity = (float)0.5;
+				
+				// adjust height if necessary for ridge irregularity
+				
+				for (Polygon p : this.adjacencies) {
+					
+					if (Math.abs(this.height - p.getHeight()) > ridgeIrregularity) {
+						
+						if (this.height - p.getHeight() > 0) {
+							this.height = p.getHeight() + ridgeIrregularity;
+						}else {
+							this.height = p.getHeight() - ridgeIrregularity;
+						}
+						
+					}
+					
+				}
+				
+				// set a steepness value 
+				// recurse into adjacent polygons to adjust height if height enough to cause this 
+				
+			}else {
+				
+				// produce medium height mountains (not very steep and quite regular ridge) on continental plate with dropoff into a very steep trench on the oceanic 
+				// medium volcanic activity
+				
 			}
 			
 		}else { // moving away 
-			
+			// produce medium height mountains (average steepness and irregular ridgeline)
+			// high volcanic activity
 		}
 		
 	}
@@ -144,6 +185,10 @@ public class Polygon {
 	}public void setInPlate (boolean b) {
 		this.inPlate = b;
 	}
+	
+	public float getHeight () {
+		return this.height;
+	}
 
 	public ArrayList<Polygon> getAdjacencies() {
 		return adjacencies;
@@ -167,6 +212,11 @@ public class Polygon {
 
 	public void setPlate(Plate plate) {
 		this.plate = plate;
+		if (this.plate.isContinental()) {
+			this.height = 1;
+		}else {
+			this.height = -1;
+		}
 	}
 	
 }
