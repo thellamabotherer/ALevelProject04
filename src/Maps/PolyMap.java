@@ -27,26 +27,18 @@ public class PolyMap {
 			
 		}
 
-		for (Edge e : edges) {			
-
+		for (Edge e : edges) {
 			
 			if (e.getLeftSite() != null) {e.getLeftSite().getPoly().addEdge(e);
-										  e.getLeftSite().getPoly().addAdjacency(e.getRightSite().getPoly());}
+										  e.getLeftSite().getPoly().addAdjacency(e.getRightSite().getPoly());
+										  e.addPolygons(e.getLeftSite().getPoly(), null);}
 			if (e.getRightSite() != null) {e.getRightSite().getPoly().addEdge(e);
-			                               e.getRightSite().getPoly().addAdjacency(e.getLeftSite().getPoly());}
+			                               e.getRightSite().getPoly().addAdjacency(e.getLeftSite().getPoly());
+			                               e.addPolygons(null, e.getLeftSite().getPoly());}
 			
 		}
 		
-		/*Random rand = new Random ();
 		
-		for (int i = 0; i < plates; i++) {
-			
-			int r = rand.nextInt(this.polygons.size());
-			if (!this.polygons.get(r).isInPlate()) {
-				
-			}
-			
-		}*/
 		
 	}
 	

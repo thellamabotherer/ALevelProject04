@@ -27,6 +27,10 @@ public class Plate {
 		
 		this.polys.add(start);
 		this.majorPlate = majorPlate;
+		this.continental = rand.nextBoolean();
+		
+		this.direction = new Vector2f (rand.nextFloat(), rand.nextFloat());
+		
 		
 	}public boolean floodFill () {
 		boolean used = false;
@@ -38,6 +42,7 @@ public class Plate {
 			for (Polygon a : p.getAdjacencies()) {
 				if (!a.isInPlate()) {
 					a.setInPlate(true);
+					a.setPlate(this);
 					this.polys.add(a);
 					used = true;
 				}

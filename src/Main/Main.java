@@ -25,19 +25,25 @@ public class Main {
 	public static MeshRenderer meshRenderer;	
 	public static PlateRenderer plateRenderer;
 	
-	public static void main (String args []) {		
-		
-		newMap (
-				WIDTH, // width
-				HEIGHT, // height
-				"Test Map", // window name
-				60, // frame rate
-				10000, // number of sites
-				2, // number of passes of the lloyd relaxation
-				(float) 0.5, // strength of each relaxation
-				3,   5, // range of possible major plate numbers
-				3,   5  // range of possible minor plate numbers
-				);
+	public static void main (String args []) {			
+			
+			newWindow (
+					
+					WIDTH, // width
+					HEIGHT, // height
+					"Test Map", // window name
+					60 // frame rate
+					
+					);
+			
+			newMap (
+					
+					5000, // number of sites
+					2, // number of passes of the lloyd relaxation
+					(float) 0.5, // strength of each relaxation
+					4,   6, // range of possible major plate numbers
+					0,   8  // range of possible minor plate numbers
+					);
 		
 		meshRenderer = new MeshRenderer (meshMap, window);
 		plateRenderer = new PlateRenderer(plateMap, window);
@@ -49,10 +55,15 @@ public class Main {
 		
 	}
 	
-	private static void newMap (int WIDTH, int HEIGHT, String name, int fps, int numSites, int numRelaxations, float relaxDist, int bigPlateMax, int bigPlateMin, int smallPlateMax, int smallPlateMin) {
+private static void newWindow (int WIDTH, int HEIGHT, String name, int fps) {
 		
 		window = new Window (WIDTH, HEIGHT, name);
 		instance = new Instance (fps, window);
+		
+	}
+	
+	private static void newMap (int numSites, int numRelaxations, float relaxDist, int bigPlateMax, int bigPlateMin, int smallPlateMax, int smallPlateMin) {
+		
 		testMap = new TestMap (WIDTH, HEIGHT, numSites);
 		meshMap = new MeshMap(WIDTH, HEIGHT, testMap.getSites(), window, false, testMap.getRoot());
 		

@@ -1,5 +1,7 @@
 package Data;
 
+import org.lwjgl.util.vector.Vector2f;
+
 public class Edge {
 	
 	Point start;
@@ -7,6 +9,8 @@ public class Edge {
 	Point leftSite;
 	Point rightSite;
 	Point direction;
+	
+	Polygon[] polygons;
 	
 	private Edge neighbour;
 	
@@ -30,6 +34,13 @@ public class Edge {
 		System.out.println("LeftSite = " + this.leftSite);
 		System.out.println("RightSite = " + this.rightSite);
 		
+	}
+	
+	public Vector2f[] getEq () { // gives a vector equation r = A + (lambda)B where A is eq[0] and B is eq[1]
+		Vector2f[] eq = new Vector2f[2];
+		 eq[0] = new Vector2f ((float)(this.getStart().getX()), (float)(this.getStart().getY()));
+		 eq[1] = new Vector2f ((float)((this.getEnd().getX())-(this.getStart().getX())),(float)((this.getEnd().getY())-(this.getStart().getY())));
+		 return eq;
 	}
 	
 	public Edge getNeighbour () {
@@ -96,4 +107,12 @@ public class Edge {
 		this.yint = yint;
 	}
 
+	public void addPolygons (Polygon p1, Polygon p2) {
+		if (this.polygons == null) {this.polygons = new Polygon[2];}
+		if (p1 != null) {this.polygons[0] = p1;}
+		if (p2 != null) {this.polygons[1] = p2;}
+		}
+	
+	
+	
 }
