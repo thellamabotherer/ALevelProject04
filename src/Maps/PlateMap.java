@@ -42,18 +42,12 @@ public class PlateMap {
 		boolean majorOnly = true;
 		boolean stillUsed = true;
 		while (stillUsed) {
-			System.out.println("nog");
 			stillUsed = false;
 			for (Plate p : this.plates) {
 				if (p.isMajor() || !majorOnly) {
 					if (p.floodFill()) {stillUsed = true;}
 				}
-			}
-		}
-		
-		System.out.println("blerp");
-		for (Plate P : this.plates) {
-			System.out.println(P.getPolys().size());
+			}if (majorOnly) {majorOnly = false;} else {majorOnly = true;}
 		}
 		
 	}

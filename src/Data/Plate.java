@@ -29,7 +29,6 @@ public class Plate {
 		this.majorPlate = majorPlate;
 		
 	}public boolean floodFill () {
-		System.out.println("Boop");
 		boolean used = false;
 		ArrayList<Polygon> oldList = new ArrayList();
 		for (Polygon p : this.polys) {
@@ -39,7 +38,7 @@ public class Plate {
 			for (Polygon a : p.getAdjacencies()) {
 				if (!a.isInPlate()) {
 					a.setInPlate(true);
-					this.polys.add(p);
+					this.polys.add(a);
 					used = true;
 				}
 			}

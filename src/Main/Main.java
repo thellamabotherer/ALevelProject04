@@ -32,11 +32,11 @@ public class Main {
 				HEIGHT, // height
 				"Test Map", // window name
 				60, // frame rate
-				5000, // number of sites
+				10000, // number of sites
 				2, // number of passes of the lloyd relaxation
 				(float) 0.5, // strength of each relaxation
-				1,   2, // range of possible major plate numbers
-				0,   1  // range of possible minor plate numbers
+				3,   5, // range of possible major plate numbers
+				3,   5  // range of possible minor plate numbers
 				);
 		
 		meshRenderer = new MeshRenderer (meshMap, window);
