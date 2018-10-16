@@ -17,12 +17,16 @@ public class Plate {
 	private boolean majorPlate;
 	
 	private Vector4f Colour;
+	private double height;
 	
 	
 	public Plate (Polygon start, boolean majorPlate) {
 		
 		Random rand = new Random();
-		Colour = Main.ColourPalette.Colours[rand.nextInt(Main.ColourPalette.Colours.length)];
+		//Colour = Main.ColourPalette.Colours[rand.nextInt(Main.ColourPalette.Colours.length)];
+		
+		Colour = new Vector4f (rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), 1);
+		
 		this.polys = new ArrayList();
 		
 		this.polys.add(start);

@@ -38,11 +38,11 @@ public class Main {
 			
 			newMap (
 					
-					50000, // number of sites
+					100000, // number of sites
 					2, // number of passes of the lloyd relaxation
 					(float) 0.5, // strength of each relaxation
-					4,   6, // range of possible major plate numbers
-					0,   8  // range of possible minor plate numbers
+					10,   11, // range of possible major plate numbers
+					0,   0  // range of possible minor plate numbers
 					);
 		
 		meshRenderer = new MeshRenderer (meshMap, window);
