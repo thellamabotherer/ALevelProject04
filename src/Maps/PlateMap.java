@@ -19,10 +19,12 @@ public class PlateMap {
 		for (int i = 0; i < MPlates; i++) {
 			int startPoly = rand.nextInt(polyMap.getPolys().size());
 			if (!polyMap.getPolys().get(startPoly).isInPlate()) {
-
-				this.plates.add(new Plate(polyMap.getPolys().get(startPoly), true));
+				
+				Plate p1 = new Plate(polyMap.getPolys().get(startPoly), true);
 				polyMap.getPolys().get(startPoly).setInPlate(true);
-
+				polyMap.getPolys().get(startPoly).setPlate(p1);
+				this.plates.add(p1);
+				
 			} else {
 				i--;
 			}
@@ -33,9 +35,11 @@ public class PlateMap {
 				int startPoly = rand.nextInt(polyMap.getPolys().size());
 				if (!polyMap.getPolys().get(startPoly).isInPlate()) {
 
-					this.plates.add(new Plate(polyMap.getPolys().get(startPoly), false));
+					Plate p1 = new Plate(polyMap.getPolys().get(startPoly), true);
 					polyMap.getPolys().get(startPoly).setInPlate(true);
-
+					polyMap.getPolys().get(startPoly).setPlate(p1);
+					this.plates.add(p1);
+					
 				} else {
 					i--;
 				}
@@ -45,6 +49,22 @@ public class PlateMap {
 		boolean majorOnly = true;
 		boolean stillUsed = true;
 		while (stillUsed) {
+			if (!majorOnly) {
+				stillUsed = false;
+			}
+			for (Plate p : this.plates) {
+				if (p.isMajor() || !majorOnly) {
+					if (p.floodFill()) {
+						stillUsed = true;
+					}
+				}
+			}
+			if (majorOnly) {
+				majorOnly = false;
+			} else {
+				majorOnly = true;
+			}
+		}for (int i = 0; i < 100; i ++) {
 			if (!majorOnly) {
 				stillUsed = false;
 			}

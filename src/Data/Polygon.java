@@ -60,34 +60,120 @@ public class Polygon {
 		
 	} 
 	
-	public void collide (Vector2f direction) {
+	public void collide () {
+		
+		//System.out.println("Collide method.");
 		
 		for (Edge e : edges) {
 			// check if eq of edge intersects with bigVect between getStart and getEnd
-			if (intersects (
+			
+			if (movingTowards(
+					this,
+					e.getLeftSite().getPoly(),
+					e.getRightSite().getPoly()
+					) == 1) {
+				// away from the leftsite
+				
+				// if both same
+				if (this.getPlate().isContinental() && e.getLeftSite().getPoly().getPlate().isContinental() ||
+						!this.getPlate().isContinental() && !e.getLeftSite().getPoly().getPlate().isContinental()) {
+					//  Rift Valley; Low, sharp depression. Radiate out some low non-steep mountains. Medium volcanic activity.
+					this.height ++;
 					
-					new Vector2f ((float)this.getSite().x, (float)this.getSite().y),
-					direction,
-					e.getEq()[0],
-					e.getEq()[1],
-					new Vector2f ((float)this.getSite().x, (float)this.getSite().y),
-					new Vector2f ((float)(this.getSite().x + direction.x * 1000),(float)(this.getSite().y + direction.y * 1000)),
-					e.getEq()[0],
-					new Vector2f ( (float) (e.getEq()[0].x + e.getEq()[1].x) , (float) (e.getEq()[0].y + e.getEq()[1].y) )
-					)) {
-				
-				// this polygon is moving towards the polygon on the other side of edge e, compare the plates and figure out what's happening 
-				
-				if (e.leftSite.getPoly() == this) {
-					this.collideWith (e.rightSite.getPoly());
-				}else {
-					this.collideWith (e.getLeftSite().getPoly());
 				}
 				
+				
+				// if this ocean and that continent
+				else if (!this.getPlate().isContinental() && e.getLeftSite().getPoly().getPlate().isContinental()) {
+					// Ocean trench, medium volcanic activity.
+					this.height --;
+				}
+				
+				
+				// if this cont and that ocean
+				else if (this.getPlate().isContinental() && !e.getLeftSite().getPoly().getPlate().isContinental()) {
+					// Low mountains, high volcanic activity.
+					this.height --;
+				}
+				
+				else {
+					System.out.println("Error in polygon, collide method.");
+				}
+				
+			}if (movingTowards(
+					this, 
+					e.getLeftSite().getPoly(),
+					e.getRightSite().getPoly()
+					) == 2) {
+				// away from the rightSite
+			}else if (movingTowards(
+					this, 
+					e.getLeftSite().getPoly(),
+					e.getRightSite().getPoly()
+					) == 11) {
+				// towards leftSite
+			}else if (movingTowards(
+					this, 
+					e.getLeftSite().getPoly(),
+					e.getRightSite().getPoly()
+					) == 12) {
+				// towardsRightSite
+			}
+			
+			
+		}
+		
+	}private static int movingTowards(Polygon thisPoly, Polygon leftSite, Polygon rightSite) {
+		
+		//System.out.println(thisPoly.getPlate());
+		//System.out.println(leftSite.getPlate());
+		//System.out.println(rightSite.getPlate());
+		
+		// remove the site that is identical to this
+		if (thisPoly == leftSite) {
+			// run alg on rightsite
+			
+			if (thisPoly.getPlate() == rightSite.getPlate()) {return 0;}
+			
+			double distSquared = ((thisPoly.getCentroid().x - rightSite.getCentroid().x)*
+					(thisPoly.getCentroid().x - rightSite.getCentroid().x)) + 
+					((thisPoly.getCentroid().y - rightSite.getCentroid().y)*
+					 (thisPoly.getCentroid().y - rightSite.getCentroid().y));
+			double newDistSquared = (	
+				 (thisPoly.getCentroid().x  + thisPoly.getPlate().getDirection().x * 0.00001 - rightSite.getCentroid().x + rightSite.getPlate().getDirection().x)*
+				 (thisPoly.getCentroid().x  + thisPoly.getPlate().getDirection().x * 0.00001 - rightSite.getCentroid().x + rightSite.getPlate().getDirection().x)) + 
+				((thisPoly.getCentroid().y  + thisPoly.getPlate().getDirection().y * 0.00001 - rightSite.getCentroid().y + rightSite.getPlate().getDirection().y)*
+				 (thisPoly.getCentroid().y  + thisPoly.getPlate().getDirection().y * 0.00001 - rightSite.getCentroid().y + rightSite.getPlate().getDirection().y));
+		
+			if (distSquared - newDistSquared > 0) {
+				return 12;
+				
+			}else {
+				return 2;
 			}
 		}
 		
-	}public void collideWith (Polygon P) {
+		if (thisPoly.getPlate() == leftSite.getPlate()) {return 0;}
+		
+		double distSquared = ((thisPoly.getCentroid().x - leftSite.getCentroid().x)*
+				(thisPoly.getCentroid().x - leftSite.getCentroid().x)) + 
+				((thisPoly.getCentroid().y - leftSite.getCentroid().y)*
+				 (thisPoly.getCentroid().y - leftSite.getCentroid().y));
+		double newDistSquared = (
+			 (thisPoly.getCentroid().x  + thisPoly.getPlate().getDirection().x * 0.00001 - leftSite.getCentroid().x + leftSite.getPlate().getDirection().x)*
+			 (thisPoly.getCentroid().x  + thisPoly.getPlate().getDirection().x * 0.00001 - leftSite.getCentroid().x + leftSite.getPlate().getDirection().x)) + 
+			((thisPoly.getCentroid().y  + thisPoly.getPlate().getDirection().y * 0.00001 - leftSite.getCentroid().y + leftSite.getPlate().getDirection().y)*
+			 (thisPoly.getCentroid().y  + thisPoly.getPlate().getDirection().y * 0.00001 - leftSite.getCentroid().y + leftSite.getPlate().getDirection().y));
+	
+		if (distSquared - newDistSquared > 0) {
+			return 11;
+			
+		}else {
+			return 1;
+		}
+	}
+
+	/* public void collideWith (Polygon P) {
 		
 		Plate plate1 = this.getPlate();
 		Plate plate2 = P.getPlate();
@@ -173,7 +259,7 @@ public class Polygon {
 		}return false;
 		
 		
-	}
+	}*/
 	
 	
 	public void addEdge (Edge e) {
@@ -211,6 +297,7 @@ public class Polygon {
 	}
 
 	public void setPlate(Plate plate) {
+		//System.out.println("Setting plate");
 		this.plate = plate;
 		if (this.plate.isContinental()) {
 			this.height = 1;

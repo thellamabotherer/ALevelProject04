@@ -1,6 +1,9 @@
 package Main;
 
+import Data.Plate;
 import Data.Point;
+import Data.Polygon;
+import Maps.HeightMap;
 import Maps.MeshMap;
 import Maps.PlateMap;
 import Maps.PolyMap;
@@ -22,6 +25,7 @@ public class Main {
 	public static MeshMap meshMap;
 	public static PolyMap polyMap;
 	public static PlateMap plateMap;
+	public static HeightMap heightMap;
 	
 	public static MeshRenderer meshRenderer;	
 	public static PlateRenderer plateRenderer;
@@ -49,11 +53,11 @@ public class Main {
 		
 		meshRenderer = new MeshRenderer (meshMap, window);
 		plateRenderer = new PlateRenderer(plateMap, window);
-		heightRenderer = new HeightRenderer(window, plateMap);
+		heightRenderer = new HeightRenderer(window, heightMap);
 		while (instance.run()) {
 			//meshRenderer.draw();
-			plateRenderer.draw();
-			//heightRenderer.draw();
+			//plateRenderer.draw();
+			heightRenderer.draw();
 		}
 		
 		
@@ -79,6 +83,8 @@ private static void newWindow (int WIDTH, int HEIGHT, String name, int fps) {
 		
 		polyMap = new PolyMap (meshMap.getSites().get(0), meshMap.getEdges(), meshMap.getSites());
 		plateMap = new PlateMap (polyMap, bigPlateMin, bigPlateMax, smallPlateMin, smallPlateMax);
+		
+		heightMap = new HeightMap (plateMap.getPlates()) ;
 	}
 	
 }

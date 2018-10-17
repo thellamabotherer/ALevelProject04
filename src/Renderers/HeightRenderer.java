@@ -6,22 +6,23 @@ import org.lwjgl.util.vector.Vector4f;
 
 import Data.Plate;
 import Data.Polygon;
+import Maps.HeightMap;
 import Maps.PlateMap;
 
 public class HeightRenderer {
 	
-	private PlateMap plateMap;
+	private HeightMap heightMap;
 	private Window window;
 	
-	public HeightRenderer (Window window, PlateMap plateMap) {
-		this.plateMap = plateMap;
+	public HeightRenderer (Window window, HeightMap heightMap) {
+		this.heightMap = heightMap;
 		this.window = window;
 	}
 	
 	public void draw () {
-		for (Plate P : this.plateMap.getPlates()) {
+		for (Plate P : this.heightMap.getPlates()) {
 			for (Polygon p : P.getPolys()) {
-				p.draw(this.window, new Vector4f((float) (p.getHeight()/2.5), 0, 0, 1));
+				p.draw(this.window, new Vector4f((float)0, (float)0, (float) ((float)p.getHeight()/2), (float)1));
 			}
 		}
 	}

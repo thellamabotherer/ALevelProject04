@@ -19,6 +19,8 @@ public class Plate {
 	private Vector4f Colour;
 	private double height;
 	
+	private int size;
+	
 	
 	public Plate (Polygon start, boolean majorPlate) {
 		
@@ -48,6 +50,7 @@ public class Plate {
 					a.setInPlate(true);
 					a.setPlate(this);
 					this.polys.add(a);
+					this.size ++;
 					used = true;
 				}
 			}
