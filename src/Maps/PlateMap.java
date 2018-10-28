@@ -81,6 +81,10 @@ public class PlateMap {
 				majorOnly = true;
 			}
 		}
+		
+		for (Plate p : plates) {
+			p.findCentroid();
+		}
 
 	}
 

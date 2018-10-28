@@ -15,7 +15,7 @@ public class HeightMap {
 		
 		for (Plate P : this.plates) {
 			for (Polygon p : P.getPolys()) {
-				p.collide();
+				if (!p.isEdgeOfPlate()) { p.collide();}
 			}
 		}
 		
