@@ -25,9 +25,9 @@ public class HeightRenderer {
 			for (Polygon p : P.getPolys()) {
 				float red;
 				float blue;
-				if (p.getHeight() < 0) {red = 0;} else {red = p.getHeight() / 2;}
-				float green = (1- Math.abs(p.getHeight() / 2));
-				if (p.getHeight() > 0) {blue = 0;} else {blue = - p.getHeight() / 2;}
+				if (p.getHeight() < 0) {red = 0;} else {red = p.getHeight();}
+				float green = (1- Math.abs(p.getHeight()));
+				if (p.getHeight() > 0) {blue = 0;} else {blue = - p.getHeight();}
 				
 				
 				p.draw(this.window, new Vector4f(red, green, blue, (float)1));

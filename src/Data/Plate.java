@@ -36,7 +36,7 @@ public class Plate {
 		this.majorPlate = majorPlate;
 		this.continental = rand.nextBoolean();
 		
-		this.direction = new Vector2f (rand.nextFloat(), rand.nextFloat());
+		this.direction = new Vector2f (rand.nextFloat() * 2 - 1, rand.nextFloat() * 2 - 1);
 		
 		
 	}public boolean floodFill () {

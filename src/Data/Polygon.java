@@ -18,7 +18,8 @@ public class Polygon {
 	private boolean inPlate;
 
 	private float height;
-	private boolean edgeOfPlate;
+	private boolean edgeOfPlate = false;
+	private int boundaryType; // 
 
 	private Plate plate;
 
@@ -66,20 +67,111 @@ public class Polygon {
 
 	}
 
+	public float distToPoly (Polygon  P) {
+		float dx = this.getCentroid().x - P.getCentroid().x;
+		float dy = this.getCentroid().y - P.getCentroid().y;
+		return (float) Math.sqrt(dx * dx + dy * dy);
+	}
+	
 	public void checkEdge() {
-		this.edgeOfPlate = false;
 		for (Edge e : this.edges) {
-			if (!movingTowardsPoly(this, e.getLeftSite().getPoly(), e.getRightSite().getPoly())) {
+			if (e.getRightSite().getPoly().getPlate() != this.getPlate() || e.getLeftSite().getPoly().getPlate() != this.getPlate()) {
 				this.edgeOfPlate = true;
+				return;
 			}
-		}
+		}this.edgeOfPlate = false;
 	}
 
 	public boolean isEdgeOfPlate() {
 		return edgeOfPlate;
 	}
+	
+	public Object findNearestEdge (int a) {
+		float min = Float.MAX_VALUE;
+		Polygon activePoly = null;
+		for (Polygon P : this.getPlate().getPolys()) {
+			if (this.distToPoly(P) < min && P.isEdgeOfPlate() == true) {
+				
+				min = this.distToPoly(P);
+				activePoly = P;
+			}
+		}
+		if (a == 0) {return activePoly;}
+		return min;
+	}
+	
+	public void calculateElevation () {
+		
+		Random rand = new Random();
+		
+		Polygon nearestBoundary = (Polygon) this.findNearestEdge(0);
+		if (nearestBoundary == null) {return;}
+		
+		float dist = (float) this.findNearestEdge(1);
+		Plate otherPlate = null;
+		
+		// find type of nearest tectonic interaction 
 
-	public void collide() {
+		for (Polygon P : nearestBoundary.adjacencies) {
+			if (nearestBoundary.getPlate() != P.getPlate()) {
+				int type = movingTowards (nearestBoundary, P, P);
+				otherPlate = P.getPlate();
+			}
+		}
+		float relativeSpeed = (float) (
+				Math.sqrt(
+				(this.getPlate().getDirection().x - otherPlate.getDirection().x) *
+				(this.getPlate().getDirection().x - otherPlate.getDirection().x) +
+				(this.getPlate().getDirection().y - otherPlate.getDirection().y) *
+				(this.getPlate().getDirection().y - otherPlate.getDirection().y)
+				));
+
+		if (dotProd (this.getPlate().getDirection(), otherPlate.getDirection()) < 0) { // subducting boundaries when plates going towards each other
+		
+		// for continent on continent
+		if (this.getPlate().isContinental() && otherPlate.isContinental()) {
+			// add mountains proportional to relative V and inversely proportional to dist ^ 2
+			this.height = (float) (this.height + 
+					WorldConstraints.continentOnContinentBase * 
+					relativeSpeed * 
+					Math.pow(Math.E, -(WorldConstraints.continentOnContinentSteep * dist)) +
+					rand.nextFloat() * WorldConstraints.continentOnContinentRand
+					);
+		}// continent on ocean 
+		else if (this.getPlate().isContinental() && !otherPlate.isContinental()) {
+			// height in relation to |1 - log (x+3) - (2sin(dist))/(1+|x-2|)|
+			this.height = (float) (this.height + 
+					WorldConstraints.continentOnOceanBase *
+					relativeSpeed * 
+					Math.pow(Math.E, - Math.abs(dist * WorldConstraints.continentOnOceanSteep - WorldConstraints.continentOnOceanSetback) +
+							rand.nextFloat() * WorldConstraints.continentOnOceanRand)
+					);
+		}// ocean on continent
+		else if (!this.getPlate().isContinental() && otherPlate.isContinental()) {
+			// height in relation to (4log(x+1/2) - 2)/(dist + 3)
+			this.height = (float) (this.height + 
+					WorldConstraints.oceanOnContinentBase *
+					relativeSpeed * 
+					(Math.log((dist * WorldConstraints.oceanOnContinentSteep + 1)/2) - 2 ) / (dist * WorldConstraints.oceanOnContinentSteep + 3) +
+					rand.nextFloat() * WorldConstraints.oceanOnContinentRand
+					);
+					
+		}// ocean on ocean 
+		// same as continent on continent (kinda)
+		else {
+			this.height = (float) (this.height + 
+					WorldConstraints.oceanOnOceanBase * 
+					relativeSpeed * 
+					Math.pow(Math.E, -(WorldConstraints.oceanOnOceanSteep * dist))+
+					rand.nextFloat() * WorldConstraints.oceanOnOceanRand);
+		}
+		
+		}else { // plates moving apart
+			
+		}
+	}
+
+	public void collide() { // I'm hoping to deprecate this method and replace it with something that looks a little nicer 
 
 		// System.out.println("Collide method.");
 
@@ -246,7 +338,7 @@ public class Polygon {
 
 	}
 
-	private static boolean movingTowardsPoly(Polygon thisPoly, Polygon leftSite, Polygon rightSite) {
+	private static boolean movingTowardsPoly(Polygon thisPoly, Polygon leftSite, Polygon rightSite) { // deprecated method 
 
 		if (thisPoly == leftSite) {
 
@@ -266,6 +358,7 @@ public class Polygon {
 		return true;
 
 	}
+	
 	private static int movingTowards(Polygon thisPoly, Polygon leftSite, Polygon rightSite) {
 		if (thisPoly == leftSite) {
 			
@@ -322,6 +415,10 @@ public class Polygon {
 
 	public float getHeight() {
 		return this.height;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
 	}
 
 	public ArrayList<Polygon> getAdjacencies() {
