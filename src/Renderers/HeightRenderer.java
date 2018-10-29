@@ -1,5 +1,6 @@
 package Renderers;
 
+import Main.ColourPalette;
 import Main.Window;
 
 import org.lwjgl.util.vector.Vector4f;
@@ -19,10 +20,39 @@ public class HeightRenderer {
 		this.window = window;
 	}
 	
-	public void draw () {
+	public void drawHeight () {
 		for (Plate P : this.heightMap.getPlates()) {
 			for (Polygon p : P.getPolys()) {
-				p.draw(this.window, new Vector4f((float)0, (float)0, (float) ((float)p.getHeight()/2), (float)1));
+				float red;
+				float blue;
+				if (p.getHeight() < 0) {red = 0;} else {red = p.getHeight();}
+				float green = (1- Math.abs(p.getHeight()));
+				if (p.getHeight() > 0) {blue = 0;} else {blue = - p.getHeight();}
+				
+				
+				p.draw(this.window, new Vector4f(red, green, blue, (float)1));
+			}
+		}
+	}public void drawSimpleTerrain () {
+		for (Plate P : this.heightMap.getPlates()) {
+			for (Polygon p : P.getPolys()) {
+				if (p.getHeight() < -0.7) {
+					p.draw(window, ColourPalette.deepBlue);
+				} else if (p.getHeight() < -0.3) {
+					p.draw(window, ColourPalette.middleBlue);
+				} else if (p.getHeight() < 0) {
+					p.draw(window, ColourPalette.lightBlue);
+				} else if (p.getHeight() < 0.05) {
+					p.draw(window, ColourPalette.yellow);
+				} else if (p.getHeight() < 0.3) {
+					p.draw(window, ColourPalette.lightGreen);
+				} else if (p.getHeight() < 0.5) {
+					p.draw(window, ColourPalette.deepGreen);
+				} else if (p.getHeight() < 0.8) {
+					p.draw(window, ColourPalette.brown);
+				} else {
+					p.draw(window, ColourPalette.white);
+				}
 			}
 		}
 	}

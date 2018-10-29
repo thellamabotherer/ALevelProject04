@@ -27,6 +27,7 @@ public class Main {
 	public static PlateMap plateMap;
 	public static HeightMap heightMap;
 	
+	public static TestRenderer testRenderer;
 	public static MeshRenderer meshRenderer;	
 	public static PlateRenderer plateRenderer;
 	public static HeightRenderer heightRenderer;
@@ -44,23 +45,45 @@ public class Main {
 			
 			newMap (
 					
-					5000, // number of sites
-					3, // number of passes of the lloyd relaxation
-					(float) 1, // strength of each relaxation
-					20,   25, // range of possible major plate numbers
-					0,   0  // range of possible minor plate numbers
+					10000, // number of sites
+					2, // number of passes of the lloyd relaxation
+					(float) 0.5, // strength of each relaxation
+					7,   11, // range of possible major plate numbers
+					10,   15  // range of possible minor plate numbers
 					);
 		
+		testRenderer = new TestRenderer ();
 		meshRenderer = new MeshRenderer (meshMap, window);
-		//plateRenderer = new PlateRenderer(plateMap, window);
-		//heightRenderer = new HeightRenderer(window, heightMap);
+		plateRenderer = new PlateRenderer(plateMap, window);
+		heightRenderer = new HeightRenderer(window, heightMap);
+		
+		int active = 3;
+		
 		while (instance.run()) {
-			meshRenderer.draw();
+			//checkInput();
+			switch (active) {
+				case 0: testRenderer.draw(testMap.getSites(), window);
+				break;
+				case 1: meshRenderer.draw();
+				break;
+				case 2: plateRenderer.draw();
+				break;
+				case 3: heightRenderer.drawHeight();
+				break;
+				case 4: heightRenderer.drawSimpleTerrain();
+				break;
+			}
+			// testRenderer.draw();
+			//meshRenderer.draw();
 			//plateRenderer.draw();
-			//heightRenderer.draw();
+			//heightRenderer.drawSimpleTerrain();
 		}
 		
 		
+	}
+	
+	private static void checkInput () {
+		// keyboard handlers look tricky, do this later
 	}
 	
 private static void newWindow (int WIDTH, int HEIGHT, String name, int fps) {
@@ -82,9 +105,9 @@ private static void newWindow (int WIDTH, int HEIGHT, String name, int fps) {
 		}
 		
 		polyMap = new PolyMap (meshMap.getSites().get(0), meshMap.getEdges(), meshMap.getSites());
-		//plateMap = new PlateMap (polyMap, bigPlateMin, bigPlateMax, smallPlateMin, smallPlateMax);
+		plateMap = new PlateMap (polyMap, bigPlateMin, bigPlateMax, smallPlateMin, smallPlateMax);
 		
-		//heightMap = new HeightMap (plateMap.getPlates()) ;
+		heightMap = new HeightMap (plateMap.getPlates()) ;
 	}
 	
 }
