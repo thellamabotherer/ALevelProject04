@@ -27,8 +27,8 @@ public class WorldConstraints {
 	public static final float oceanOnContinentRand = (float) 0.01;
 	
 	
-	public static final float oceanOnOceanBase = (float) 0.45;
-	public static final float oceanOnOceanSteep = (float) 0.1;
+	public static final float oceanOnOceanBase = (float) 0.2;
+	public static final float oceanOnOceanSteep = (float) 0.3;
 	public static final float oceanOnOceanRand = (float) 0.2;
 	
 	
