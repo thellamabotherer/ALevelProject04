@@ -45,11 +45,11 @@ public class Main {
 			
 			newMap (
 					
-					10000, // number of sites
+					1000, // number of sites
 					2, // number of passes of the lloyd relaxation
 					(float) 0.5, // strength of each relaxation
-					7,   11, // range of possible major plate numbers
-					10,   15  // range of possible minor plate numbers
+					1,   3, // range of possible major plate numbers
+					1,   4  // range of possible minor plate numbers
 					);
 		
 		testRenderer = new TestRenderer ();
