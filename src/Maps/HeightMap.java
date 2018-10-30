@@ -18,9 +18,8 @@ public class HeightMap {
 		for (Plate P : this.plates) {
 			for (Polygon p : P.getPolys()) {
 				p.checkEdge();
-			}
+			}P.findAdj();
 			for (Polygon p : P.getPolys()) {
-				//if (!p.isEdgeOfPlate()) { p.collide();}
 				p.calculateElevation();
 			}
 		}normaliseHeights();

@@ -1,6 +1,8 @@
 package Data;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 import org.lwjgl.util.vector.Vector2f;
@@ -16,10 +18,11 @@ public class Polygon {
 	private Point site;
 	private ArrayList<Polygon> adjacencies;
 	private boolean inPlate;
+	private boolean checked = false;
 
 	private float height;
 	private boolean edgeOfPlate = false;
-	private int boundaryType; // 
+	private int boundaryType; //
 
 	private Plate plate;
 
@@ -67,278 +70,167 @@ public class Polygon {
 
 	}
 
-	public float distToPoly (Polygon  P) {
+	public float distToPoly(Polygon P) {
 		float dx = this.getCentroid().x - P.getCentroid().x;
 		float dy = this.getCentroid().y - P.getCentroid().y;
 		return (float) Math.sqrt(dx * dx + dy * dy);
 	}
-	
+
 	public void checkEdge() {
 		for (Edge e : this.edges) {
-			if (e.getRightSite().getPoly().getPlate() != this.getPlate() || e.getLeftSite().getPoly().getPlate() != this.getPlate()) {
+			if (e.getRightSite().getPoly().getPlate() != this.getPlate()
+					|| e.getLeftSite().getPoly().getPlate() != this.getPlate()) {
 				this.edgeOfPlate = true;
 				return;
 			}
-		}this.edgeOfPlate = false;
+		}
+		this.edgeOfPlate = false;
 	}
 
 	public boolean isEdgeOfPlate() {
 		return edgeOfPlate;
 	}
-	
-	public Object findNearestEdge (int a) {
-		float min = Float.MAX_VALUE;
-		Polygon activePoly = null;
-		for (Polygon P : this.getPlate().getPolys()) {
-			if (this.distToPoly(P) < min && P.isEdgeOfPlate() == true) {
-				
-				min = this.distToPoly(P);
-				activePoly = P;
-			}
+
+
+
+	public int distToPlate(Plate P, int steps, int best, Plate current) {
+		
+		if (this.getPlate() == P) {
+			return 0;
 		}
-		if (a == 0) {return activePoly;}
-		return min;
+		if (steps > best || this.plate != current) {
+			return best;
+		}
+		int localBest = 50;
+		boolean found = false;
+		int newDist;
+		for (Polygon p : this.getAdjacencies()) {
+			if (!p.isChecked()) {
+				newDist = (p.distToPlate(P, steps + 1, localBest, current));
+				if (newDist != -1) {
+					found = true;
+					if (newDist < localBest) {
+						localBest = newDist;
+					}
+				}
+			}
+		}this.checked = true;
+		if (found) {
+			return localBest + 1;
+		}
+		return -1;
 	}
-	
-	public void calculateElevation () {
-		
-		Random rand = new Random();
-		
-		Polygon nearestBoundary = (Polygon) this.findNearestEdge(0);
-		if (nearestBoundary == null) {return;}
-		
-		float dist = (float) this.findNearestEdge(1);
-		Plate otherPlate = null;
-		
-		// find type of nearest tectonic interaction 
 
-		for (Polygon P : nearestBoundary.adjacencies) {
-			if (nearestBoundary.getPlate() != P.getPlate()) {
-				int type = movingTowards (nearestBoundary, P, P);
-				otherPlate = P.getPlate();
-			}
-		}
-		float relativeSpeed = (float) (
-				Math.sqrt(
-				(this.getPlate().getDirection().x - otherPlate.getDirection().x) *
-				(this.getPlate().getDirection().x - otherPlate.getDirection().x) +
-				(this.getPlate().getDirection().y - otherPlate.getDirection().y) *
-				(this.getPlate().getDirection().y - otherPlate.getDirection().y)
-				));
+	public void calculateElevation() {
 
-		if (dotProd (this.getPlate().getDirection(), otherPlate.getDirection()) < 0) { // subducting boundaries when plates going towards each other
+		ArrayList<Float[]> tectonicEffects = new ArrayList();
+
+		// for each plate around the plate this is on
+
+		float heightDiff = 0;
+
+		//System.out.println("On plate : " + this.plate);
 		
-		// for continent on continent
-		if (this.getPlate().isContinental() && otherPlate.isContinental()) {
-			// add mountains proportional to relative V and inversely proportional to dist ^ 2
-			this.height = (float) (this.height + 
-					WorldConstraints.continentOnContinentBase * 
-					relativeSpeed * 
-					Math.pow(Math.E, -(WorldConstraints.continentOnContinentSteep * dist)) +
-					rand.nextFloat() * WorldConstraints.continentOnContinentRand
-					);
-		}// continent on ocean 
-		else if (this.getPlate().isContinental() && !otherPlate.isContinental()) {
-			// height in relation to |1 - log (x+3) - (2sin(dist))/(1+|x-2|)|
-			this.height = (float) (this.height + 
-					WorldConstraints.continentOnOceanBase *
-					relativeSpeed * 
-					Math.pow(Math.E, - Math.abs(dist * WorldConstraints.continentOnOceanSteep - WorldConstraints.continentOnOceanSetback) +
-							rand.nextFloat() * WorldConstraints.continentOnOceanRand)
-					);
-		}// ocean on continent
-		else if (!this.getPlate().isContinental() && otherPlate.isContinental()) {
-			// height in relation to (4log(x+1/2) - 2)/(dist + 3)
-			this.height = (float) (this.height + 
-					WorldConstraints.oceanOnContinentBase *
-					relativeSpeed * 
-					(Math.log((dist * WorldConstraints.oceanOnContinentSteep + 1)/2) - 2 ) / (dist * WorldConstraints.oceanOnContinentSteep + 3) +
-					rand.nextFloat() * WorldConstraints.oceanOnContinentRand
-					);
-					
-		}// ocean on ocean 
-		// same as continent on continent (kinda)
-		else {
-			this.height = (float) (this.height + 
-					WorldConstraints.oceanOnOceanBase * 
-					relativeSpeed * 
-					Math.pow(Math.E, -(WorldConstraints.oceanOnOceanSteep * dist))+
-					rand.nextFloat() * WorldConstraints.oceanOnOceanRand);
-		}
-		
-		}else { // plates moving apart
+		for (Plate P : this.getPlate().getAdj()) {
+
+			//System.out.println("Searching for plate : " + P);
 			
-		}
-	}
+			// get dist to nearest point on that plate
 
-	public void collide() { // I'm hoping to deprecate this method and replace it with something that looks a little nicer 
+			int dist = distToPlate(
+					P, 
+					0, 
+					50, 
+					this.plate
+					);
+			this.plate.uncheck();
+			float relSpeed = relSpeed(this.getPlate().getDirection(), P.getDirection());
 
-		// System.out.println("Collide method.");
+			// calc elevation based on params
 
-		Random rand = new Random();
-
-		for (Edge e : edges) {
-			// check if eq of edge intersects with bigVect between getStart and getEnd
-
-			if (movingTowards(this, e.getLeftSite().getPoly(), e.getRightSite().getPoly()) == 1) {
-				// away from the leftsite
-
-				System.out.println("Away 1");
+			if (movingCloser(this.plate, P)) { // plates moving together
 				
-				// if both same
-				if (this.getPlate().isContinental() && e.getLeftSite().getPoly().getPlate().isContinental()) {
-					// Rift Valley; Low, sharp depression. Radiate out some low non-steep mountains.
-					// Medium volcanic activity.
-					this.height = this.height + WorldConstraints.riftValleyLower
-							+ rand.nextFloat() * (WorldConstraints.riftValleyHigher - WorldConstraints.riftValleyLower);
-
-				} else if (!this.getPlate().isContinental() && !e.getLeftSite().getPoly().getPlate().isContinental()) {
-					this.height = this.height + WorldConstraints.oceanTrenchLower + rand.nextFloat()
-							* (WorldConstraints.oceanTrenchHigher - WorldConstraints.oceanTrenchLower);
+				if (this.getPlate().isContinental() && P.isContinental()) {
+					// mountains up
+					heightDiff = (float) (WorldConstraints.contOnContHeight * (Math.pow(Math.E, (- WorldConstraints.contOnContSteep * dist))));
+				}else if (this.getPlate().isContinental() && !P.isContinental()) {
+					// mountains set back a bit
+					heightDiff = WorldConstraints.contOnOceanHeight / ((Math.abs(WorldConstraints.contOnOceanSteep * dist - WorldConstraints.contOnOceanSetback) + 1));
+				}else if (!this.getPlate().isContinental() && P.isContinental()) {
+					// deep ocean trench, slowly levels off
+					heightDiff = (float) ( - WorldConstraints.oceanOnContHeight * Math.pow(Math.E, (-WorldConstraints.oceanOnContSteep * dist)));
+				}else {
+					if (magnitude(this.getPlate().getDirection()) < magnitude (P.getDirection())) {
+						// deep ocean trench
+						heightDiff = (float) ( - WorldConstraints.oceanOnOceanHeight * Math.pow(Math.E, (-WorldConstraints.oceanOnOceanSteep * dist)));
+					}else {
+						// island arc
+						heightDiff = (float) (  (WorldConstraints.islandArcHeight/ (WorldConstraints.islandArcSudden * dist + 1)) - (WorldConstraints.islandArcHeight * Math.pow(Math.E, (- WorldConstraints.islandArcSudden * dist))));
+					}
 				}
 
-				// if this ocean and that continent
-				else if (!this.getPlate().isContinental() && e.getLeftSite().getPoly().getPlate().isContinental()) {
-					// Ocean trench, medium volcanic activity.
-					this.height = this.height + WorldConstraints.oceanTrenchLower + rand.nextFloat()
-							* (WorldConstraints.oceanTrenchHigher - WorldConstraints.oceanTrenchLower);
-					;
+			} else { // plates moving apart
 
-				}
-
-				// if this cont and that ocean
-				else if (this.getPlate().isContinental() && !e.getLeftSite().getPoly().getPlate().isContinental()) {
-					// Low mountains, high volcanic activity.
-					this.height = this.height + WorldConstraints.smallMountainsLower + rand.nextFloat()
-							* (WorldConstraints.smallMountainsHigher - WorldConstraints.smallMountainsLower);
-				}
-
-				else {
-					System.out.println("Error in polygon, collide method.");
+				if (this.getPlate().isContinental() && P.isContinental()) {
+					// rift valley
+					heightDiff = (float) (  - Math.pow(Math.E, -dist)*(((-WorldConstraints.riftValleyHeight)/(WorldConstraints.riftValleySteep * dist * dist + WorldConstraints.riftValleyDeepest)) + WorldConstraints.riftValleyHeight * WorldConstraints.riftValleyBase));
+				}else if (this.getPlate().isContinental() && !P.isContinental()) {
+					// bit of a dip, then mountains up
+					
+				}else if (!this.getPlate().isContinental() && P.isContinental()) {
+					// like the last one, but smaller and further from boundary
+					
+				}else {
+					// mid-oceanic ridge
+					heightDiff = (float)(WorldConstraints.oceanRidgeHeight/((WorldConstraints.oceanRidgeSteep * dist * dist + 1)));
+					
 				}
 
 			}
-			if (movingTowards(this, e.getLeftSite().getPoly(), e.getRightSite().getPoly()) == 2) {
-				// away from the rightSite
 
-				System.out.println("Away 2");
-				
-				// if both same
-				if (this.getPlate().isContinental() && e.getRightSite().getPoly().getPlate().isContinental()) {
-					// Rift Valley; Low, sharp depression. Radiate out some low non-steep mountains.
-					// Medium volcanic activity.
-					this.height = this.height + WorldConstraints.riftValleyLower
-							+ rand.nextFloat() * (WorldConstraints.riftValleyHigher - WorldConstraints.riftValleyLower);
+			// calc weighting based on dist and rel speed
 
-				} else if (!this.getPlate().isContinental() && !e.getRightSite().getPoly().getPlate().isContinental()) {
-					this.height = this.height + WorldConstraints.oceanTrenchLower + rand.nextFloat()
-							* (WorldConstraints.oceanTrenchHigher - WorldConstraints.oceanTrenchLower);
-				}
+			float weight = (float) relSpeed / (dist * dist);
 
-				// if this ocean and that continent
-				else if (!this.getPlate().isContinental() && e.getRightSite().getPoly().getPlate().isContinental()) {
-					// Ocean trench, medium volcanic activity.
-					this.height = this.height + WorldConstraints.riftValleyLower
-							+ rand.nextFloat() * (WorldConstraints.riftValleyHigher - WorldConstraints.riftValleyLower);
-				}
+			// add to list
 
-				// if this cont and that ocean
-				else if (this.getPlate().isContinental() && !e.getRightSite().getPoly().getPlate().isContinental()) {
-					// Low mountains, high volcanic activity.
-					this.height = this.height + WorldConstraints.smallMountainsLower + rand.nextFloat()
-							* (WorldConstraints.smallMountainsHigher - WorldConstraints.smallMountainsLower);
-				}
-
-				else {
-					System.out.println("Error in polygon, collide method.");
-				}
-
-			} else if (movingTowards(this, e.getLeftSite().getPoly(), e.getRightSite().getPoly()) == 11) {
-				// towards leftSite
-
-				System.out.println("Towards 1");
-
-				// if both the same
-				if ((this.getPlate().isContinental() && e.getLeftSite().getPoly().getPlate().isContinental()) || !(this.getPlate().isContinental() && !e.getLeftSite().getPoly().getPlate().isContinental())) {
-					
-					// send up high mountains
-					
-					this.height = this.height 
-							+WorldConstraints.bigMountainsLower 
-							+ rand.nextFloat() * (WorldConstraints.bigMountainsHigher - WorldConstraints.bigMountainsLower);
-					
-				}
-				// if this continent and that ocean
-				
-				else if (this.getPlate().isContinental() && !e.getLeftSite().getPoly().getPlate().isContinental()) {
-				// send up medium mountains
-
-					this.height = this.height 
-							+WorldConstraints.mediumMountainsLower 
-							+ rand.nextFloat() * (WorldConstraints.mediumMountainsHigher - WorldConstraints.mediumMountainsLower);
-					
-					
-				}	
-				
-				else {
-				
-				// if this ocean and that continent
-
-					this.height = this.height 
-							+WorldConstraints.oceanTrenchLower 
-							+ rand.nextFloat() * (WorldConstraints.oceanTrenchHigher - WorldConstraints.oceanTrenchLower);
-					
-					
-				// send down trench
-
-				}	
-					
-			} else if (movingTowards(this, e.getLeftSite().getPoly(), e.getRightSite().getPoly()) == 12) {
-				// towardsRightSite
-
-				System.out.println("Towards 2");
-
-				// if both the same
-				if ((this.getPlate().isContinental() && e.getRightSite().getPoly().getPlate().isContinental()) || !(this.getPlate().isContinental() && !e.getRightSite().getPoly().getPlate().isContinental())) {
-					
-					// send up high mountains
-					
-					this.height = this.height 
-							+WorldConstraints.bigMountainsLower 
-							+ rand.nextFloat() * (WorldConstraints.bigMountainsHigher - WorldConstraints.bigMountainsLower);
-					
-				}
-				// if this continent and that ocean
-				
-				else if (this.getPlate().isContinental() && !e.getRightSite().getPoly().getPlate().isContinental()) {
-				// send up medium mountains
-
-					this.height = this.height 
-							+WorldConstraints.mediumMountainsLower 
-							+ rand.nextFloat() * (WorldConstraints.mediumMountainsHigher - WorldConstraints.mediumMountainsLower);
-					
-					
-				}	
-				
-				else {
-				
-				// if this ocean and that continent
-
-					this.height = this.height 
-							+WorldConstraints.oceanTrenchLower 
-							+ rand.nextFloat() * (WorldConstraints.oceanTrenchHigher - WorldConstraints.oceanTrenchLower);
-					
-					
-				// send down trench
-
-				}	
-			}
+			Float[] arr = { heightDiff, weight };
+			tectonicEffects.add(arr);
 
 		}
 
+		// implement elevations based on weightings
+
+		float heightSum = 0;
+		float weightSum = 0;
+		for (Float[] f : tectonicEffects) {
+			heightSum = heightSum + f[0] * f[1];
+			weightSum = weightSum + f[1];
+		}
+
+		this.height = this.height + heightSum / weightSum;
+
 	}
 
-	private static boolean movingTowardsPoly(Polygon thisPoly, Polygon leftSite, Polygon rightSite) { // deprecated method 
+	
+	public float relSpeed(Vector2f v1, Vector2f v2) {
+		return (float) (Math.sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y)));
+	}
+
+	private boolean movingCloser(Plate p1, Plate p2) {
+		if (dotProd(p1.getDirection(), p2.getDirection()) > 0) {
+			return true;
+		}
+		return false;
+	}
+
+	private static float magnitude(Vector2f v) {
+		return ((float) Math.sqrt(v.x * v.x + v.y * v.y));
+	}
+
+	
+	private static boolean movingTowardsPoly(Polygon thisPoly, Polygon leftSite, Polygon rightSite) { // deprecated
+																										// method
 
 		if (thisPoly == leftSite) {
 
@@ -358,12 +250,14 @@ public class Polygon {
 		return true;
 
 	}
-	
+
 	private static int movingTowards(Polygon thisPoly, Polygon leftSite, Polygon rightSite) {
 		if (thisPoly == leftSite) {
-			
-			if (thisPoly.getPlate() == rightSite.getPlate()) {return 0;}
-			
+
+			if (thisPoly.getPlate() == rightSite.getPlate()) {
+				return 0;
+			}
+
 			// run alg on right site
 			Vector2f v = new Vector2f(thisPoly.getPlate().getDirection().x - rightSite.getPlate().getDirection().x,
 					thisPoly.getPlate().getDirection().y - rightSite.getPlate().getDirection().y);
@@ -376,9 +270,11 @@ public class Polygon {
 			}
 
 		} else {
-			
-			if (thisPoly.getPlate() == leftSite.getPlate()) {return 0;}
-			
+
+			if (thisPoly.getPlate() == leftSite.getPlate()) {
+				return 0;
+			}
+
 			// run alg on left site
 			Vector2f v = new Vector2f(thisPoly.getPlate().getDirection().x - leftSite.getPlate().getDirection().x,
 					thisPoly.getPlate().getDirection().y - leftSite.getPlate().getDirection().y);
@@ -449,6 +345,14 @@ public class Polygon {
 		} else {
 			this.height = WorldConstraints.oceanicBase;
 		}
+	}
+
+	public boolean isChecked() {
+		return this.checked;
+	}
+
+	public void uncheck() {
+		this.checked = false;
 	}
 
 }

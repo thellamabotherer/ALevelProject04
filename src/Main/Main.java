@@ -48,8 +48,8 @@ public class Main {
 					10000, // number of sites
 					2, // number of passes of the lloyd relaxation
 					(float) 0.5, // strength of each relaxation
-					5,   7, // range of possible major plate numbers
-					5,   7  // range of possible minor plate numbers
+					6,   10, // range of possible major plate numbers
+					6,   10  // range of possible minor plate numbers
 					);
 		
 		testRenderer = new TestRenderer ();

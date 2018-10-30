@@ -11,6 +11,8 @@ import Main.Window;
 public class Plate {
 
 	private ArrayList<Polygon> polys;
+	private ArrayList<Plate> adj;
+	
 	private Vector2f direction;
 	private float speed;
 	private boolean continental;
@@ -58,6 +60,19 @@ public class Plate {
 		}return used;
 	}
 	
+	public void findAdj () {
+		this.adj = new ArrayList();
+		for (Polygon p : this.polys) {
+			if (p.isEdgeOfPlate()) {
+				for (Polygon q : p.getAdjacencies()) {
+					if (q.getPlate() != this && !(this.adj.contains(q.getPlate()))) {
+						this.adj.add(q.getPlate());
+					}
+				}
+			}
+		}
+	}
+	
 	public void findCentroid () {
 		float x = 0;
 		float y = 0;
@@ -84,6 +99,13 @@ public class Plate {
 		return this.direction;
 	}public boolean isContinental () {
 		return this.continental;
+	}
+	public ArrayList<Plate> getAdj() {
+		return adj;
+	}public void uncheck () {
+		for (Polygon p : this.polys) {
+			p.uncheck();
+		}
 	}
 	
 }
