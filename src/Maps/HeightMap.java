@@ -14,24 +14,14 @@ public class HeightMap {
 	public HeightMap (ArrayList<Plate> Plates) {
 		
 		this.plates = Plates;
-		double start;
-		double end;
 		
 		for (Plate P : this.plates) {
-			start = System.nanoTime();
 			for (Polygon p : P.getPolys()) {
 				p.checkEdge();
-			}end = System.nanoTime();
-			System.out.println("Check edges = " + (end - start));
-			start = System.nanoTime();
-			P.findAdjacencies();
-			end = System.nanoTime();
-			System.out.println("Plate adjacencies = " + (end - start));
-			start = System.nanoTime();
+			}P.findAdj();
 			for (Polygon p : P.getPolys()) {
-				p.calculateAllElevations();
-			}end = System.nanoTime();
-			System.out.println("Calc Elevs = " + (end - start));
+				p.calculateElevation();
+			}
 		}normaliseHeights();
 		
 	}public ArrayList<Plate> getPlates () {
@@ -47,11 +37,13 @@ public class HeightMap {
 					this.minHeight = p.getHeight();
 				}
 			}
-		}float range = this.maxHeight - this.minHeight;
-		System.out.println(minHeight);
-		for (Plate P : this.plates) {
+		}for (Plate P : this.plates) {
 			for (Polygon p : P.getPolys()) {
-				p.setHeight(((p.getHeight() - minHeight)/(range / 2) - 1));
+				if (p.getHeight() > 0) {
+					p.setHeight(p.getHeight()/maxHeight);
+				}else {
+					p.setHeight(p.getHeight()/-minHeight);
+				}
 			}
 		}
 	}

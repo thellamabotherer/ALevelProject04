@@ -15,8 +15,8 @@ import Renderers.TestRenderer;
 
 public class Main {
 
-	public static int WIDTH = 1920;
-	public static int HEIGHT = 1080;	
+	public static int WIDTH = Settings.screenWidth;
+	public static int HEIGHT = Settings.screenHeight;	
 	
 	public static Window window;
 	public static Instance instance;
@@ -45,11 +45,13 @@ public class Main {
 			
 			newMap (
 					
-					1000, // number of sites
+					5000, // number of sites
 					2, // number of passes of the lloyd relaxation
 					(float) 0.5, // strength of each relaxation
-					1,   3, // range of possible major plate numbers
-					1,   4  // range of possible minor plate numbers
+
+					6,   10, // range of possible major plate numbers
+					7,   9  // range of possible minor plate numbers
+					
 					);
 		
 		testRenderer = new TestRenderer ();

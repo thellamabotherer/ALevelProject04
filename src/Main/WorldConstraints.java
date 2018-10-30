@@ -8,44 +8,44 @@ public class WorldConstraints {
 	public static final float continentalBase = (float) 0.2;
 	public static final float oceanicBase = (float) -0.4;
 	
+	public static final float oceanProb = (float) 0.5;
+	
 	public static float maxHeight = continentalBase;
 	public static float minHeight = oceanicBase;
 	
-	public static final float continentOnContinentBase = 1;
-	public static final float continentOnContinentSteep = (float) 0.01;
-	public static final float continentOnContinentRand = (float) 0.1;
+	public static final float contOnContHeight = 1;
+	public static final float contOnContSteep = 1;
+	
+	public static final float contOnOceanHeight = (float) 0.5;
+	public static final float contOnOceanSteep = (float)1;
+	public static final float contOnOceanSetback = (float)1.5;
+	
+	public static final float oceanOnContHeight = (float)0.5;
+	public static final float oceanOnContSteep = (float)0.8;
+	
+	public static final float oceanOnOceanHeight = (float)0.4;
+	public static final float oceanOnOceanSteep = (float)0.5;
+	
+	public static final float islandArcHeight = (float)0.3;
+	public static final float islandArcSteep = 1;
+	public static final float islandArcSetback = 2;
+	
+	public static final float riftValleyHeight = (float) 0.1;
+	public static final float riftValleySteep = (float)1;
+	public static final float riftValleySetback = (float)4.4;
+	public static final float riftValleyBase = (float)2;
 	
 	
-	public static final float continentOnOceanBase = (float) 0.5;
-	public static final float continentOnOceanSteep = (float) 0.05;
-	public static final float continentOnOceanSetback = (float) 0.01;
-	public static final float continentOnOceanRand = (float) 0.05;
+	public static final float contFromOceanSetback = (float) 1; // a
+	public static final float contFromOceanSteep = (float) 0.5; // b
+	public static final float contFromOceanHeight = (float) 0.4; // f
 	
+	public static final float oceanFromContSetback = (float) 2; 
+	public static final float oceanFromContSteep = (float) 0.4; 
+	public static final float oceanFromContHeight = (float) 0.2; 
 	
-	public static final float oceanOnContinentBase = (float) 0.8;
-	public static final float oceanOnContinentSteep = (float) 0.01;
-	public static final float oceanOnContinentRand = (float) 0.01;
-	
-	
-	public static final float oceanOnOceanBase = (float) 0.45;
-	public static final float oceanOnOceanSteep = (float) 0.1;
-	public static final float oceanOnOceanRand = (float) 0.2;
-	
-	
-	// these bits have now been deprecated but removing them means loads of errors
-	
-	public static final float bigMountainsLower = (float) 0.2;
-	public static final float bigMountainsHigher = (float) 0.7;
-	public static final float smallMountainsLower = (float) 0.05;
-	public static final float smallMountainsHigher = (float) 0.2;
-	public static final float mediumMountainsLower = (float) 0.15;
-	public static final float mediumMountainsHigher = (float) 0.4;
-	
-	public static final float riftValleyLower = (float) -0.01;
-	public static final float riftValleyHigher = (float) -0.05;
-	public static final float oceanTrenchLower = (float) -0.4;
-	public static final float oceanTrenchHigher = (float) -0.6;
-	
+	public static final float oceanRidgeHeight = (float)0.4;
+	public static final float oceanRidgeSteep = 0.5;
 	
 	
 }
