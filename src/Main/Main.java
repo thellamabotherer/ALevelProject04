@@ -3,6 +3,7 @@ package Main;
 import Data.Plate;
 import Data.Point;
 import Data.Polygon;
+import Maps.AreaMap;
 import Maps.HeightMap;
 import Maps.MeshMap;
 import Maps.PlateMap;
@@ -15,8 +16,8 @@ import Renderers.TestRenderer;
 
 public class Main {
 
-	public static int WIDTH = 1920;
-	public static int HEIGHT = 1080;	
+	public static int WIDTH = WorldConstraints.WIDTH;
+	public static int HEIGHT = WorldConstraints.HEIGHT;	
 	
 	public static Window window;
 	public static Instance instance;
@@ -26,11 +27,13 @@ public class Main {
 	public static PolyMap polyMap;
 	public static PlateMap plateMap;
 	public static HeightMap heightMap;
+	public static AreaMap areaMap;
 	
 	public static TestRenderer testRenderer;
 	public static MeshRenderer meshRenderer;	
 	public static PlateRenderer plateRenderer;
 	public static HeightRenderer heightRenderer;
+
 	
 	public static void main (String args []) {			
 			
@@ -48,8 +51,8 @@ public class Main {
 					10000, // number of sites
 					2, // number of passes of the lloyd relaxation
 					(float) 0.5, // strength of each relaxation
-					6,   10, // range of possible major plate numbers
-					6,   10  // range of possible minor plate numbers
+					20,   30, // range of possible major plate numbers
+					20,   30  // range of possible minor plate numbers
 					);
 		
 		testRenderer = new TestRenderer ();
@@ -61,7 +64,7 @@ public class Main {
 		
 		while (instance.run()) {
 			//checkInput();
-			switch (active) {
+			/*switch (active) {
 				case 0: testRenderer.draw(testMap.getSites(), window);
 				break;
 				case 1: meshRenderer.draw();
@@ -72,11 +75,8 @@ public class Main {
 				break;
 				case 4: heightRenderer.drawSimpleTerrain();
 				break;
-			}
-			// testRenderer.draw();
-			//meshRenderer.draw();
-			//plateRenderer.draw();
-			//heightRenderer.drawSimpleTerrain();
+			}*/
+			areaMap.draw(window, 0);
 		}
 		
 		
@@ -85,14 +85,12 @@ public class Main {
 	private static void checkInput () {
 		// keyboard handlers look tricky, do this later
 	}
-	
 private static void newWindow (int WIDTH, int HEIGHT, String name, int fps) {
 		
 		window = new Window (WIDTH, HEIGHT, name);
 		instance = new Instance (fps, window);
 		
 	}
-	
 	private static void newMap (int numSites, int numRelaxations, float relaxDist, int bigPlateMax, int bigPlateMin, int smallPlateMax, int smallPlateMin) {
 		
 		testMap = new TestMap (WIDTH, HEIGHT, numSites);
@@ -108,6 +106,6 @@ private static void newWindow (int WIDTH, int HEIGHT, String name, int fps) {
 		plateMap = new PlateMap (polyMap, bigPlateMin, bigPlateMax, smallPlateMin, smallPlateMax);
 		
 		heightMap = new HeightMap (plateMap.getPlates()) ;
+		areaMap = new AreaMap (heightMap);
 	}
-	
 }

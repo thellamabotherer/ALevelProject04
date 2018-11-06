@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 
 import Main.Window;
+import Main.WorldConstraints;
 
 public class Plate {
 
@@ -17,6 +18,8 @@ public class Plate {
 	private float speed;
 	private boolean continental;
 	private boolean majorPlate;
+	
+	private float baseHeight;
 	
 	private Vector4f Colour;
 	private double height;
@@ -37,7 +40,11 @@ public class Plate {
 		this.polys.add(start);
 		this.majorPlate = majorPlate;
 		this.continental = rand.nextBoolean();
-		
+		if (this.isContinental()) {
+			this.setBaseHeight(WorldConstraints.continentalBaseMin + rand.nextFloat() * (WorldConstraints.continentalBaseMax - WorldConstraints.continentalBaseMin));
+		}else {
+			this.setBaseHeight(WorldConstraints.oceanicBaseMin + rand.nextFloat() * (WorldConstraints.oceanicBaseMax - WorldConstraints.oceanicBaseMin));
+		}
 		this.direction = new Vector2f (rand.nextFloat() * 2 - 1, rand.nextFloat() * 2 - 1);
 		
 		
@@ -106,6 +113,12 @@ public class Plate {
 		for (Polygon p : this.polys) {
 			p.uncheck();
 		}
+	}
+	public float getBaseHeight() {
+		return baseHeight;
+	}
+	public void setBaseHeight(float baseHeight) {
+		this.baseHeight = baseHeight;
 	}
 	
 }

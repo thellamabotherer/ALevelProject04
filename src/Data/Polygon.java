@@ -23,9 +23,13 @@ public class Polygon {
 	private float height;
 	private boolean edgeOfPlate = false;
 	private int boundaryType; //
+	
+	private float igneousness;
 
 	private Plate plate;
 
+	private Area area;
+	
 	public Polygon(Point site) {
 		this.site = site;
 		this.edges = new ArrayList();
@@ -128,14 +132,9 @@ public class Polygon {
 		// for each plate around the plate this is on
 
 		float heightDiff = 0;
-
-		//System.out.println("On plate : " + this.plate);
+		this.igneousness = Float.MAX_VALUE;
 		
 		for (Plate P : this.getPlate().getAdj()) {
-
-			//System.out.println("Searching for plate : " + P);
-			
-			// get dist to nearest point on that plate
 
 			int dist = distToPlate(
 					P, 
@@ -176,14 +175,13 @@ public class Polygon {
 					heightDiff = (float) (  - Math.pow(Math.E, -dist)*(((-WorldConstraints.riftValleyHeight)/(WorldConstraints.riftValleySteep * dist * dist + WorldConstraints.riftValleyDeepest)) + WorldConstraints.riftValleyHeight * WorldConstraints.riftValleyBase));
 				}else if (this.getPlate().isContinental() && !P.isContinental()) {
 					// bit of a dip, then mountains up
-					
+					heightDiff = (float) ((-  WorldConstraints.contFromOceanHeight * Math.sin(WorldConstraints.contFromOceanSteep * dist))/(WorldConstraints.contFromOceanSteep * dist + WorldConstraints.contFromOceanStart));
 				}else if (!this.getPlate().isContinental() && P.isContinental()) {
-					// like the last one, but smaller and further from boundary
-					
+					// like the last one, but smaller and further from boundar
+					heightDiff = (float) ((-  WorldConstraints.oceanFromContHeight * Math.sin(WorldConstraints.oceanFromContSteep * dist))/(WorldConstraints.oceanFromContSteep * dist + WorldConstraints.oceanFromContStart));
 				}else {
 					// mid-oceanic ridge
 					heightDiff = (float)(WorldConstraints.oceanRidgeHeight/((WorldConstraints.oceanRidgeSteep * dist * dist + 1)));
-					
 				}
 
 			}
@@ -212,6 +210,20 @@ public class Polygon {
 
 	}
 
+	public void smoothIsland () {
+		Random rand = new Random();
+		float n;
+		if (this.height > 0) {
+			for (Polygon p : this.adjacencies) {
+				if (!p.getPlate().isContinental() && (p.getHeight() > 0)) {
+					n = rand.nextFloat();
+					if (n < 0.8) {
+						this.height = (float) (this.height - (rand.nextFloat() * 0.1));
+					}
+				}
+			}
+		}
+	}
 	
 	public float relSpeed(Vector2f v1, Vector2f v2) {
 		return (float) (Math.sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y)));
@@ -287,6 +299,9 @@ public class Polygon {
 			}
 		}
 
+	}public Area toArea () {
+		this.area = new Area(this.height, this.getCentroid().y, this.getCentroid().x, this);
+		return this.area;
 	}
 
 	public static float dotProd(Vector2f v1, Vector2f v2) {
@@ -340,11 +355,7 @@ public class Polygon {
 	public void setPlate(Plate plate) {
 		// System.out.println("Setting plate");
 		this.plate = plate;
-		if (this.plate.isContinental()) {
-			this.height = WorldConstraints.continentalBase;
-		} else {
-			this.height = WorldConstraints.oceanicBase;
-		}
+		this.height = this.plate.getBaseHeight();
 	}
 
 	public boolean isChecked() {
@@ -353,6 +364,10 @@ public class Polygon {
 
 	public void uncheck() {
 		this.checked = false;
+	}
+
+	public Area getArea() {
+		return area;
 	}
 
 }
