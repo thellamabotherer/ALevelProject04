@@ -23,9 +23,13 @@ public class Polygon {
 	private float height;
 	private boolean edgeOfPlate = false;
 	private int boundaryType; //
+	
+	private float igneousness;
 
 	private Plate plate;
 
+	private Area area;
+	
 	public Polygon(Point site) {
 		this.site = site;
 		this.edges = new ArrayList();
@@ -124,19 +128,13 @@ public class Polygon {
 	public void calculateElevation() {
 
 		ArrayList<Float[]> tectonicEffects = new ArrayList();
-		Random rand = new Random();
-		
+
 		// for each plate around the plate this is on
 
 		float heightDiff = 0;
-
-		//System.out.println("On plate : " + this.plate);
+		this.igneousness = Float.MAX_VALUE;
 		
 		for (Plate P : this.getPlate().getAdj()) {
-
-			//System.out.println("Searching for plate : " + P);
-			
-			// get dist to nearest point on that plate
 
 			int dist = distToPlate(
 					P, 
@@ -156,7 +154,7 @@ public class Polygon {
 					heightDiff = (float) (WorldConstraints.contOnContHeight * (Math.pow(Math.E, (- WorldConstraints.contOnContSteep * dist))));
 				}else if (this.getPlate().isContinental() && !P.isContinental()) {
 					// mountains set back a bit
-					heightDiff = (float) (WorldConstraints.contOnOceanHeight * Math.pow(Math.E, - WorldConstraints.contOnOceanSteep * dist)/ (WorldConstraints.contOnOceanSteep * dist + WorldConstraints.contOnOceanSetback) );
+					heightDiff = WorldConstraints.contOnOceanHeight / ((Math.abs(WorldConstraints.contOnOceanSteep * dist - WorldConstraints.contOnOceanSetback) + 1));
 				}else if (!this.getPlate().isContinental() && P.isContinental()) {
 					// deep ocean trench, slowly levels off
 					heightDiff = (float) ( - WorldConstraints.oceanOnContHeight * Math.pow(Math.E, (-WorldConstraints.oceanOnContSteep * dist)));
@@ -166,7 +164,7 @@ public class Polygon {
 						heightDiff = (float) ( - WorldConstraints.oceanOnOceanHeight * Math.pow(Math.E, (-WorldConstraints.oceanOnOceanSteep * dist)));
 					}else {
 						// island arc
-						heightDiff = (float) ( (WorldConstraints.islandArcHeight * Math.pow(Math.E, - WorldConstraints.islandArcSteep * dist)) / (Math.pow(WorldConstraints.islandArcSteep * dist, WorldConstraints.islandArcSteep * dist + WorldConstraints.islandArcSetback)) );
+						heightDiff = (float) (  (WorldConstraints.islandArcHeight/ (WorldConstraints.islandArcSudden * dist + 1)) - (WorldConstraints.islandArcHeight * Math.pow(Math.E, (- WorldConstraints.islandArcSudden * dist))));
 					}
 				}
 
@@ -174,22 +172,19 @@ public class Polygon {
 
 				if (this.getPlate().isContinental() && P.isContinental()) {
 					// rift valley
-					heightDiff = (float) (WorldConstraints.riftValleyHeight * (Math.pow((dist/ WorldConstraints.riftValleySetback) , (WorldConstraints.riftValleySetback / dist - WorldConstraints.riftValleySteep)) - WorldConstraints.riftValleyBase/(dist+1)));
+					heightDiff = (float) (  - Math.pow(Math.E, -dist)*(((-WorldConstraints.riftValleyHeight)/(WorldConstraints.riftValleySteep * dist * dist + WorldConstraints.riftValleyDeepest)) + WorldConstraints.riftValleyHeight * WorldConstraints.riftValleyBase));
 				}else if (this.getPlate().isContinental() && !P.isContinental()) {
 					// bit of a dip, then mountains up
-					heightDiff = (float) (WorldConstraints.contFromOceanHeight * Math.pow(Math.E, - WorldConstraints.contFromOceanSteep * dist)/ (WorldConstraints.contFromOceanSteep * dist + WorldConstraints.contFromOceanSetback) );
+					heightDiff = (float) ((-  WorldConstraints.contFromOceanHeight * Math.sin(WorldConstraints.contFromOceanSteep * dist))/(WorldConstraints.contFromOceanSteep * dist + WorldConstraints.contFromOceanStart));
 				}else if (!this.getPlate().isContinental() && P.isContinental()) {
-					// like the last one, but smaller and further from boundary
-					heightDiff = (float) (WorldConstraints.oceanFromContHeight * Math.pow(Math.E, - WorldConstraints.oceanFromContSteep * dist)/ (WorldConstraints.oceanFromContSteep * dist + WorldConstraints.oceanFromContSetback) );
+					// like the last one, but smaller and further from boundar
+					heightDiff = (float) ((-  WorldConstraints.oceanFromContHeight * Math.sin(WorldConstraints.oceanFromContSteep * dist))/(WorldConstraints.oceanFromContSteep * dist + WorldConstraints.oceanFromContStart));
 				}else {
 					// mid-oceanic ridge
 					heightDiff = (float)(WorldConstraints.oceanRidgeHeight/((WorldConstraints.oceanRidgeSteep * dist * dist + 1)));
-					
 				}
 
 			}
-			
-			heightDiff = heightDiff + heightDiff * rand.nextFloat();
 
 			// calc weighting based on dist and rel speed
 
@@ -212,10 +207,23 @@ public class Polygon {
 		}
 
 		this.height = this.height + heightSum / weightSum;
-		//this.height = this.height + this.getPlate().getTilt(this.getCentroid());
 
 	}
 
+	public void smoothIsland () {
+		Random rand = new Random();
+		float n;
+		if (this.height > 0) {
+			for (Polygon p : this.adjacencies) {
+				if (!p.getPlate().isContinental() && (p.getHeight() > 0)) {
+					n = rand.nextFloat();
+					if (n < 0.8) {
+						this.height = (float) (this.height - (rand.nextFloat() * 0.1));
+					}
+				}
+			}
+		}
+	}
 	
 	public float relSpeed(Vector2f v1, Vector2f v2) {
 		return (float) (Math.sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y)));
@@ -230,6 +238,70 @@ public class Polygon {
 
 	private static float magnitude(Vector2f v) {
 		return ((float) Math.sqrt(v.x * v.x + v.y * v.y));
+	}
+
+	
+	private static boolean movingTowardsPoly(Polygon thisPoly, Polygon leftSite, Polygon rightSite) { // deprecated
+																										// method
+
+		if (thisPoly == leftSite) {
+
+			if (thisPoly.getPlate() == rightSite.getPlate()) {
+				return false;
+			}
+
+			else {
+				return true;
+			}
+		}
+
+		if (thisPoly.getPlate() == leftSite.getPlate()) {
+			return false;
+		}
+
+		return true;
+
+	}
+
+	private static int movingTowards(Polygon thisPoly, Polygon leftSite, Polygon rightSite) {
+		if (thisPoly == leftSite) {
+
+			if (thisPoly.getPlate() == rightSite.getPlate()) {
+				return 0;
+			}
+
+			// run alg on right site
+			Vector2f v = new Vector2f(thisPoly.getPlate().getDirection().x - rightSite.getPlate().getDirection().x,
+					thisPoly.getPlate().getDirection().y - rightSite.getPlate().getDirection().y);
+			Vector2f r = new Vector2f(thisPoly.getCentroid().x - rightSite.getCentroid().x,
+					thisPoly.getCentroid().y - rightSite.getCentroid().y);
+			if (dotProd(v, r) > 0) { // away from right
+				return 2;
+			} else { // towards right
+				return 12;
+			}
+
+		} else {
+
+			if (thisPoly.getPlate() == leftSite.getPlate()) {
+				return 0;
+			}
+
+			// run alg on left site
+			Vector2f v = new Vector2f(thisPoly.getPlate().getDirection().x - leftSite.getPlate().getDirection().x,
+					thisPoly.getPlate().getDirection().y - leftSite.getPlate().getDirection().y);
+			Vector2f r = new Vector2f(thisPoly.getCentroid().x - leftSite.getCentroid().x,
+					thisPoly.getCentroid().y - leftSite.getCentroid().y);
+			if (dotProd(v, r) > 0) { // away from right
+				return 1;
+			} else { // towards right
+				return 11;
+			}
+		}
+
+	}public Area toArea () {
+		this.area = new Area(this.height, this.getCentroid().y, this.getCentroid().x, this);
+		return this.area;
 	}
 
 	public static float dotProd(Vector2f v1, Vector2f v2) {
@@ -283,11 +355,7 @@ public class Polygon {
 	public void setPlate(Plate plate) {
 		// System.out.println("Setting plate");
 		this.plate = plate;
-		if (this.plate.isContinental()) {
-			this.height = WorldConstraints.continentalBase;
-		} else {
-			this.height = WorldConstraints.oceanicBase;
-		}
+		this.height = this.plate.getBaseHeight();
 	}
 
 	public boolean isChecked() {
@@ -296,6 +364,10 @@ public class Polygon {
 
 	public void uncheck() {
 		this.checked = false;
+	}
+
+	public Area getArea() {
+		return area;
 	}
 
 }

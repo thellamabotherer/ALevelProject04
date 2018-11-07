@@ -22,6 +22,11 @@ public class HeightMap {
 			for (Polygon p : P.getPolys()) {
 				p.calculateElevation();
 			}
+			if (!P.isContinental()) {
+				for (Polygon p : P.getPolys()) {
+					p.smoothIsland();
+				}
+			}
 		}normaliseHeights();
 		
 	}public ArrayList<Plate> getPlates () {

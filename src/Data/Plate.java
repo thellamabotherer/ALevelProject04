@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import Main.Settings;
 import Main.Window;
 import Main.WorldConstraints;
 
@@ -21,13 +19,14 @@ public class Plate {
 	private boolean continental;
 	private boolean majorPlate;
 	
+	private float baseHeight;
+	
 	private Vector4f Colour;
 	private double height;
 	
 	private int size;
 	private Vector2f centroid;
 	
-	private Vector2f tilt;
 	
 	public Plate (Polygon start, boolean majorPlate) {
 		
@@ -40,15 +39,12 @@ public class Plate {
 		
 		this.polys.add(start);
 		this.majorPlate = majorPlate;
-		
-		float type = rand.nextFloat();
-		if (type < WorldConstraints.oceanProb) {
-			this.continental = false;
+		this.continental = rand.nextBoolean();
+		if (this.isContinental()) {
+			this.setBaseHeight(WorldConstraints.continentalBaseMin + rand.nextFloat() * (WorldConstraints.continentalBaseMax - WorldConstraints.continentalBaseMin));
 		}else {
-			this.continental =true;
+			this.setBaseHeight(WorldConstraints.oceanicBaseMin + rand.nextFloat() * (WorldConstraints.oceanicBaseMax - WorldConstraints.oceanicBaseMin));
 		}
-		
-		this.tilt = new Vector2f (rand.nextFloat()/2, rand.nextFloat()/2);
 		this.direction = new Vector2f (rand.nextFloat() * 2 - 1, rand.nextFloat() * 2 - 1);
 		
 		
@@ -94,12 +90,6 @@ public class Plate {
 		}this.centroid = new Vector2f (x/n, y/n);
 	}
 	
-	public float getTilt (Vector3f pos) {
-		float tiltX = ((this.getCentroid().x - pos.x) * (tilt.x)) / Settings.screenWidth;
-		float tiltY = ((this.getCentroid().y - pos.y) * (tilt.y)) / Settings.screenHeight;
-		return (tiltX + tiltY);
-	}
-	
 	public Vector2f getCentroid() {
 		return centroid;
 	}
@@ -123,6 +113,12 @@ public class Plate {
 		for (Polygon p : this.polys) {
 			p.uncheck();
 		}
+	}
+	public float getBaseHeight() {
+		return baseHeight;
+	}
+	public void setBaseHeight(float baseHeight) {
+		this.baseHeight = baseHeight;
 	}
 	
 }
