@@ -46,5 +46,10 @@ public class WorldConstraints {
 	public static final float oceanRidgeHeight = (float)0.4;
 	public static final float oceanRidgeSteep = 1;
 	
+	// for the weather sims 
+	
+	public static final int clouds = 500;
+	public static final int currents = 500;
+	public static final int timeToLive = 100;
 	
 }

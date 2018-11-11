@@ -2,15 +2,20 @@ package Maps;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 import org.lwjgl.opengl.Display;
 
 import java.util.Comparator;
 
 import Data.Area;
+import Data.Cloud;
+import Data.Current;
 import Data.Plate;
 import Data.Polygon;
+import Data.Weather;
 import Main.Window;
+import Main.WorldConstraints;
 import Renderers.HeightRenderer;
 
 public class AreaMap {
@@ -27,33 +32,23 @@ public class AreaMap {
 		}
 		for (Area a : areas) {
 			a.setupAdjacencies();
-		}
-		this.simulateOceanCurrents(w);
-		for (Area a : this.areas) {
 			a.getStartHumid();
 			a.getStartAirTemp();
 		}
+		for (Area a : this.areas) {
+			a.setupPrefs();
+		}this.simWeather();
 	}
 
-	public void simulateOceanCurrents(Window w) {
-
-		PriorityQueue<Area> pQueue = new PriorityQueue(10000);
-		for (Area a : this.areas) {
-			if (a.isOcean()) {
-				pQueue.add(a);
-			}
-		}
-		int num = 50;
-		while (!pQueue.isEmpty()) {
-			num--;
-			Area a = pQueue.remove();
-			a.simulateCurrents();
-			if (num == 0) {
-				this.HR.drawSimpleTerrain();
-				this.draw(w, 1);
-				Display.update();
-				num = 50;
-			}
+	private void simWeather () {
+		Random rand = new Random();
+		Weather c;
+		for (int i = 0; i < WorldConstraints.currents; i++) {
+			c = new Current (this.areas.get(rand.nextInt(this.areas.size())));
+			c.walk();
+		}for (int i = 0; i < WorldConstraints.currents; i++) {
+			c = new Cloud (this.areas.get(rand.nextInt(this.areas.size())));
+			c.walk();
 		}
 	}
 

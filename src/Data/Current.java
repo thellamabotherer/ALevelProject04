@@ -5,25 +5,20 @@ import java.util.Random;
 
 import Main.WorldConstraints;
 
-public class Cloud extends Weather {
-	
+public class Current extends Weather {
+
 	protected Area area;
 	
 	private float temp;
-	private float water;
-	private float pressure;
 	private int life;
 	
-	public Cloud (Area a) {
+	public Current (Area a) {
 		
-		this.pressure = a.getAltitude();
-		this.water = a.getHumidity() * 10;
-		this.temp = a.getAirTemp();
 		this.life = WorldConstraints.timeToLive;
+		this.temp = a.getOceanTemp();
 		this.area = a;
 		
 	}
-	
 	@Override
 	public void walk () {
 		System.out.println("New walk from area " + this.area.toString());
@@ -52,6 +47,10 @@ public class Cloud extends Weather {
 		}System.out.println("Back up stack");
 	}
 	
+	protected ArrayList<Float> getPrefList () {
+		return this.area.getOceanPrefs();
+	}
+	
 	@Override
 	protected int findDirection (float dir, ArrayList<Float> prefs, int checked) {
 		if (checked == prefs.size()) {
@@ -62,25 +61,12 @@ public class Cloud extends Weather {
 		}return findDirection (dir - prefs.get(checked), prefs, checked + 1) ;
 	}
 	
-	protected ArrayList<Float> getPrefList () {
-		return this.area.getAirPrefs();
-	}
-	
 	protected void moveInto () {
 		
 		float t;
-		t = area.getAirTemp();
-		area.setAirTemp((9 * t + this.temp)/10);
+		t = area.getOceanTemp();
+		area.setOceanTemp((9 * t + this.temp)/10);
 		this.temp = (9 * this.temp + t)/10;
-		
-		this.area.setHumidity(
-				
-				(float) (this.water * (0.1 + area.getAltitude() - this.pressure))
-				
-				);
-		
-		this.water = (float) (this.water - this.water * (0.1 + area.getAltitude() - this.pressure));
-		this.pressure = area.getAltitude();
 		
 	}
 	

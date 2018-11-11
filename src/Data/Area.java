@@ -19,6 +19,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private Polygon poly;
 
 	private boolean ocean;
+	private boolean lake;
 	private float oceanEnergy;
 
 	private float oceanTemp;
@@ -27,11 +28,11 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private float precipitation;
 	private Vector2f currents;
 
-	private ArrayList<Cloud> cloudQueue;
-	
 	private boolean comparingOcean = true;
 
 	private ArrayList<Area> adjacencies;
+	private ArrayList<Float> airPrefs;
+	private ArrayList<Float> oceanPrefs;
 
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
 		this.altitude = altitude;
@@ -48,6 +49,54 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			return;
 		}
 		this.ocean = false;
+	}
+
+	public void setupPrefs() { // add the coriolis effect here later
+		float weight = 0;
+		if (ocean) {
+			for (Area a : this.adjacencies) {
+				if (a.ocean) {
+					if (this.getOceanTemp() > a.getOceanTemp()) {
+						weight = weight + (this.getOceanTemp() - a.getOceanTemp());
+					}
+				}
+			}
+			if (weight > 0) {
+				this.oceanPrefs = new ArrayList();
+				for (Area a : this.adjacencies) {
+
+					if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
+						this.oceanPrefs.add((this.oceanTemp - a.getOceanTemp()) / weight);
+					} else {
+						this.oceanPrefs.add((float) 0);
+					}
+				}
+			}else {
+				this.oceanPrefs = null;
+			}
+		}
+		
+		for (Area a : this.adjacencies) {
+
+				if (this.getAirTemp() > a.getAirTemp()) {
+					weight = weight + (this.getAirTemp() - a.getAirTemp());
+				}
+			
+		}
+		if (weight > 0) {
+			this.airPrefs = new ArrayList();
+			for (Area a : this.adjacencies) {
+
+				if (this.getAirTemp() > a.getAirTemp()) {
+					this.airPrefs.add((this.airTemp - a.getAirTemp()) / weight);
+				} else {
+					this.airPrefs.add((float) 0);
+				}
+			}
+		}else {
+			this.airPrefs = null;
+		}
+		
 	}
 
 	public int compareTo(Area a) {
@@ -76,29 +125,6 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 	}
 
-	public void simulateCurrents() {
-		float maxDiff = 0;
-		Area a1 = null;
-		float t;
-		if (this.isOcean()) {
-			for (Area a : this.adjacencies) {
-
-				if (a.isOcean()) {
-
-					if (this.getOceanTemp() - a.getOceanTemp() * - a.getAltitude() > maxDiff) {
-						a1 = a;
-						maxDiff = this.getOceanTemp() - a.getOceanTemp() * - a.getAltitude();
-					}
-				}
-			}
-			if (a1 != null) {
-				t = this.getOceanTemp();
-				a1.setOceanTemp((50 * t + a1.getOceanTemp()) / 51);
-				this.oceanTemp = (t + a1.getOceanTemp()) / 2;
-			}
-		}
-	}
-
 	public void getStartHumid() {
 		if (this.ocean) {
 			this.humidity = (2 * this.oceanTemp + 1) / 3;
@@ -116,14 +142,6 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		this.airTemp = (1 - 2 * Math.abs(this.latitude - (WorldConstraints.HEIGHT / 2)) / WorldConstraints.HEIGHT);
 	}
 
-	private void simulateWinds () {
-		
-	}
-
-	private void takeCloud (Cloud c) {
-		this.cloudQueue.add(c);
-	}
-	
 	public float dotProd(Vector2f a, Vector2f b) {
 		return (a.x * b.x + a.y + b.y);
 	}
@@ -167,6 +185,18 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	public float getAltitude() {
 		return altitude;
+	}
+
+	public ArrayList<Float> getAirPrefs() {
+		return airPrefs;
+	}
+
+	public void setAirPrefs(ArrayList<Float> airPrefs) {
+		this.airPrefs = airPrefs;
+	}
+
+	public void setOceanPrefs(ArrayList<Float> oceanPrefs) {
+		this.oceanPrefs = oceanPrefs;
 	}
 
 	public void setAltitude(float altitude) {
@@ -243,6 +273,10 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	public void setCurrents(Vector2f currents) {
 		this.currents = currents;
+	}
+
+	public ArrayList<Float> getOceanPrefs() {
+		return this.oceanPrefs;
 	}
 
 }
