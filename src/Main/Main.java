@@ -61,12 +61,12 @@ public class Main {
 		plateRenderer = new PlateRenderer(plateMap, window);
 		heightRenderer = new HeightRenderer(window, heightMap);
 
+		areaMap = new AreaMap(heightMap, window, heightRenderer);
+		
 		double end = System.nanoTime();
 		System.out.println(end - start);
 
 		//int active = 4;
-		heightRenderer.drawSimpleTerrain();
-		areaMap = new AreaMap(heightMap, window, heightRenderer);
 		
 		for (int active = 1; active < 7; active++) {
 			while (instance.run()) {
@@ -127,6 +127,8 @@ public class Main {
 		plateMap = new PlateMap(polyMap, bigPlateMin, bigPlateMax, smallPlateMin, smallPlateMax);
 
 		heightMap = new HeightMap(plateMap.getPlates());
+		
+		
 		
 	}
 }

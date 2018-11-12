@@ -14,6 +14,7 @@ import Data.Current;
 import Data.Plate;
 import Data.Polygon;
 import Data.Weather;
+import Main.Main;
 import Main.Window;
 import Main.WorldConstraints;
 import Renderers.HeightRenderer;
@@ -45,9 +46,11 @@ public class AreaMap {
 		Weather c;
 		for (int i = 0; i < WorldConstraints.currents; i++) {
 			c = new Current (this.areas.get(rand.nextInt(this.areas.size())));
+			//Main.heightRenderer.drawSimpleTerrain();
 			c.walk();
 		}for (int i = 0; i < WorldConstraints.currents; i++) {
 			c = new Cloud (this.areas.get(rand.nextInt(this.areas.size())));
+			Main.heightRenderer.drawSimpleTerrain();
 			c.walk();
 		}
 	}

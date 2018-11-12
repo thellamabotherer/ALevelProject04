@@ -51,52 +51,114 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		this.ocean = false;
 	}
 
-	public void setupPrefs() { // add the coriolis effect here later
-		float weight = 0;
-		if (ocean) {
-			for (Area a : this.adjacencies) {
-				if (a.ocean) {
-					if (this.getOceanTemp() > a.getOceanTemp()) {
-						weight = weight + (this.getOceanTemp() - a.getOceanTemp());
+	public void setupPrefs() {
+		if (this.getLatitude() > WorldConstraints.HEIGHT / 2) { // northern hemisphere
+			float weight = 0;
+			if (ocean) {
+				for (Area a : this.adjacencies) {
+					if (a.ocean) {
+						if (this.getOceanTemp() > a.getOceanTemp()) {
+							if (this.getLongditude() < a.getLongditude()) {
+								weight = (float) (weight + (this.getOceanTemp() - a.getOceanTemp() + 0.01) * 4);
+							}else {
+								weight = (float) (weight + (this.getOceanTemp() - a.getOceanTemp() + 0.01) * (float)0.25);
+							}
+						}
 					}
 				}
+				if (weight > 0) {
+					this.oceanPrefs = new ArrayList();
+					for (Area a : this.adjacencies) {
+
+						if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
+							if (this.getLongditude() < a.getLongditude()) {
+								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp() + (float)0.01) * 4)/weight);
+							}else {
+								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp() + (float)0.01) * (float)0.25)/weight);
+							}
+						} else {
+							this.oceanPrefs.add((float) 0);
+						}
+					}
+				} else {
+					this.oceanPrefs = null;
+				}
+			}
+			weight = 0;
+			for (Area a : this.adjacencies) {
+
+				if (this.getAirTemp() > a.getAirTemp()) {
+					weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01));
+				}
+
 			}
 			if (weight > 0) {
-				this.oceanPrefs = new ArrayList();
+				this.airPrefs = new ArrayList();
 				for (Area a : this.adjacencies) {
 
-					if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
-						this.oceanPrefs.add((this.oceanTemp - a.getOceanTemp()) / weight);
+					if (this.getAirTemp() > a.getAirTemp()) {
+						this.airPrefs.add((this.airTemp - a.getAirTemp() + (float)0.01) / weight);
 					} else {
-						this.oceanPrefs.add((float) 0);
+						this.airPrefs.add((float) 0);
 					}
 				}
-			}else {
-				this.oceanPrefs = null;
+			} else {
+				this.airPrefs = null;
 			}
-		}
-		
-		for (Area a : this.adjacencies) {
+		} else { // southern hemisphere
+			float weight = 0;
+			if (ocean) {
+				for (Area a : this.adjacencies) {
+					if (a.ocean) {
+						if (this.getOceanTemp() > a.getOceanTemp()) {
+							if (this.getLongditude() > a.getLongditude()) {
+								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * 4;
+							}else {
+								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * (float)0.25;
+							}
+						}
+					}
+				}
+				if (weight > 0) {
+					this.oceanPrefs = new ArrayList();
+					for (Area a : this.adjacencies) {
+
+						if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
+							if (this.getLongditude() > a.getLongditude()) {
+								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * 4)/weight);
+							}else {
+								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * (float)0.25)/weight);
+							}
+						} else {
+							this.oceanPrefs.add((float) 0);
+						}
+					}
+				} else {
+					this.oceanPrefs = null;
+				}
+			}
+			weight = 0;
+			for (Area a : this.adjacencies) {
 
 				if (this.getAirTemp() > a.getAirTemp()) {
 					weight = weight + (this.getAirTemp() - a.getAirTemp());
 				}
-			
-		}
-		if (weight > 0) {
-			this.airPrefs = new ArrayList();
-			for (Area a : this.adjacencies) {
 
-				if (this.getAirTemp() > a.getAirTemp()) {
-					this.airPrefs.add((this.airTemp - a.getAirTemp()) / weight);
-				} else {
-					this.airPrefs.add((float) 0);
-				}
 			}
-		}else {
-			this.airPrefs = null;
+			if (weight > 0) {
+				this.airPrefs = new ArrayList();
+				for (Area a : this.adjacencies) {
+
+					if (this.getAirTemp() > a.getAirTemp()) {
+						this.airPrefs.add((this.airTemp - a.getAirTemp()) / weight);
+					} else {
+						this.airPrefs.add((float) 0);
+					}
+				}
+			} else {
+				this.airPrefs = null;
+			}
 		}
-		
 	}
 
 	public int compareTo(Area a) {

@@ -3,6 +3,12 @@ package Data;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
+
+import Main.Main;
+import Main.Window;
 import Main.WorldConstraints;
 
 public class Cloud extends Weather {
@@ -26,30 +32,26 @@ public class Cloud extends Weather {
 	
 	@Override
 	public void walk () {
-		System.out.println("New walk from area " + this.area.toString());
+		this.draw(30, Main.window);
+		Display.update();
 		Random rand = new Random();
 		ArrayList<Float> prefs = this.getPrefList();
-		System.out.println("Local prefs = " + prefs);
 		if (prefs == null) {
-			System.out.println("Null prefs");
 			return;
-		}if (prefs.size() == 0) {
-			System.out.println("No prefs");
 		}
 		float dir = rand.nextFloat();
 		try {
 		this.area = this.area.getAdjacencies().get(findDirection(dir, prefs, 0));
 		}catch (IndexOutOfBoundsException ex) {
-			System.out.println("Couldn't find direction.");
+
 			return;
 		}
-		System.out.println("Moving into " + this.area);
 		this.moveInto();
 		this.life --;
-		System.out.println("Life left = " + this.life);
+
 		if (this.life > 0) {
 			this.walk();
-		}System.out.println("Back up stack");
+		}
 	}
 	
 	@Override
@@ -83,5 +85,26 @@ public class Cloud extends Weather {
 		this.pressure = area.getAltitude();
 		
 	}
+	
+	// --------------------------- graphical ----------------------------------------
+	
+		private void draw (int frames, Window window) {
+			window.beginRender();
+			window.changeColour(new Vector4f (0, 1, 0, 0));
+			window.addVertex(new Vector3f(this.area.getLongditude(), this.area.getLatitude() + 5, 0));
+			window.addVertex(new Vector3f(this.area.getLongditude() + 5, this.area.getLatitude() - 2, 0));
+			window.addVertex(new Vector3f(this.area.getLongditude() - 5, this.area.getLatitude() - 2, 0));
+			window.endRender();
+			window.beginRender();
+			window.addVertex(new Vector3f(this.area.getLongditude(), this.area.getLatitude() - 5, 0));
+			window.addVertex(new Vector3f(this.area.getLongditude() - 5, this.area.getLatitude() + 2, 0));
+			window.addVertex(new Vector3f(this.area.getLongditude() + 5, this.area.getLatitude() + 2, 0));
+			window.endRender();
+			try {
+				Thread.sleep(1000/frames);
+			} catch (InterruptedException e) {
+				System.out.println("Boop");
+			}
+		}
 	
 }
