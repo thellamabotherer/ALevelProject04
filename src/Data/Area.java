@@ -24,9 +24,10 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	private float oceanTemp;
 	private float airTemp;
-	private float humidity;
-	private float precipitation;
-	private Vector2f currents;
+	private float water;
+	
+	private Area nextOcean;
+	private Area nextAir;
 
 	private boolean comparingOcean = true;
 
@@ -45,122 +46,10 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 					- 2 * Math.abs(this.latitude - (WorldConstraints.HEIGHT / 2)) / WorldConstraints.HEIGHT)
 					* (-this.altitude);
 			this.oceanTemp = this.oceanEnergy / (-this.altitude);
-			this.currents = new Vector2f((float) 0, (float) 0);
 			return;
 		}
 		this.ocean = false;
 	}
-
-	public void setupPrefs() {
-		if (this.getLatitude() > WorldConstraints.HEIGHT / 2) { // northern hemisphere
-			float weight = 0;
-			if (ocean) {
-				for (Area a : this.adjacencies) {
-					if (a.ocean) {
-						if (this.getOceanTemp() > a.getOceanTemp()) {
-							if (this.getLongditude() < a.getLongditude()) {
-								weight = (float) (weight + (this.getOceanTemp() - a.getOceanTemp() + 0.01) * 4);
-							}else {
-								weight = (float) (weight + (this.getOceanTemp() - a.getOceanTemp() + 0.01) * (float)0.25);
-							}
-						}
-					}
-				}
-				if (weight > 0) {
-					this.oceanPrefs = new ArrayList();
-					for (Area a : this.adjacencies) {
-
-						if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
-							if (this.getLongditude() < a.getLongditude()) {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp() + (float)0.01) * 4)/weight);
-							}else {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp() + (float)0.01) * (float)0.25)/weight);
-							}
-						} else {
-							this.oceanPrefs.add((float) 0);
-						}
-					}
-				} else {
-					this.oceanPrefs = null;
-				}
-			}
-			weight = 0;
-			for (Area a : this.adjacencies) {
-
-				if (this.getAirTemp() > a.getAirTemp()) {
-					weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01));
-				}
-
-			}
-			if (weight > 0) {
-				this.airPrefs = new ArrayList();
-				for (Area a : this.adjacencies) {
-
-					if (this.getAirTemp() > a.getAirTemp()) {
-						this.airPrefs.add((this.airTemp - a.getAirTemp() + (float)0.01) / weight);
-					} else {
-						this.airPrefs.add((float) 0);
-					}
-				}
-			} else {
-				this.airPrefs = null;
-			}
-		} else { // southern hemisphere
-			float weight = 0;
-			if (ocean) {
-				for (Area a : this.adjacencies) {
-					if (a.ocean) {
-						if (this.getOceanTemp() > a.getOceanTemp()) {
-							if (this.getLongditude() > a.getLongditude()) {
-								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * 4;
-							}else {
-								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * (float)0.25;
-							}
-						}
-					}
-				}
-				if (weight > 0) {
-					this.oceanPrefs = new ArrayList();
-					for (Area a : this.adjacencies) {
-
-						if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
-							if (this.getLongditude() > a.getLongditude()) {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * 4)/weight);
-							}else {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * (float)0.25)/weight);
-							}
-						} else {
-							this.oceanPrefs.add((float) 0);
-						}
-					}
-				} else {
-					this.oceanPrefs = null;
-				}
-			}
-			weight = 0;
-			for (Area a : this.adjacencies) {
-
-				if (this.getAirTemp() > a.getAirTemp()) {
-					weight = weight + (this.getAirTemp() - a.getAirTemp());
-				}
-
-			}
-			if (weight > 0) {
-				this.airPrefs = new ArrayList();
-				for (Area a : this.adjacencies) {
-
-					if (this.getAirTemp() > a.getAirTemp()) {
-						this.airPrefs.add((this.airTemp - a.getAirTemp()) / weight);
-					} else {
-						this.airPrefs.add((float) 0);
-					}
-				}
-			} else {
-				this.airPrefs = null;
-			}
-		}
-	}
-
 	public int compareTo(Area a) {
 		if (comparingOcean) {
 			if (this.oceanTemp == a.getOceanTemp()) {
@@ -187,23 +76,38 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 	}
 
-	public void getStartHumid() {
-		if (this.ocean) {
-			this.humidity = (2 * this.oceanTemp + 1) / 3;
-			return;
-		}
-		this.humidity = 0;
+	public void getCurrentVect(WeatherSystem[] epicentres) {
+		
+		float weight = 0;
+		float tempVectX;
+		float tempVectY;
+		float vectX = 0;
+		float vectY = 0;
+		float relX;
+		float relY;
+		
+		for (WeatherSystem e : epicentres) {
+			// get vector from here to e
+			relX = this.x - e.getCoords().x;
+			relY = this.y - e.getCoords().y;
+			// get perp vector
+				
+			// reduce perp vect to unit vect
+			// if on left 
+				// make unit vect negative if need to for cw or ccw purposes
+			// else 
+				// same but right
+			// find weight based on dist to e 
+			// mutliply unit vect by weight * value >1 from WC
+			// add vect to the total vects 
+			// add weight to the total weight 
+		}// divide total vects by the overall weight
+		
+	}public void findBestNext () {
+		
 	}
-
-	public void getStartAirTemp() {
-		if (this.ocean) {
-			this.airTemp = (this.oceanTemp
-					+ (1 - 2 * Math.abs(this.latitude - (WorldConstraints.HEIGHT / 2)) / WorldConstraints.HEIGHT)) / 2;
-			return;
-		}
-		this.airTemp = (1 - 2 * Math.abs(this.latitude - (WorldConstraints.HEIGHT / 2)) / WorldConstraints.HEIGHT);
-	}
-
+	
+	
 	public float dotProd(Vector2f a, Vector2f b) {
 		return (a.x * b.x + a.y + b.y);
 	}
