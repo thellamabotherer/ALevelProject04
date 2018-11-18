@@ -60,8 +60,9 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 						if (this.getOceanTemp() > a.getOceanTemp()) {
 							if (this.getLongditude() < a.getLongditude()) {
 								weight = (float) (weight + (this.getOceanTemp() - a.getOceanTemp() + 0.01) * 4);
-							}else {
-								weight = (float) (weight + (this.getOceanTemp() - a.getOceanTemp() + 0.01) * (float)0.25);
+							} else {
+								weight = (float) (weight
+										+ (this.getOceanTemp() - a.getOceanTemp() + 0.01) * (float) 0.25);
 							}
 						}
 					}
@@ -72,9 +73,12 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 						if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
 							if (this.getLongditude() < a.getLongditude()) {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp() + (float)0.01) * 4)/weight);
-							}else {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp() + (float)0.01) * (float)0.25)/weight);
+								this.oceanPrefs
+										.add(((this.getOceanTemp() - a.getOceanTemp() + (float) 0.01) * 4) / weight);
+							} else {
+								this.oceanPrefs
+										.add(((this.getOceanTemp() - a.getOceanTemp() + (float) 0.01) * (float) 0.25)
+												/ weight);
 							}
 						} else {
 							this.oceanPrefs.add((float) 0);
@@ -88,7 +92,11 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			for (Area a : this.adjacencies) {
 
 				if (this.getAirTemp() > a.getAirTemp()) {
-					weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01));
+					if (this.getLongditude() < a.getLongditude()) {
+						weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01) * 4);
+					} else {
+						weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01) * (float) 0.25);
+					}
 				}
 
 			}
@@ -97,7 +105,12 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 				for (Area a : this.adjacencies) {
 
 					if (this.getAirTemp() > a.getAirTemp()) {
-						this.airPrefs.add((this.airTemp - a.getAirTemp() + (float)0.01) / weight);
+						if (this.getLongditude() < a.getLongditude()) {
+							this.airPrefs.add(((this.getAirTemp() - a.getAirTemp() + (float) 0.01) * 4) / weight);
+						} else {
+							this.airPrefs
+									.add(((this.getAirTemp() - a.getAirTemp() + (float) 0.01) * (float) 0.25) / weight);
+						}
 					} else {
 						this.airPrefs.add((float) 0);
 					}
@@ -113,8 +126,8 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 						if (this.getOceanTemp() > a.getOceanTemp()) {
 							if (this.getLongditude() > a.getLongditude()) {
 								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * 4;
-							}else {
-								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * (float)0.25;
+							} else {
+								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * (float) 0.25;
 							}
 						}
 					}
@@ -125,9 +138,9 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 						if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
 							if (this.getLongditude() > a.getLongditude()) {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * 4)/weight);
-							}else {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * (float)0.25)/weight);
+								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * 4) / weight);
+							} else {
+								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * (float) 0.25) / weight);
 							}
 						} else {
 							this.oceanPrefs.add((float) 0);
@@ -141,7 +154,11 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			for (Area a : this.adjacencies) {
 
 				if (this.getAirTemp() > a.getAirTemp()) {
-					weight = weight + (this.getAirTemp() - a.getAirTemp());
+					if (this.getLongditude() < a.getLongditude()) {
+						weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01) * 4);
+					} else {
+						weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01) * (float) 0.25);
+					}
 				}
 
 			}
@@ -150,7 +167,12 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 				for (Area a : this.adjacencies) {
 
 					if (this.getAirTemp() > a.getAirTemp()) {
-						this.airPrefs.add((this.airTemp - a.getAirTemp()) / weight);
+						if (this.getLongditude() < a.getLongditude()) {
+							this.airPrefs.add(((this.getAirTemp() - a.getAirTemp() + (float) 0.01) * 4) / weight);
+						} else {
+							this.airPrefs
+									.add(((this.getAirTemp() - a.getAirTemp() + (float) 0.01) * (float) 0.25) / weight);
+						}
 					} else {
 						this.airPrefs.add((float) 0);
 					}
@@ -227,7 +249,11 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			w.addVertex(new Vector3f(this.longditude, this.latitude + 5, 0));
 			w.addVertex(new Vector3f(this.longditude - 5, this.latitude, 0));
 			w.endRender();
-			w.changeColour(new Vector4f(0, this.oceanTemp, 0, 1));
+			if (this.ocean) {
+				w.changeColour(new Vector4f(0, this.oceanTemp, 0, 1));
+			} else {
+				w.changeColour(new Vector4f(0, this.humidity, 0, 1));
+			}
 			w.beginRender();
 			w.addVertex(new Vector3f(this.longditude + 5, this.latitude, 0));
 			w.addVertex(new Vector3f(this.longditude, this.latitude - 5, 0));

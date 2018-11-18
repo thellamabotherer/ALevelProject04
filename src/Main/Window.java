@@ -37,16 +37,6 @@ public class Window {
 		
 		glOrtho(0, Display.getWidth(), 0, Display.getHeight(), 0, 1);
 
-		/*
-		GL11.glMatrixMode(GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GLU.gluPerspective(1, Display.getWidth()/Display.getHeight(), -100, 100);
-		GL11.glMatrixMode(GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		*/
-		
-		//perspectiveGL();
-
 		glTranslatef(0.0f, 0.0f, 0.0f);
 
 		glClearDepth(100.0f);

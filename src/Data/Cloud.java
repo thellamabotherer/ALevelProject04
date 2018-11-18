@@ -32,8 +32,8 @@ public class Cloud extends Weather {
 	
 	@Override
 	public void walk () {
-		this.draw(30, Main.window);
-		Display.update();
+		//this.draw(30, Main.window);
+		//Display.update();
 		Random rand = new Random();
 		ArrayList<Float> prefs = this.getPrefList();
 		if (prefs == null) {

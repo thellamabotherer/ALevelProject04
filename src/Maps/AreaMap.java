@@ -50,7 +50,7 @@ public class AreaMap {
 			c.walk();
 		}for (int i = 0; i < WorldConstraints.currents; i++) {
 			c = new Cloud (this.areas.get(rand.nextInt(this.areas.size())));
-			Main.heightRenderer.drawSimpleTerrain();
+			//Main.heightRenderer.drawSimpleTerrain();
 			c.walk();
 		}
 	}

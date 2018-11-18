@@ -1,5 +1,8 @@
 package Main;
 
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
+
 import Data.Plate;
 import Data.Point;
 import Data.Polygon;
@@ -44,6 +47,9 @@ public class Main {
 				60 // frame rate
 
 		);
+		
+		instance = new Instance (60, window);
+		
 
 		double start = System.nanoTime();
 
@@ -90,7 +96,7 @@ public class Main {
 				case 5:
 					heightRenderer.drawSimpleTerrain();
 					areaMap.draw(window, 1);
-					/* I want to */break;// free
+	/* I want to */ break; // free 
 				case 6:
 					heightRenderer.drawSimpleTerrain();
 					areaMap.draw(window, 2);
