@@ -31,14 +31,14 @@ public class MeshRenderer {
 			window.endRender();
 		}
 		
-		/*for (int i = 0; i < this.map.getEdges().size(); i++) {
+		for (int i = 0; i < this.map.getEdges().size(); i++) {
 			
 			window.beginLineRender();
 			window.addVertex(new Vector3f ((float)this.map.getEdges().get(i).getStart().getX(),(float)this.map.getEdges().get(i).getStart().getY(),(float)0));
 			window.addVertex(new Vector3f ((float)this.map.getEdges().get(i).getEnd().getX(),(float)this.map.getEdges().get(i).getEnd().getY(),(float)0));
 			window.addVertex(new Vector3f ((float)this.map.getEdges().get(i).getStart().getX(),(float)this.map.getEdges().get(i).getStart().getY(),(float)0));
 			window.endRender();
-		}*/
+		}
 	}
 
 }

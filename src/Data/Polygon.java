@@ -300,6 +300,13 @@ public class Polygon {
 		}
 
 	}public Area toArea () {
+		if (this.getCentroid().y < 0) {
+			this.area = new Area(this.height, 0, this.getCentroid().x, this);
+			return this.area;
+		}else if (this.getCentroid().x < 0) {
+			this.area = new Area(this.height, this.getCentroid().y, 0, this);
+			return this.area;
+		}
 		this.area = new Area(this.height, this.getCentroid().y, this.getCentroid().x, this);
 		return this.area;
 	}
@@ -368,6 +375,14 @@ public class Polygon {
 
 	public Area getArea() {
 		return area;
+	}
+
+	public ArrayList<Edge> getEdges() {
+		return edges;
+	}
+
+	public void setEdges(ArrayList<Edge> edges) {
+		this.edges = edges;
 	}
 
 }

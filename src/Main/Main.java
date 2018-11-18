@@ -12,6 +12,7 @@ import Maps.MeshMap;
 import Maps.PlateMap;
 import Maps.PolyMap;
 import Maps.TestMap;
+import Renderers.AreaRenderer;
 import Renderers.HeightRenderer;
 import Renderers.MeshRenderer;
 import Renderers.PlateRenderer;
@@ -36,6 +37,8 @@ public class Main {
 	public static MeshRenderer meshRenderer;
 	public static PlateRenderer plateRenderer;
 	public static HeightRenderer heightRenderer;
+	public static AreaRenderer areaRenderer;
+	
 
 	public static void main(String args[]) {
 
@@ -62,19 +65,14 @@ public class Main {
 				20, 30 // range of possible minor plate numbers
 		);
 
-		testRenderer = new TestRenderer();
-		meshRenderer = new MeshRenderer(meshMap, window);
-		plateRenderer = new PlateRenderer(plateMap, window);
-		heightRenderer = new HeightRenderer(window, heightMap);
-
-		areaMap = new AreaMap(heightMap, window, heightRenderer);
+		
 		
 		double end = System.nanoTime();
 		System.out.println(end - start);
 
 		//int active = 4;
 		
-		for (int active = 1; active < 7; active++) {
+		for (int active = 3; active < 7; active++) {
 			while (instance.run()) {
 				// checkInput();
 				switch (active) {
@@ -88,10 +86,10 @@ public class Main {
 					plateRenderer.draw();
 					break;
 				case 3:
-					heightRenderer.drawHeight();
+					areaRenderer.drawHeights();
 					break;
 				case 4:
-					heightRenderer.drawSimpleTerrain();
+					areaRenderer.drawSimpleTerrain();
 					break;
 				case 5:
 					heightRenderer.drawSimpleTerrain();
@@ -134,6 +132,14 @@ public class Main {
 
 		heightMap = new HeightMap(plateMap.getPlates());
 		
+		testRenderer = new TestRenderer();
+		meshRenderer = new MeshRenderer(meshMap, window);
+		plateRenderer = new PlateRenderer(plateMap, window);
+		heightRenderer = new HeightRenderer(window, heightMap);
+
+		areaMap = new AreaMap(heightMap, window, heightRenderer);
+		areaRenderer = new AreaRenderer(areaMap, window);
+		areaRenderer.setSimpleTerrain();
 		
 		
 	}

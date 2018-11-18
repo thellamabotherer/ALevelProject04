@@ -9,11 +9,9 @@ import org.lwjgl.opengl.Display;
 import java.util.Comparator;
 
 import Data.Area;
-import Data.Cloud;
-import Data.Current;
 import Data.Plate;
 import Data.Polygon;
-import Data.Weather;
+import Data.WeatherSystem;
 import Main.Main;
 import Main.Window;
 import Main.WorldConstraints;
@@ -33,26 +31,101 @@ public class AreaMap {
 		}
 		for (Area a : areas) {
 			a.setupAdjacencies();
-			a.getStartHumid();
-			a.getStartAirTemp();
 		}
-		for (Area a : this.areas) {
-			a.setupPrefs();
-		}this.simWeather();
+		this.simCurrents();
+		this.getStartValues();
+		this.simWeather();
 	}
 
-	private void simWeather () {
+	private void simCurrents() {
 		Random rand = new Random();
-		Weather c;
-		for (int i = 0; i < WorldConstraints.currents; i++) {
-			c = new Current (this.areas.get(rand.nextInt(this.areas.size())));
-			//Main.heightRenderer.drawSimpleTerrain();
-			c.walk();
-		}for (int i = 0; i < WorldConstraints.currents; i++) {
-			c = new Cloud (this.areas.get(rand.nextInt(this.areas.size())));
-			//Main.heightRenderer.drawSimpleTerrain();
-			c.walk();
+		// generate a few weather centres
+		int numCCentres;
+		int temp;
+		if (WorldConstraints.currentCentresMin < WorldConstraints.currentCentresMax) {
+			numCCentres = WorldConstraints.currentCentresMin
+					+ rand.nextInt(WorldConstraints.currentCentresMax - WorldConstraints.currentCentresMin);
+		} else {
+			numCCentres = WorldConstraints.currentCentresMin;
 		}
+		WeatherSystem[] epicentres = new WeatherSystem[numCCentres];
+		for (int i = 0; i < numCCentres; i++) {
+			WeatherSystem epicentre = null;
+			while (epicentre == null) {
+				temp = rand.nextInt(this.areas.size());
+				if (this.areas.get(temp).isOcean()) {
+					epicentre = new WeatherSystem(WeatherSystem.current, this.areas.get(temp));
+				}
+			}epicentres[i] = epicentre;
+		}
+
+		// random number of points between two vals in WC
+		// give each rand bool for cw or ccw
+
+		// for each area, use a weighted average to determine prevailing current
+		// direction and speed
+
+		for (Area a : this.areas) {
+			if (a.isOcean()) {
+				// for each weather epicentre, gen a vector perpendicular to the line between
+				// this and the epicentre
+
+				a.getCurrentVect(epicentres);
+
+				// align this in the correct direction based on how far around it we are
+				// divide the vector by a scalar function of the distance between this and the
+				// epicentre
+				// sum up all of these vectors to get a prevailing current direction
+
+				// all done in method in area
+
+			}
+		}
+		
+		// move thermal energy around based off the currents
+
+		// for each area, make weather object (current subclass)
+		// set current object to walk the nodes until it has deposited all of it's
+		// energy
+		// if current hits coast, flood out remaining energy
+			
+	}
+
+	
+	
+
+	private void getStartValues() {
+
+		// for each area
+
+		// if ocean
+		// water genned from temp
+
+		// create weather obj (cloud subclass)
+
+	}
+
+	private void simWeather() {
+
+		// generate a few weather centres
+
+		// random number of points between two vals in WC
+		// give each rand bool for cw or ccw
+
+		// for each area, use a weighted average to determine prevailing current
+		// direction and speed
+
+		// for each weather epicentre, gen a vector perpendicular to the line between
+		// this and the epicentre
+		// align this in the correct direction based on how far around it we are
+		// divide the vector by a scalar function of the distance between this and the
+		// epicentre
+
+		// sum up all of these vectors to get a prevailing wind direction
+
+		// walk this area's weather object from here and deposit heat and moisture based
+		// on change in altitude until weather is depleted
+
 	}
 
 	// ----------------------- graphical stuff :( ----------------------------------
@@ -63,5 +136,17 @@ public class AreaMap {
 			a.draw(w, mode);
 		}
 	}
+
+	public ArrayList<Area> getAreas() {
+		return areas;
+	}
+
+	public void setAreas(ArrayList<Area> areas) {
+		this.areas = areas;
+	}
+	
+	// --------------------------
+	
+	
 
 }

@@ -2,6 +2,8 @@ package Data;
 
 import java.util.Random;
 
+import org.lwjgl.util.vector.Vector3f;
+
 public class Point implements Comparable <Point>{
 	
 	double x;
@@ -93,6 +95,10 @@ public class Point implements Comparable <Point>{
 
 	public void addSmall () {
 		this.y = this.y + 0.000000001;
+	}
+	
+	public Vector3f coords () {
+		return new Vector3f ((float)this.x, (float)this.y, 0);
 	}
 
 /*	public void slide (int dist, int WIDTH, int HEIGHT) {  // this method is also useless, avoid it at all costs

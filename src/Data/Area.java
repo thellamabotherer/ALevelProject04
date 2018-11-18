@@ -24,11 +24,14 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	private float oceanTemp;
 	private float airTemp;
-	private float humidity;
-	private float precipitation;
-	private Vector2f currents;
+	private float water;
+	
+	private Area nextOcean;
+	private Area nextAir;
 
 	private boolean comparingOcean = true;
+	
+	private Vector4f colour;
 
 	private ArrayList<Area> adjacencies;
 	private ArrayList<Float> airPrefs;
@@ -45,144 +48,10 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 					- 2 * Math.abs(this.latitude - (WorldConstraints.HEIGHT / 2)) / WorldConstraints.HEIGHT)
 					* (-this.altitude);
 			this.oceanTemp = this.oceanEnergy / (-this.altitude);
-			this.currents = new Vector2f((float) 0, (float) 0);
 			return;
 		}
 		this.ocean = false;
 	}
-
-	public void setupPrefs() {
-		if (this.getLatitude() > WorldConstraints.HEIGHT / 2) { // northern hemisphere
-			float weight = 0;
-			if (ocean) {
-				for (Area a : this.adjacencies) {
-					if (a.ocean) {
-						if (this.getOceanTemp() > a.getOceanTemp()) {
-							if (this.getLongditude() < a.getLongditude()) {
-								weight = (float) (weight + (this.getOceanTemp() - a.getOceanTemp() + 0.01) * 4);
-							} else {
-								weight = (float) (weight
-										+ (this.getOceanTemp() - a.getOceanTemp() + 0.01) * (float) 0.25);
-							}
-						}
-					}
-				}
-				if (weight > 0) {
-					this.oceanPrefs = new ArrayList();
-					for (Area a : this.adjacencies) {
-
-						if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
-							if (this.getLongditude() < a.getLongditude()) {
-								this.oceanPrefs
-										.add(((this.getOceanTemp() - a.getOceanTemp() + (float) 0.01) * 4) / weight);
-							} else {
-								this.oceanPrefs
-										.add(((this.getOceanTemp() - a.getOceanTemp() + (float) 0.01) * (float) 0.25)
-												/ weight);
-							}
-						} else {
-							this.oceanPrefs.add((float) 0);
-						}
-					}
-				} else {
-					this.oceanPrefs = null;
-				}
-			}
-			weight = 0;
-			for (Area a : this.adjacencies) {
-
-				if (this.getAirTemp() > a.getAirTemp()) {
-					if (this.getLongditude() < a.getLongditude()) {
-						weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01) * 4);
-					} else {
-						weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01) * (float) 0.25);
-					}
-				}
-
-			}
-			if (weight > 0) {
-				this.airPrefs = new ArrayList();
-				for (Area a : this.adjacencies) {
-
-					if (this.getAirTemp() > a.getAirTemp()) {
-						if (this.getLongditude() < a.getLongditude()) {
-							this.airPrefs.add(((this.getAirTemp() - a.getAirTemp() + (float) 0.01) * 4) / weight);
-						} else {
-							this.airPrefs
-									.add(((this.getAirTemp() - a.getAirTemp() + (float) 0.01) * (float) 0.25) / weight);
-						}
-					} else {
-						this.airPrefs.add((float) 0);
-					}
-				}
-			} else {
-				this.airPrefs = null;
-			}
-		} else { // southern hemisphere
-			float weight = 0;
-			if (ocean) {
-				for (Area a : this.adjacencies) {
-					if (a.ocean) {
-						if (this.getOceanTemp() > a.getOceanTemp()) {
-							if (this.getLongditude() > a.getLongditude()) {
-								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * 4;
-							} else {
-								weight = weight + (this.getOceanTemp() - a.getOceanTemp()) * (float) 0.25;
-							}
-						}
-					}
-				}
-				if (weight > 0) {
-					this.oceanPrefs = new ArrayList();
-					for (Area a : this.adjacencies) {
-
-						if (a.isOcean() && this.getOceanTemp() > a.getOceanTemp()) {
-							if (this.getLongditude() > a.getLongditude()) {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * 4) / weight);
-							} else {
-								this.oceanPrefs.add(((this.getOceanTemp() - a.getOceanTemp()) * (float) 0.25) / weight);
-							}
-						} else {
-							this.oceanPrefs.add((float) 0);
-						}
-					}
-				} else {
-					this.oceanPrefs = null;
-				}
-			}
-			weight = 0;
-			for (Area a : this.adjacencies) {
-
-				if (this.getAirTemp() > a.getAirTemp()) {
-					if (this.getLongditude() < a.getLongditude()) {
-						weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01) * 4);
-					} else {
-						weight = (float) (weight + (this.getAirTemp() - a.getAirTemp() + 0.01) * (float) 0.25);
-					}
-				}
-
-			}
-			if (weight > 0) {
-				this.airPrefs = new ArrayList();
-				for (Area a : this.adjacencies) {
-
-					if (this.getAirTemp() > a.getAirTemp()) {
-						if (this.getLongditude() < a.getLongditude()) {
-							this.airPrefs.add(((this.getAirTemp() - a.getAirTemp() + (float) 0.01) * 4) / weight);
-						} else {
-							this.airPrefs
-									.add(((this.getAirTemp() - a.getAirTemp() + (float) 0.01) * (float) 0.25) / weight);
-						}
-					} else {
-						this.airPrefs.add((float) 0);
-					}
-				}
-			} else {
-				this.airPrefs = null;
-			}
-		}
-	}
-
 	public int compareTo(Area a) {
 		if (comparingOcean) {
 			if (this.oceanTemp == a.getOceanTemp()) {
@@ -209,23 +78,42 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 	}
 
-	public void getStartHumid() {
-		if (this.ocean) {
-			this.humidity = (2 * this.oceanTemp + 1) / 3;
-			return;
-		}
-		this.humidity = 0;
+	public void getCurrentVect(WeatherSystem[] epicentres) {
+		
+		float weight = 0;
+		float tempVectX;
+		float tempVectY;
+		float vectX = 0;
+		float vectY = 0;
+		float relX;
+		float relY;
+		
+		for (WeatherSystem e : epicentres) {
+			// get vector from here to e
+			relX = this.longditude - e.getCoords().x;
+			relY = this.latitude - e.getCoords().y;
+			// get perp vector
+			tempVectX = relY;
+			tempVectY = - relX;
+			// reduce perp vect to unit vect
+			relX = (float) Math.sqrt(tempVectX * tempVectX + tempVectY * tempVectY);
+			tempVectX = tempVectX / relX;
+			tempVectY = tempVectY / relY;
+			// if on left 
+			if (this.longditude < e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
+				// make unit vect negative if need to for cw or ccw purposes
+				
+			}// find weight based on dist to e 
+			// mutliply unit vect by weight * value >1 from WC
+			// add vect to the total vects 
+			// add weight to the total weight 
+		}// divide total vects by the overall weight
+		
+	}public void findBestNext () {
+		
 	}
-
-	public void getStartAirTemp() {
-		if (this.ocean) {
-			this.airTemp = (this.oceanTemp
-					+ (1 - 2 * Math.abs(this.latitude - (WorldConstraints.HEIGHT / 2)) / WorldConstraints.HEIGHT)) / 2;
-			return;
-		}
-		this.airTemp = (1 - 2 * Math.abs(this.latitude - (WorldConstraints.HEIGHT / 2)) / WorldConstraints.HEIGHT);
-	}
-
+	
+	
 	public float dotProd(Vector2f a, Vector2f b) {
 		return (a.x * b.x + a.y + b.y);
 	}
@@ -249,11 +137,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			w.addVertex(new Vector3f(this.longditude, this.latitude + 5, 0));
 			w.addVertex(new Vector3f(this.longditude - 5, this.latitude, 0));
 			w.endRender();
-			if (this.ocean) {
-				w.changeColour(new Vector4f(0, this.oceanTemp, 0, 1));
-			} else {
-				w.changeColour(new Vector4f(0, this.humidity, 0, 1));
-			}
+			w.changeColour(new Vector4f(0, this.oceanTemp, 0, 1));
 			w.beginRender();
 			w.addVertex(new Vector3f(this.longditude + 5, this.latitude, 0));
 			w.addVertex(new Vector3f(this.longditude, this.latitude - 5, 0));
@@ -287,6 +171,12 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		this.oceanPrefs = oceanPrefs;
 	}
 
+	public Vector4f getColour() {
+		return colour;
+	}
+	public void setColour(Vector4f colour) {
+		this.colour = colour;
+	}
 	public void setAltitude(float altitude) {
 		this.altitude = altitude;
 	}
@@ -339,14 +229,6 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		this.airTemp = airTemp;
 	}
 
-	public float getHumidity() {
-		return humidity;
-	}
-
-	public void setHumidity(float humidity) {
-		this.humidity = humidity;
-	}
-
 	public ArrayList<Area> getAdjacencies() {
 		return adjacencies;
 	}
@@ -355,16 +237,17 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		this.adjacencies = adjacencies;
 	}
 
-	public Vector2f getCurrents() {
-		return currents;
-	}
-
-	public void setCurrents(Vector2f currents) {
-		this.currents = currents;
-	}
 
 	public ArrayList<Float> getOceanPrefs() {
 		return this.oceanPrefs;
 	}
+	public Polygon getPoly() {
+		return poly;
+	}
+	public void setPoly(Polygon poly) {
+		this.poly = poly;
+	}
+	
+	
 
 }

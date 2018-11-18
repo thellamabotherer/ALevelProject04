@@ -48,8 +48,11 @@ public class WorldConstraints {
 	
 	// for the weather sims 
 	
-	public static final int clouds = 500000;
-	public static final int currents = 500000;
-	public static final int timeToLive = 100;
+	public static final int currentCentresMin = 6;
+	public static final int currentCentresMax = 6;
+	
+	public static final int airCentresMin = 5;
+	public static final int airCentresMax = 8;
+	
 	
 }
