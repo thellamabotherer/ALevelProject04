@@ -2,11 +2,13 @@ package Renderers;
 
 import java.util.Random;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 
 import Data.Area;
 import Data.Edge;
 import Main.ColourPalette;
+import Main.GraphicalFunctions;
 import Main.Window;
 import Main.WorldConstraints;
 import Maps.AreaMap;
@@ -46,21 +48,25 @@ public class AreaRenderer {
 	public void setSimpleTerrain() {
 		Random rand = new Random();
 		for (Area a : this.areas.getAreas()) {
-			if (a.getLatitude() < (float) (WorldConstraints.HEIGHT * 0.1) || a.getLatitude() > (float) (WorldConstraints.HEIGHT * 0.9)) {
-				a.setColour(ColourPalette.polar[rand.nextInt(4)]);
+			if (a.getLatitude() < (float) (WorldConstraints.HEIGHT * 0.05) || a.getLatitude() > (float) (WorldConstraints.HEIGHT * 0.95)) {
+				a.setColour(ColourPalette.white);
 			} else {
-				if (a.getAltitude() < -0.3) {
-					a.setColour(ColourPalette.deepSea[rand.nextInt(4)]);
-				}else if (a.getAltitude() < 0) {
-					a.setColour(ColourPalette.shallowSea[rand.nextInt(4)]);
-				}else if (a.getAltitude() < 0.1) {
-					a.setColour(ColourPalette.coast[rand.nextInt(4)]);
-				}else if (a.getAltitude() < 0.4) {
-					a.setColour(ColourPalette.plains[rand.nextInt(4)]);
-				}else if (a.getAltitude() < 0.8) {
-					a.setColour(ColourPalette.hills[rand.nextInt(4)]);
-				}else {
-					a.setColour(ColourPalette.mountains[rand.nextInt(4)]);
+				if (a.getAltitude() < -0.7) {
+					a.setColour(ColourPalette.deepBlue);
+				} else if (a.getAltitude() < -0.3) {
+					a.setColour(ColourPalette.middleBlue);
+				} else if (a.getAltitude() < 0) {
+					a.setColour(ColourPalette.lightBlue);
+				} else if (a.getAltitude() < 0.05) {
+					a.setColour(ColourPalette.yellow);
+				} else if (a.getAltitude() < 0.3) {
+					a.setColour(ColourPalette.lightGreen);
+				} else if (a.getAltitude() < 0.5) {
+					a.setColour(ColourPalette.deepGreen);
+				} else if (a.getAltitude() < 0.8) {
+					a.setColour(ColourPalette.brown);
+				} else {
+					a.setColour(ColourPalette.mountains2);
 				}
 			}
 		}
@@ -68,6 +74,16 @@ public class AreaRenderer {
 	}public void drawSimpleTerrain () {
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
+		}
+	}public void drawCurrents () {
+		for (Area a : this.areas.getAreas()) {
+			a.getPoly().draw(window, a.getColour());
+			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getCurrents());
+		}
+	}public void drawWinds () {
+		for (Area a : this.areas.getAreas()) {
+			a.getPoly().draw(window, a.getColour());
+			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getWinds());
 		}
 	}
 

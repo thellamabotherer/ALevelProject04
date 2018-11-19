@@ -72,7 +72,7 @@ public class Main {
 
 		//int active = 4;
 		
-		for (int active = 3; active < 7; active++) {
+		for (int active = 0; active < 7; active++) {
 			while (instance.run()) {
 				// checkInput();
 				switch (active) {
@@ -92,12 +92,10 @@ public class Main {
 					areaRenderer.drawSimpleTerrain();
 					break;
 				case 5:
-					heightRenderer.drawSimpleTerrain();
-					areaMap.draw(window, 1);
+					areaRenderer.drawCurrents();
 	/* I want to */ break; // free 
 				case 6:
-					heightRenderer.drawSimpleTerrain();
-					areaMap.draw(window, 2);
+					areaRenderer.drawWinds();
 					break;
 				}
 			}

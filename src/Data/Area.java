@@ -1,6 +1,7 @@
 package Data;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -30,6 +31,9 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private Area nextAir;
 
 	private boolean comparingOcean = true;
+	
+	private Vector2f currents;
+	private Vector2f winds;
 	
 	private Vector4f colour;
 
@@ -98,12 +102,29 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			// reduce perp vect to unit vect
 			relX = (float) Math.sqrt(tempVectX * tempVectX + tempVectY * tempVectY);
 			tempVectX = tempVectX / relX;
-			tempVectY = tempVectY / relY;
+			tempVectY = tempVectY / relX;
 			// if on left 
 			if (this.longditude < e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
 				// make unit vect negative if need to for cw or ccw purposes
-				
-			}// find weight based on dist to e 
+				tempVectY = Math.abs(tempVectY);
+			}else if (this.longditude < e.getCoords().x && e.getSpin() != WeatherSystem.clockwise){
+				tempVectY = -Math.abs(tempVectY);
+			}else if (this.longditude > e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
+				tempVectY = -Math.abs(tempVectY);
+			}else {
+				tempVectY = Math.abs(tempVectY);
+			}if (this.longditude < e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
+				// make unit vect negative if need to for cw or ccw purposes
+				tempVectY = Math.abs(tempVectY);
+			}else if (this.longditude < e.getCoords().x && e.getSpin() != WeatherSystem.clockwise){
+				tempVectY = -Math.abs(tempVectY);
+			}else if (this.longditude > e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
+				tempVectY = -Math.abs(tempVectY);
+			}else {
+				tempVectY = Math.abs(tempVectY);
+			}
+			
+			// find weight based on dist to e 
 			// mutliply unit vect by weight * value >1 from WC
 			// add vect to the total vects 
 			// add weight to the total weight 
@@ -246,6 +267,18 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	}
 	public void setPoly(Polygon poly) {
 		this.poly = poly;
+	}
+	public Vector2f getCurrents() {
+		return currents;
+	}
+	public void setCurrents(Vector2f currents) {
+		this.currents = currents;
+	}
+	public Vector2f getWinds() {
+		return winds;
+	}
+	public void setWinds(Vector2f winds) {
+		this.winds = winds;
 	}
 	
 	
