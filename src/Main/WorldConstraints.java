@@ -54,5 +54,7 @@ public class WorldConstraints {
 	public static final int airCentresMin = 5;
 	public static final int airCentresMax = 8;
 	
+	public static final float epicentreWeightCoefficient = (float)2;
+	
 	
 }

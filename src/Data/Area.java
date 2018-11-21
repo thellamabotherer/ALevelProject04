@@ -113,22 +113,43 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 				tempVectY = -Math.abs(tempVectY);
 			}else {
 				tempVectY = Math.abs(tempVectY);
-			}if (this.longditude < e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
+			}
+			
+			if (this.latitude < e.getCoords().y && e.getSpin() == WeatherSystem.clockwise) {
 				// make unit vect negative if need to for cw or ccw purposes
-				tempVectY = Math.abs(tempVectY);
-			}else if (this.longditude < e.getCoords().x && e.getSpin() != WeatherSystem.clockwise){
-				tempVectY = -Math.abs(tempVectY);
-			}else if (this.longditude > e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
-				tempVectY = -Math.abs(tempVectY);
+				tempVectX = Math.abs(tempVectX);
+			}else if (this.latitude < e.getCoords().y && e.getSpin() != WeatherSystem.clockwise){
+				tempVectX = -Math.abs(tempVectX);
+			}else if (this.latitude > e.getCoords().y && e.getSpin() == WeatherSystem.clockwise) {
+				tempVectX = -Math.abs(tempVectX);
 			}else {
-				tempVectY = Math.abs(tempVectY);
+				tempVectX = Math.abs(tempVectX);
 			}
 			
 			// find weight based on dist to e 
+			
+			float tempWeight = (float) (weight + Math.sqrt((double)  ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x) + (this.latitude - e.getCoords().y) * (this.latitude - e.getCoords().y))  ));
+			weight = weight + tempWeight;
+			
 			// mutliply unit vect by weight * value >1 from WC
+			
+			tempVectX = tempVectX * tempWeight;
+			tempVectY = tempVectY * tempWeight;
+			
 			// add vect to the total vects 
+			
+			vectX = vectX + tempVectX;
+			vectY = vectY + tempVectY;
+			
 			// add weight to the total weight 
-		}// divide total vects by the overall weight
+		}
+		
+		vectX = 10 * vectX / weight;
+		vectY = 10 * vectY / weight;
+		
+		this.currents = new Vector2f ( vectX  , vectY ) ;
+		
+		// divide total vects by the overall weight
 		
 	}public void findBestNext () {
 		

@@ -3,6 +3,7 @@ package Main;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import Data.Matrix2d;
 import Data.Plate;
 import Data.Point;
 import Data.Polygon;
@@ -53,7 +54,21 @@ public class Main {
 		
 		instance = new Instance (60, window);
 		
+		/*float[][] arr = {{4, 5}, {3, 1}, {4, 3}};
+		//System.out.println(arr.toString());
+		Matrix2d testMat = new Matrix2d(arr);
+		testMat.print();
+		float[][] arr2  = {{8, 1},{9, 4}};
+		Matrix2d testMat2 = new Matrix2d (arr2);
+		System.out.println("Next mat");
+		testMat2.print();
+		Matrix2d image = testMat.mult(testMat2);
+		System.out.println("Result = ");
+		image.print();*/
+		
 
+		
+		
 		double start = System.nanoTime();
 
 		newMap(
@@ -72,7 +87,7 @@ public class Main {
 
 		//int active = 4;
 		
-		for (int active = 0; active < 7; active++) {
+		for (int active = 5; active < 7; active++) {
 			while (instance.run()) {
 				// checkInput();
 				switch (active) {

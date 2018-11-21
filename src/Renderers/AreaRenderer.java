@@ -78,12 +78,12 @@ public class AreaRenderer {
 	}public void drawCurrents () {
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
-			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getCurrents());
+			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getCurrents(), 7);
 		}
 	}public void drawWinds () {
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
-			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getWinds());
+			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getWinds(), 7);
 		}
 	}
 
