@@ -1,33 +1,28 @@
 package Data;
 
-public class Matrix2d {
+public class Matrix2d<T> {
 	
-	private float[][] mat;
+	private T[][] mat;
 	
-	/*public <T> Matrix2d (T[][] Mat) {
-		this.mat = Mat;
-	}*/public Matrix2d (float[][] Mat){
+	public Matrix2d (T[][] Mat) {
 		this.mat = Mat;
 	}
-
-	public Matrix2d mult (Matrix2d transform) {
-		if (this.xSize() == transform.ySize()) {
-			float[][] firstMatrix = transform.getMat();
-	        float[][] secondMatrix = this.mat;
-	        
-	        // Mutliplying Two matrices
-	        float[][] image = new float[transform.ySize()][this.xSize()];
-	        for(int i = 0; i < transform.ySize(); i++) {
-	            for (int j = 0; j < this.xSize(); j++) {
-	                for (int k = 0; k < transform.xSize(); k++) {
-	                    image[i][j] += firstMatrix[i][k] * secondMatrix[k][j];
-	                }
-	            }
-	        }
-			return new Matrix2d (image); 
-		}else {
-			return null;
+	
+	@SuppressWarnings("unchecked")
+	public Matrix2d<T> mult (Matrix2d<T> transform) {
+		Object[][] image = new Object[transform.rows()][this.columns()];
+		for (int r = 0; r < image.length; r++) {
+			for (int c = 0; c < image[0].length; c++) {
+				if (r == 0) {
+					image[r][c] = (Float)this.mat[0][c] * (Float)transform.getMat()[0][0] 
+							+ (Float)this.mat[1][c] * (Float)transform.getMat()[0][1];
+				}else if (r == 1) {
+					image[r][c] = (Float)this.mat[0][c] * (Float)transform.getMat()[1][0] 
+							+ (Float)this.mat[1][c] * (Float)transform.getMat()[1][1];
+				}
+			}
 		}
+		return new Matrix2d (image);
 	}
 	
 	public void print () {
@@ -38,11 +33,11 @@ public class Matrix2d {
 		}
 	}
 	
-	public int ySize () {
+	public int rows () {
 		return this.mat.length;
-	}public int xSize () {
+	}public int columns () {
 		return this.mat[0].length;
-	}public float[][] getMat () {
+	}public T[][] getMat () {
 		return this.mat;
 	}
 	

@@ -43,41 +43,48 @@ public class Main {
 
 	public static void main(String args[]) {
 
+		GraphicalFunctions.setup();
 		newWindow(
 
 				WIDTH, // width
 				HEIGHT, // height
 				"Test Map", // window name
-				60 // frame rate
+				30 // frame rate
 
 		);
 		
-		instance = new Instance (60, window);
+		instance = new Instance (30, window);
 		
-		/*float[][] arr = {{4, 5}, {3, 1}, {4, 3}};
-		//System.out.println(arr.toString());
-		Matrix2d testMat = new Matrix2d(arr);
-		testMat.print();
-		float[][] arr2  = {{8, 1},{9, 4}};
-		Matrix2d testMat2 = new Matrix2d (arr2);
-		System.out.println("Next mat");
-		testMat2.print();
-		Matrix2d image = testMat.mult(testMat2);
-		System.out.println("Result = ");
+		/*Float[][] arr = new Float[2][4];
+		arr[0][0] = (float) 1;
+		arr[0][1] = (float) 0;
+		arr[1][0] = (float) 0;
+		arr[1][1] = (float) 1;
+		arr[0][2] = (float) 1;
+		arr[0][3] = (float) 9;
+		arr[1][2] = (float) 6;
+		arr[1][3] = (float) 1;
+		
+		Matrix2d<Float> shape = new Matrix2d<Float> (arr);
+		Float[][] arr2 = new Float[2][2];
+		arr2[0][0] = (float) 1;
+		arr2[0][1] = (float) 0;
+		arr2[1][0] = (float) 0;
+		arr2[1][1] = (float) 1;
+		Matrix2d<Float> transform = new Matrix2d<Float> (arr2);
+		Matrix2d<Float> image = shape.mult(transform);
 		image.print();*/
-		
-
 		
 		
 		double start = System.nanoTime();
-
+		 
 		newMap(
 
 				10000, // number of sites
 				2, // number of passes of the lloyd relaxation
 				(float) 0.5, // strength of each relaxation
-				20, 30, // range of possible major plate numbers
-				20, 30 // range of possible minor plate numbers
+				10, 20, // range of possible major plate numbers
+				0, 0 // range of possible minor plate numbers
 		);
 
 		
@@ -86,6 +93,8 @@ public class Main {
 		System.out.println(end - start);
 
 		//int active = 4;
+		
+		
 		
 		for (int active = 5; active < 7; active++) {
 			while (instance.run()) {
@@ -108,7 +117,7 @@ public class Main {
 					break;
 				case 5:
 					areaRenderer.drawCurrents();
-	/* I want to */ break; // free 
+	 /*I want to*/  break; // free 
 				case 6:
 					areaRenderer.drawWinds();
 					break;

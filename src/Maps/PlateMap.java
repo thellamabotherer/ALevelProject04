@@ -14,8 +14,14 @@ public class PlateMap {
 
 		Random rand = new Random();
 		this.plates = new ArrayList();
-
-		int MPlates = majorPlatesLower + rand.nextInt(Math.abs(majorPlatesUpper - majorPlatesLower));
+		int MPlates;
+		
+		
+		if (majorPlatesUpper > majorPlatesLower) {
+			MPlates = majorPlatesLower + rand.nextInt(Math.abs(majorPlatesUpper - majorPlatesLower));
+		}else {
+			MPlates = majorPlatesLower;
+		}
 		for (int i = 0; i < MPlates; i++) {
 			int startPoly = rand.nextInt(polyMap.getPolys().size());
 			if (!polyMap.getPolys().get(startPoly).isInPlate()) {

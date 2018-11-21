@@ -3,8 +3,12 @@ package Data;
 import java.util.Random;
 
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
+import Main.ColourPalette;
 import Main.Main;
+import Main.Window;
 import Main.WorldConstraints;
 
 public class WeatherSystem { // an epicentre of the weather around which air or water tries to spin 
@@ -35,6 +39,15 @@ public class WeatherSystem { // an epicentre of the weather around which air or 
 	
 	public boolean getSpin () {
 		return this.spin;
+	}
+	
+	public void draw (Window w) {
+		w.beginRender();
+		w.changeColour(new Vector4f (1, 1, 1, 0));
+		w.addVertex(new Vector3f (this.x - 5, this.y - 5, 0));
+		w.addVertex(new Vector3f (this.x, this.y + 10, 0));
+		w.addVertex(new Vector3f (this.x + 5, this.y - 5, 0));
+		w.endRender();
 	}
 
 }

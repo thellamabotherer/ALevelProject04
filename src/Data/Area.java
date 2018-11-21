@@ -103,6 +103,82 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			relX = (float) Math.sqrt(tempVectX * tempVectX + tempVectY * tempVectY);
 			tempVectX = tempVectX / relX;
 			tempVectY = tempVectY / relX;
+			
+			if (this.longditude > e.getCoords().x) {
+				if (e.getSpin() == WeatherSystem.clockwise) {
+					tempVectY = - Math.abs(tempVectY);
+				}else {
+					tempVectY = Math.abs(tempVectY);
+				}
+			}else {
+				if (e.getSpin() != WeatherSystem.clockwise) {
+					tempVectY = - Math.abs(tempVectY);
+				}else {
+					tempVectY = Math.abs(tempVectY);
+				}
+			}
+			
+			if (this.getLatitude() > e.getCoords().x) {
+				if (e.getSpin() == WeatherSystem.clockwise) {
+					tempVectX = Math.abs(tempVectX);
+				}else {
+					tempVectX = - Math.abs(tempVectX);
+				}
+			}else {
+				if (e.getSpin() != WeatherSystem.clockwise) {
+					tempVectX = Math.abs(tempVectX);
+				}else {
+					tempVectX = - Math.abs(tempVectX);
+				}
+			}
+			
+			// find weight based on dist to e 
+			
+			float tempWeight = (float) (weight + Math.sqrt((double)  ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x) + (this.latitude - e.getCoords().y) * (this.latitude - e.getCoords().y))  ));
+			weight = weight + tempWeight;
+			
+			// mutliply unit vect by weight * value >1 from WC
+			
+			tempVectX = tempVectX / tempWeight;
+			tempVectY = tempVectY / tempWeight;
+			
+			// add vect to the total vects 
+			
+			vectX = vectX + tempVectX;
+			vectY = vectY + tempVectY;
+			
+			// add weight to the total weight 
+		}
+		
+		vectX = 10 * vectX / weight;
+		vectY = 10 * vectY / weight;
+		
+		this.currents = new Vector2f ( vectX  , vectY ) ;
+		
+		// divide total vects by the overall weight
+		
+	}
+public void getWindVect(WeatherSystem[] epicentres) {
+		
+		float weight = 0;
+		float tempVectX;
+		float tempVectY;
+		float vectX = 0;
+		float vectY = 0;
+		float relX;
+		float relY;
+		
+		for (WeatherSystem e : epicentres) {
+			// get vector from here to e
+			relX = this.longditude - e.getCoords().x;
+			relY = this.latitude - e.getCoords().y;
+			// get perp vector
+			tempVectX = relY;
+			tempVectY = - relX;
+			// reduce perp vect to unit vect
+			relX = (float) Math.sqrt(tempVectX * tempVectX + tempVectY * tempVectY);
+			tempVectX = tempVectX / relX;
+			tempVectY = tempVectY / relX;
 			// if on left 
 			if (this.longditude < e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
 				// make unit vect negative if need to for cw or ccw purposes
@@ -147,11 +223,12 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		vectX = 10 * vectX / weight;
 		vectY = 10 * vectY / weight;
 		
-		this.currents = new Vector2f ( vectX  , vectY ) ;
+		this.winds = new Vector2f ( vectX  , vectY ) ;
 		
 		// divide total vects by the overall weight
 		
-	}public void findBestNext () {
+	}
+	public void findBestNext () {
 		
 	}
 	

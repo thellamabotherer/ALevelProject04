@@ -21,6 +21,8 @@ public class AreaMap {
 
 	private ArrayList<Area> areas = new ArrayList();
 	private HeightRenderer HR;
+	
+	private WeatherSystem[] epicentres;
 
 	public AreaMap(HeightMap heightMap, Window w, HeightRenderer hr) {
 		this.HR = hr;
@@ -39,7 +41,6 @@ public class AreaMap {
 
 	private void simCurrents() {
 		Random rand = new Random();
-		// generate a few weather centres
 		int numCCentres;
 		int temp;
 		if (WorldConstraints.currentCentresMin < WorldConstraints.currentCentresMax) {
@@ -53,36 +54,18 @@ public class AreaMap {
 			WeatherSystem epicentre = null;
 			while (epicentre == null) {
 				temp = rand.nextInt(this.areas.size());
-				if (this.areas.get(temp).isOcean()) {
+				if (this.areas.get(temp).isOcean() && this.areas.get(temp).getLatitude() > WorldConstraints.HEIGHT * 0.3 && this.areas.get(temp).getLatitude() < WorldConstraints.HEIGHT * 0.7) {
 					epicentre = new WeatherSystem(WeatherSystem.current, this.areas.get(temp));
 				}
 			}
 			epicentres[i] = epicentre;
-		}
-
-		// random number of points between two vals in WC
-		// give each rand bool for cw or ccw
-
-		// for each area, use a weighted average to determine prevailing current
-		// direction and speed
-
+		}	
+		this.epicentres = epicentres;
 		for (Area a : this.areas) {
 			if (a.isOcean()) {
-				// for each weather epicentre, gen a vector perpendicular to the line between
-				// this and the epicentre
-
 				a.getCurrentVect(epicentres);
-
-				// align this in the correct direction based on how far around it we are
-				// divide the vector by a scalar function of the distance between this and the
-				// epicentre
-				// sum up all of these vectors to get a prevailing current direction
-
-				// all done in method in area
-
 			}
 		}
-
 		// move thermal energy around based off the currents
 
 		// for each area, make weather object (current subclass)
@@ -109,23 +92,23 @@ public class AreaMap {
 		// generate a few weather centres
 		int numCCentres;
 		int temp;
-		if (WorldConstraints.currentCentresMin < WorldConstraints.currentCentresMax) {
-			numCCentres = WorldConstraints.currentCentresMin
-					+ rand.nextInt(WorldConstraints.currentCentresMax - WorldConstraints.currentCentresMin);
+		if (WorldConstraints.airCentresMin < WorldConstraints.airCentresMax) {
+			numCCentres = WorldConstraints.airCentresMin
+					+ rand.nextInt(WorldConstraints.airCentresMax - WorldConstraints.airCentresMin);
 		} else {
-			numCCentres = WorldConstraints.currentCentresMin;
+			numCCentres = WorldConstraints.airCentresMin;
 		}
 		WeatherSystem[] epicentres = new WeatherSystem[numCCentres];
 		for (int i = 0; i < numCCentres; i++) {
 			WeatherSystem epicentre = null;
 			while (epicentre == null) {
 				temp = rand.nextInt(this.areas.size());
-				if (this.areas.get(temp).isOcean()) {
-					epicentre = new WeatherSystem(WeatherSystem.current, this.areas.get(temp));
+				if (this.areas.get(temp).isOcean() && this.areas.get(temp).getLatitude() > WorldConstraints.HEIGHT * 0.3 && this.areas.get(temp).getLatitude() < WorldConstraints.HEIGHT * 0.7) {
+					epicentre = new WeatherSystem(WeatherSystem.air, this.areas.get(temp));
 				}
 			}
 			epicentres[i] = epicentre;
-		}
+		}this.epicentres = epicentres;
 
 		for (Area a : this.areas) {
 
@@ -165,6 +148,16 @@ public class AreaMap {
 		this.areas = areas;
 	}
 
+	public WeatherSystem[] getEpicentres() {
+		return epicentres;
+	}
+
+	public void setEpicentres(WeatherSystem[] epicentres) {
+		this.epicentres = epicentres;
+	}
+
 	// --------------------------
+	
+	
 
 }

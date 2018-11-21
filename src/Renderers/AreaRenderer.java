@@ -2,11 +2,13 @@ package Renderers;
 
 import java.util.Random;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 
 import Data.Area;
 import Data.Edge;
+import Data.WeatherSystem;
 import Main.ColourPalette;
 import Main.GraphicalFunctions;
 import Main.Window;
@@ -78,12 +80,19 @@ public class AreaRenderer {
 	}public void drawCurrents () {
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
+			window.changeColour(ColourPalette.red);
 			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getCurrents(), 7);
+			for (WeatherSystem e : areas.getEpicentres()) {
+				e.draw(window);
+			}Display.update();
 		}
 	}public void drawWinds () {
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
 			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getWinds(), 7);
+			for (WeatherSystem e : areas.getEpicentres()) {
+				e.draw(window);
+			}
 		}
 	}
 
