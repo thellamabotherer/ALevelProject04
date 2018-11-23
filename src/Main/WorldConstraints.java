@@ -48,11 +48,8 @@ public class WorldConstraints {
 	
 	// for the weather sims 
 	
-	public static final int currentCentresMin = 6;
-	public static final int currentCentresMax = 6;
-	
-	public static final int airCentresMin = 5;
-	public static final int airCentresMax = 8;
+	public static final int seaCentres = 5;
+	public static final int airCentres = 8;
 	
 	public static final float epicentreWeightCoefficient = (float)2;
 	

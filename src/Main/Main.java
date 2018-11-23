@@ -53,28 +53,7 @@ public class Main {
 
 		);
 		
-		instance = new Instance (30, window);
-		
-		/*Float[][] arr = new Float[2][4];
-		arr[0][0] = (float) 1;
-		arr[0][1] = (float) 0;
-		arr[1][0] = (float) 0;
-		arr[1][1] = (float) 1;
-		arr[0][2] = (float) 1;
-		arr[0][3] = (float) 9;
-		arr[1][2] = (float) 6;
-		arr[1][3] = (float) 1;
-		
-		Matrix2d<Float> shape = new Matrix2d<Float> (arr);
-		Float[][] arr2 = new Float[2][2];
-		arr2[0][0] = (float) 1;
-		arr2[0][1] = (float) 0;
-		arr2[1][0] = (float) 0;
-		arr2[1][1] = (float) 1;
-		Matrix2d<Float> transform = new Matrix2d<Float> (arr2);
-		Matrix2d<Float> image = shape.mult(transform);
-		image.print();*/
-		
+		instance = new Instance (30, window);		
 		
 		double start = System.nanoTime();
 		 
@@ -83,7 +62,7 @@ public class Main {
 				10000, // number of sites
 				2, // number of passes of the lloyd relaxation
 				(float) 0.5, // strength of each relaxation
-				10, 20, // range of possible major plate numbers
+				20, 30, // range of possible major plate numbers
 				0, 0 // range of possible minor plate numbers
 		);
 

@@ -34,45 +34,8 @@ public class AreaMap {
 		for (Area a : areas) {
 			a.setupAdjacencies();
 		}
-		this.simCurrents();
 		this.getStartValues();
 		this.simWeather();
-	}
-
-	private void simCurrents() {
-		Random rand = new Random();
-		int numCCentres;
-		int temp;
-		if (WorldConstraints.currentCentresMin < WorldConstraints.currentCentresMax) {
-			numCCentres = WorldConstraints.currentCentresMin
-					+ rand.nextInt(WorldConstraints.currentCentresMax - WorldConstraints.currentCentresMin);
-		} else {
-			numCCentres = WorldConstraints.currentCentresMin;
-		}
-		WeatherSystem[] epicentres = new WeatherSystem[numCCentres];
-		for (int i = 0; i < numCCentres; i++) {
-			WeatherSystem epicentre = null;
-			while (epicentre == null) {
-				temp = rand.nextInt(this.areas.size());
-				if (this.areas.get(temp).isOcean() && this.areas.get(temp).getLatitude() > WorldConstraints.HEIGHT * 0.3 && this.areas.get(temp).getLatitude() < WorldConstraints.HEIGHT * 0.7) {
-					epicentre = new WeatherSystem(WeatherSystem.current, this.areas.get(temp));
-				}
-			}
-			epicentres[i] = epicentre;
-		}	
-		this.epicentres = epicentres;
-		for (Area a : this.areas) {
-			if (a.isOcean()) {
-				a.getCurrentVect(epicentres);
-			}
-		}
-		// move thermal energy around based off the currents
-
-		// for each area, make weather object (current subclass)
-		// set current object to walk the nodes until it has deposited all of it's
-		// energy
-		// if current hits coast, flood out remaining energy
-
 	}
 
 	private void getStartValues() {
@@ -88,47 +51,34 @@ public class AreaMap {
 
 	private void simWeather() {
 
-		Random rand = new Random();
-		// generate a few weather centres
-		int numCCentres;
-		int temp;
-		if (WorldConstraints.airCentresMin < WorldConstraints.airCentresMax) {
-			numCCentres = WorldConstraints.airCentresMin
-					+ rand.nextInt(WorldConstraints.airCentresMax - WorldConstraints.airCentresMin);
-		} else {
-			numCCentres = WorldConstraints.airCentresMin;
-		}
-		WeatherSystem[] epicentres = new WeatherSystem[numCCentres];
-		for (int i = 0; i < numCCentres; i++) {
-			WeatherSystem epicentre = null;
-			while (epicentre == null) {
-				temp = rand.nextInt(this.areas.size());
-				if (this.areas.get(temp).isOcean() && this.areas.get(temp).getLatitude() > WorldConstraints.HEIGHT * 0.3 && this.areas.get(temp).getLatitude() < WorldConstraints.HEIGHT * 0.7) {
-					epicentre = new WeatherSystem(WeatherSystem.air, this.areas.get(temp));
-				}
-			}
-			epicentres[i] = epicentre;
-		}this.epicentres = epicentres;
-
+		epicentres = genCentres(WorldConstraints.seaCentres, true);
 		for (Area a : this.areas) {
-
-			// for each weather epicentre, gen a vector perpendicular to the line between
-			// this and the epicentre
-
-			a.getCurrentVect(epicentres);
-
-			// align this in the correct direction based on how far around it we are
-			// divide the vector by a scalar function of the distance between this and the
-			// epicentre
-			// sum up all of these vectors to get a prevailing current direction
-
-			// all done in method in area
-
+			if (a.isOcean()) {
+				a.getCurrentVect(epicentres);
+			}
+		}epicentres = genCentres(WorldConstraints.seaCentres, false);
+		for (Area a : this.getAreas()) {
+			a.getWindVect(epicentres);
 		}
 
 		// walk this area's weather object from here and deposit heat and moisture based
 		// on change in altitude until weather is depleted
 
+	}private WeatherSystem[] genCentres (int num, boolean sea) {
+		Random rand = new Random();
+		int temp;
+		WeatherSystem[] epicentres = new WeatherSystem[num];
+		for (int i = 0; i < num; i++) {
+			WeatherSystem epicentre = null;
+			while (epicentre == null) {
+				temp = rand.nextInt(this.areas.size());
+				if ((this.areas.get(temp).isOcean() || !sea) && this.areas.get(temp).getLatitude() > WorldConstraints.HEIGHT * 0.3 && this.areas.get(temp).getLatitude() < WorldConstraints.HEIGHT * 0.7) {
+					epicentre = new WeatherSystem(WeatherSystem.air, this.areas.get(temp));
+				}
+			}
+			epicentres[i] = epicentre;
+		}this.epicentres = epicentres;
+		return epicentres;
 	}
 
 	// ----------------------- graphical stuff :( ----------------------------------

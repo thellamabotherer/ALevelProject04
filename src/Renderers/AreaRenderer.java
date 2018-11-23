@@ -82,17 +82,18 @@ public class AreaRenderer {
 			a.getPoly().draw(window, a.getColour());
 			window.changeColour(ColourPalette.red);
 			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getCurrents(), 7);
-			for (WeatherSystem e : areas.getEpicentres()) {
-				e.draw(window);
-			}Display.update();
+			//for (WeatherSystem e : areas.getEpicentres()) {
+				//e.draw(window);
+			//s}//Display.update();
 		}
 	}public void drawWinds () {
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
+			window.changeColour(ColourPalette.red);
 			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getWinds(), 7);
-			for (WeatherSystem e : areas.getEpicentres()) {
-				e.draw(window);
-			}
+			//for (WeatherSystem e : areas.getEpicentres()) {
+				//e.draw(window);
+			//}//Display.update();
 		}
 	}
 

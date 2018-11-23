@@ -26,15 +26,15 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private float oceanTemp;
 	private float airTemp;
 	private float water;
-	
+
 	private Area nextOcean;
 	private Area nextAir;
 
 	private boolean comparingOcean = true;
-	
+
 	private Vector2f currents;
 	private Vector2f winds;
-	
+
 	private Vector4f colour;
 
 	private ArrayList<Area> adjacencies;
@@ -56,6 +56,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 		this.ocean = false;
 	}
+
 	public int compareTo(Area a) {
 		if (comparingOcean) {
 			if (this.oceanTemp == a.getOceanTemp()) {
@@ -83,7 +84,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	}
 
 	public void getCurrentVect(WeatherSystem[] epicentres) {
-		
+
 		float weight = 0;
 		float tempVectX;
 		float tempVectY;
@@ -91,75 +92,73 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		float vectY = 0;
 		float relX;
 		float relY;
-		
+
 		for (WeatherSystem e : epicentres) {
 			// get vector from here to e
 			relX = this.longditude - e.getCoords().x;
 			relY = this.latitude - e.getCoords().y;
 			// get perp vector
 			tempVectX = relY;
-			tempVectY = - relX;
+			tempVectY = -relX;
 			// reduce perp vect to unit vect
 			relX = (float) Math.sqrt(tempVectX * tempVectX + tempVectY * tempVectY);
 			tempVectX = tempVectX / relX;
 			tempVectY = tempVectY / relX;
-			
-			if (this.longditude > e.getCoords().x) {
-				if (e.getSpin() == WeatherSystem.clockwise) {
-					tempVectY = - Math.abs(tempVectY);
-				}else {
+
+			if (this.longditude < e.getCoords().x) {
+				if (e.getSpin() == WeatherSystem.clockwise) { // to the left
 					tempVectY = Math.abs(tempVectY);
+				} else {
+					tempVectY = -Math.abs(tempVectY);
 				}
-			}else {
-				if (e.getSpin() != WeatherSystem.clockwise) {
-					tempVectY = - Math.abs(tempVectY);
-				}else {
+			} else {
+				if (e.getSpin() == WeatherSystem.clockwise) { // to the right
+					tempVectY = -Math.abs(tempVectY);
+				} else {
 					tempVectY = Math.abs(tempVectY);
 				}
 			}
-			
-			if (this.getLatitude() > e.getCoords().x) {
+			if (this.getLatitude() < e.getCoords().y) {
 				if (e.getSpin() == WeatherSystem.clockwise) {
 					tempVectX = Math.abs(tempVectX);
-				}else {
-					tempVectX = - Math.abs(tempVectX);
+				} else {
+					tempVectX = -Math.abs(tempVectX);
 				}
-			}else {
-				if (e.getSpin() != WeatherSystem.clockwise) {
+			} else {
+				if (e.getSpin() == WeatherSystem.clockwise) {
+					tempVectX = -Math.abs(tempVectX);
+				} else {
 					tempVectX = Math.abs(tempVectX);
-				}else {
-					tempVectX = - Math.abs(tempVectX);
 				}
 			}
 			
-			// find weight based on dist to e 
-			
-			float tempWeight = (float) (weight + Math.sqrt((double)  ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x) + (this.latitude - e.getCoords().y) * (this.latitude - e.getCoords().y))  ));
+			float tempWeight = (float) (Math.sqrt((double) ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x)
+							+ (this.latitude - e.getCoords().y) * (this.latitude - e.getCoords().y))));
 			weight = weight + tempWeight;
-			
+
 			// mutliply unit vect by weight * value >1 from WC
-			
+
 			tempVectX = tempVectX / tempWeight;
 			tempVectY = tempVectY / tempWeight;
-			
-			// add vect to the total vects 
-			
+
+			// add vect to the total vects
+
 			vectX = vectX + tempVectX;
 			vectY = vectY + tempVectY;
 			
-			// add weight to the total weight 
 		}
-		
+
 		vectX = 10 * vectX / weight;
 		vectY = 10 * vectY / weight;
-		
-		this.currents = new Vector2f ( vectX  , vectY ) ;
-		
+
+		this.currents = new Vector2f(vectX, vectY);
+
 		// divide total vects by the overall weight
-		
+
 	}
-public void getWindVect(WeatherSystem[] epicentres) {
-		
+
+	public void getWindVect(WeatherSystem[] epicentres) {
+
 		float weight = 0;
 		float tempVectX;
 		float tempVectY;
@@ -167,72 +166,73 @@ public void getWindVect(WeatherSystem[] epicentres) {
 		float vectY = 0;
 		float relX;
 		float relY;
-		
+
 		for (WeatherSystem e : epicentres) {
 			// get vector from here to e
 			relX = this.longditude - e.getCoords().x;
 			relY = this.latitude - e.getCoords().y;
 			// get perp vector
 			tempVectX = relY;
-			tempVectY = - relX;
+			tempVectY = -relX;
 			// reduce perp vect to unit vect
 			relX = (float) Math.sqrt(tempVectX * tempVectX + tempVectY * tempVectY);
 			tempVectX = tempVectX / relX;
 			tempVectY = tempVectY / relX;
-			// if on left 
-			if (this.longditude < e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
-				// make unit vect negative if need to for cw or ccw purposes
-				tempVectY = Math.abs(tempVectY);
-			}else if (this.longditude < e.getCoords().x && e.getSpin() != WeatherSystem.clockwise){
-				tempVectY = -Math.abs(tempVectY);
-			}else if (this.longditude > e.getCoords().x && e.getSpin() == WeatherSystem.clockwise) {
-				tempVectY = -Math.abs(tempVectY);
-			}else {
-				tempVectY = Math.abs(tempVectY);
+
+			if (this.longditude < e.getCoords().x) {
+				if (e.getSpin() == WeatherSystem.clockwise) { // to the left
+					tempVectY = Math.abs(tempVectY);
+				} else {
+					tempVectY = -Math.abs(tempVectY);
+				}
+			} else {
+				if (e.getSpin() == WeatherSystem.clockwise) { // to the right
+					tempVectY = -Math.abs(tempVectY);
+				} else {
+					tempVectY = Math.abs(tempVectY);
+				}
+			}
+			if (this.getLatitude() < e.getCoords().y) {
+				if (e.getSpin() == WeatherSystem.clockwise) {
+					tempVectX = Math.abs(tempVectX);
+				} else {
+					tempVectX = -Math.abs(tempVectX);
+				}
+			} else {
+				if (e.getSpin() == WeatherSystem.clockwise) {
+					tempVectX = -Math.abs(tempVectX);
+				} else {
+					tempVectX = Math.abs(tempVectX);
+				}
 			}
 			
-			if (this.latitude < e.getCoords().y && e.getSpin() == WeatherSystem.clockwise) {
-				// make unit vect negative if need to for cw or ccw purposes
-				tempVectX = Math.abs(tempVectX);
-			}else if (this.latitude < e.getCoords().y && e.getSpin() != WeatherSystem.clockwise){
-				tempVectX = -Math.abs(tempVectX);
-			}else if (this.latitude > e.getCoords().y && e.getSpin() == WeatherSystem.clockwise) {
-				tempVectX = -Math.abs(tempVectX);
-			}else {
-				tempVectX = Math.abs(tempVectX);
-			}
-			
-			// find weight based on dist to e 
-			
-			float tempWeight = (float) (weight + Math.sqrt((double)  ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x) + (this.latitude - e.getCoords().y) * (this.latitude - e.getCoords().y))  ));
+			float tempWeight = (float) (Math.sqrt((double) ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x)
+							+ (this.latitude - e.getCoords().y) * (this.latitude - e.getCoords().y))));
 			weight = weight + tempWeight;
-			
+
 			// mutliply unit vect by weight * value >1 from WC
-			
-			tempVectX = tempVectX * tempWeight;
-			tempVectY = tempVectY * tempWeight;
-			
-			// add vect to the total vects 
-			
+
+			tempVectX = tempVectX / tempWeight;
+			tempVectY = tempVectY / tempWeight;
+
+			// add vect to the total vects
+
 			vectX = vectX + tempVectX;
 			vectY = vectY + tempVectY;
 			
-			// add weight to the total weight 
 		}
-		
+
 		vectX = 10 * vectX / weight;
 		vectY = 10 * vectY / weight;
-		
-		this.winds = new Vector2f ( vectX  , vectY ) ;
-		
-		// divide total vects by the overall weight
-		
+
+		this.winds = new Vector2f(vectX, vectY);
+
 	}
-	public void findBestNext () {
-		
+
+	public void findBestNext() {
+
 	}
-	
-	
+
 	public float dotProd(Vector2f a, Vector2f b) {
 		return (a.x * b.x + a.y + b.y);
 	}
@@ -293,9 +293,11 @@ public void getWindVect(WeatherSystem[] epicentres) {
 	public Vector4f getColour() {
 		return colour;
 	}
+
 	public void setColour(Vector4f colour) {
 		this.colour = colour;
 	}
+
 	public void setAltitude(float altitude) {
 		this.altitude = altitude;
 	}
@@ -356,29 +358,32 @@ public void getWindVect(WeatherSystem[] epicentres) {
 		this.adjacencies = adjacencies;
 	}
 
-
 	public ArrayList<Float> getOceanPrefs() {
 		return this.oceanPrefs;
 	}
+
 	public Polygon getPoly() {
 		return poly;
 	}
+
 	public void setPoly(Polygon poly) {
 		this.poly = poly;
 	}
+
 	public Vector2f getCurrents() {
 		return currents;
 	}
+
 	public void setCurrents(Vector2f currents) {
 		this.currents = currents;
 	}
+
 	public Vector2f getWinds() {
 		return winds;
 	}
+
 	public void setWinds(Vector2f winds) {
 		this.winds = winds;
 	}
-	
-	
 
 }
