@@ -1,5 +1,6 @@
 package Main;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
@@ -101,12 +102,31 @@ public class Main {
 					areaRenderer.drawWinds();
 					break;
 				}
+				if (checkInput() != -1) {
+					active = checkInput();
+				}
 			}
 		}
 	}
 
-	private static void checkInput() {
+	private static int checkInput() {
 		// keyboard handlers look tricky, do this later
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) { // test map
+			return 0;
+		}else if (Keyboard.isKeyDown(Keyboard.KEY_V)) { // voronoi map
+			return 1;
+		}else if (Keyboard.isKeyDown(Keyboard.KEY_P)) { // plate map
+			return 2;
+		}else if (Keyboard.isKeyDown(Keyboard.KEY_H)) { // area map heights
+			return 3;
+		}else if (Keyboard.isKeyDown(Keyboard.KEY_T)) { // simple terrain map
+			return 4;
+		}else if (Keyboard.isKeyDown(Keyboard.KEY_C)) { // ocean current map
+			return 5;
+		}else if (Keyboard.isKeyDown(Keyboard.KEY_W)) { // wind map
+			return 6;
+		}return -1;
+		
 	}
 
 	private static void newWindow(int WIDTH, int HEIGHT, String name, int fps) {
