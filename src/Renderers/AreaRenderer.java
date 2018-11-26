@@ -78,6 +78,7 @@ public class AreaRenderer {
 			a.getPoly().draw(window, a.getColour());
 		}
 	}public void drawCurrents () {
+		//double start = System.nanoTime();
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
 			window.changeColour(ColourPalette.red);
@@ -85,15 +86,27 @@ public class AreaRenderer {
 			//for (WeatherSystem e : areas.getEpicentres()) {
 				//e.draw(window);
 			//s}//Display.update();
-		}
+		}//double end = System.nanoTime();
+		//System.out.println(end - start);
 	}public void drawWinds () {
+		//double start = System.nanoTime();
+		this.drawSimpleTerrain();
 		for (Area a : this.areas.getAreas()) {
-			a.getPoly().draw(window, a.getColour());
+			//a.getPoly().draw(window, a.getColour());
 			window.changeColour(ColourPalette.red);
 			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getWinds(), 7);
 			//for (WeatherSystem e : areas.getEpicentres()) {
 				//e.draw(window);
 			//}//Display.update();
+		}//double end = System.nanoTime();
+		//System.out.println(end - start);
+	}public void drawSeaTemp() {
+		for (Area a : this.areas.getAreas()) {
+			if (a.isOcean()) {
+				a.getPoly().draw(window, getHeat(a.getOceanTemp()));
+			}else {
+				a.getPoly().draw(window, ColourPalette.grey);
+			}
 		}
 	}
 

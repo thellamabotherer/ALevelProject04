@@ -12,7 +12,9 @@ public class ColourPalette {
 	public static final Vector4f deepGreen = new Vector4f   ( (float) (62)/256 , (float) (193)/256 , (float) (60)/256 ,1);
 	public static final Vector4f brown = new Vector4f       ( (float) (124)/256 , (float) (94)/256 , (float) (22)/256 ,1);
 	public static final Vector4f white = new Vector4f       ( (float) (232)/256 , (float) (230)/256 , (float) (227)/256 ,1);
-	public static final Vector4f red = new Vector4f ((float) 255/ 255, (float)0 , (float)0 , 0 );
+	public static final Vector4f red = new Vector4f         ( (float) 255/ 255, (float)0 , (float)0 , 0 );
+	public static final Vector4f grey = new Vector4f        ( (float) 150/ 255, (float)150/255 , (float)150/255 , 0 );
+	
 	
 	public static final Vector4f deepSea1 = new Vector4f ((float)0/(float)255, (float)0/(float)255, (float)204/(float)255, 0);
 	public static final Vector4f deepSea2 = new Vector4f ((float)0/(float)255, (float)0/(float)255, (float)160/(float)255, 0);

@@ -21,7 +21,6 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	private boolean ocean;
 	private boolean lake;
-	private float oceanEnergy;
 
 	private float oceanTemp;
 	private float airTemp;
@@ -48,10 +47,6 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		this.poly = poly;
 		if (this.altitude < 0) {
 			this.ocean = true;
-			this.oceanEnergy = (1
-					- 2 * Math.abs(this.latitude - (WorldConstraints.HEIGHT / 2)) / WorldConstraints.HEIGHT)
-					* (-this.altitude);
-			this.oceanTemp = this.oceanEnergy / (-this.altitude);
 			return;
 		}
 		this.ocean = false;
@@ -229,46 +224,58 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	}
 
-	public void findBestNext() {
+	public Area findBestNext(boolean type) { // true for current, false for wind
+		
+		if (type) { // then current
+			for (Edge e : this.getPoly().getEdges()) {
+				if (intersects(this.currents, e)) {
+					if (this.getPoly() == e.getLeftSite().getPoly()) {
+						return e.getRightSite().getPoly().getArea();
+					}else {
+						return e.getLeftSite().getPoly().getArea();
+					}
+				}
+			}
+		}else {
+			for (Edge e : this.getPoly().getEdges()) {
+				if (intersects(this.winds, e)) {
+					if (this.getPoly() == e.getLeftSite().getPoly()) {
+						return e.getRightSite().getPoly().getArea();
+					}else {
+						return e.getLeftSite().getPoly().getArea();
+					}
+				}
+			}
+		}System.out.println("Returned null");
+		return null;
 
 	}
 
+	public boolean intersects (Vector2f vect, Edge e) {
+
+		// get y = mx + c  for edge 
+		float mE = (float) ((e.getEnd().y - e.getStart().y) / (e.getEnd().x - e.getStart().x));
+		float cE = (float) (e.getStart().y - mE * e.getStart().x);
+		float mV = vect.y/vect.x;
+		float cV = this.getLatitude() - mV * this.getLongditude();
+		float xInt = (cV - cE) / (mE - mV);
+		if (xInt > e.getStart().x && xInt < e.getEnd().y || xInt < e.getStart().x && xInt > e.getEnd().y) {
+			return true;
+		}return false;
+	}
+
+	public void getSeaConditions () {
+		this.oceanTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT);
+		
+	}
+	
+	
 	public float dotProd(Vector2f a, Vector2f b) {
 		return (a.x * b.x + a.y + b.y);
 	}
 
 	public float magnitude(Vector2f a, Vector2f b) {
 		return (float) Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
-	}
-
-	// ----------------------- graphical stuff :( ----------------------------------
-
-	public void draw(Window w, int mode) { // 0 = centroid, 1 = wireframe, 2 = plateMap, 3 = heightMap, 4 =
-											// simpleTerrain, 5 = oceanTemp, 6 = airTemp, 7 = humidity
-		w.beginRender();
-		if (mode == 0) {
-			w.changeColour(new Vector4f(this.oceanEnergy, 0, 0, 1));
-		} else if (mode == 1) {
-			w.changeColour(new Vector4f(this.oceanTemp, 0, 0, 1));
-		} else if (mode == 2) {
-			w.changeColour(new Vector4f(this.airTemp, 0, 0, 1));
-			w.addVertex(new Vector3f(this.longditude + 5, this.latitude, 0));
-			w.addVertex(new Vector3f(this.longditude, this.latitude + 5, 0));
-			w.addVertex(new Vector3f(this.longditude - 5, this.latitude, 0));
-			w.endRender();
-			w.changeColour(new Vector4f(0, this.oceanTemp, 0, 1));
-			w.beginRender();
-			w.addVertex(new Vector3f(this.longditude + 5, this.latitude, 0));
-			w.addVertex(new Vector3f(this.longditude, this.latitude - 5, 0));
-			w.addVertex(new Vector3f(this.longditude - 5, this.latitude, 0));
-			w.endRender();
-			return;
-		}
-		w.addVertex(new Vector3f(this.longditude + 10, this.latitude, 0));
-		w.addVertex(new Vector3f(this.longditude, this.latitude + 10, 0));
-		w.addVertex(new Vector3f(this.longditude - 10, this.latitude, 0));
-		w.addVertex(new Vector3f(this.longditude, this.latitude - 10, 0));
-		w.endRender();
 	}
 
 	// ---------------------------------getters and setters
@@ -324,14 +331,6 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	public void setOcean(boolean ocean) {
 		this.ocean = ocean;
-	}
-
-	public float getOceanEnergy() {
-		return oceanEnergy;
-	}
-
-	public void setOceanEnergy(float oceanEnergy) {
-		this.oceanEnergy = oceanEnergy;
 	}
 
 	public float getOceanTemp() {

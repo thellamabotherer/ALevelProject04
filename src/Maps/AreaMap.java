@@ -25,17 +25,29 @@ public class AreaMap {
 	private WeatherSystem[] epicentres;
 
 	public AreaMap(HeightMap heightMap, Window w, HeightRenderer hr) {
+		double start;
+		double end;
 		this.HR = hr;
+		start = System.nanoTime();
 		for (Plate P : heightMap.getPlates()) {
 			for (Polygon p : P.getPolys()) {
 				areas.add(p.toArea());
 			}
-		}
+		}end = System.nanoTime();
+		System.out.println("Setup area map takes " + (end - start));
+		start = System.nanoTime();
 		for (Area a : areas) {
 			a.setupAdjacencies();
-		}
+		}end = System.nanoTime();
+		System.out.println("Setup adj takes " + (end - start));
 		this.getStartValues();
+		start = System.nanoTime();
 		this.simWeather();
+		end = System.nanoTime();
+		System.out.println("Weather sim 	takes " + (end - start));
+		for (Area a : areas) {
+			a.getSeaConditions();
+		}
 	}
 
 	private void getStartValues() {
