@@ -249,6 +249,10 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}System.out.println("Returned null");
 		return null;
 
+	}public void setupNext () {
+		if (this.ocean) {
+			this.nextOcean = findBestNext(true);
+		}this.nextAir = findBestNext(false);
 	}
 
 	public boolean intersects (Vector2f vect, Edge e) {
@@ -264,9 +268,16 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}return false;
 	}
 
+	public void getStartConditions () {
+		if (this.isOcean()) {
+			this.getSeaConditions();
+		}this.getAirConditions();
+	}
+	
 	public void getSeaConditions () {
-		this.oceanTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT);
-		
+		this.oceanTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT)/2;
+	}public void getAirConditions () {
+		this.oceanTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT)/2;
 	}
 	
 	
@@ -384,5 +395,31 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	public void setWinds(Vector2f winds) {
 		this.winds = winds;
 	}
+
+	public Area getNextOcean() {
+		return nextOcean;
+	}
+
+	public void setNextOcean(Area nextOcean) {
+		this.nextOcean = nextOcean;
+	}
+
+	public Area getNextAir() {
+		return nextAir;
+	}
+
+	public void setNextAir(Area nextAir) {
+		this.nextAir = nextAir;
+	}
+
+	public float getWater() {
+		return water;
+	}
+
+	public void setWater(float water) {
+		this.water = water;
+	}
+	
+	
 
 }

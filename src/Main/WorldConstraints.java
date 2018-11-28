@@ -53,5 +53,9 @@ public class WorldConstraints {
 	
 	public static final float epicentreWeightCoefficient = (float)2;
 	
+	public static final int currentSims = 1;
+	public static final int airSims = 1;
+	
+	
 	
 }
