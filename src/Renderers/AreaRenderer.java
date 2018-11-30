@@ -108,9 +108,17 @@ public class AreaRenderer {
 				a.getPoly().draw(window, ColourPalette.grey);
 			}
 		}
+	}public void drawAirTemp() {
+		for (Area a : this.areas.getAreas()) {
+			a.getPoly().draw(window, getHeat(a.getAirTemp()));
+		}
+	}public void drawRainfall() {
+		for (Area a : this.areas.getAreas()) {
+			a.getPoly().draw(window, getHeat(1 - a.getWater()));
+		}
 	}
 
-	private Vector4f getHeat(float val) { // takes val from 0 to 1, returns heatmap colour
+	public static Vector4f getHeat(float val) { // takes val from 0 to 1, returns heatmap colour
 		float r;
 		float g;
 		float b;

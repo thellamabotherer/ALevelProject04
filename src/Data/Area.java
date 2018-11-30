@@ -246,13 +246,17 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 					}
 				}
 			}
-		}System.out.println("Returned null");
+		}
 		return null;
 
-	}public void setupNext () {
-		if (this.ocean) {
-			this.nextOcean = findBestNext(true);
-		}this.nextAir = findBestNext(false);
+	}public void setupNext (boolean type) {
+		if (type) {
+			if (this.isOcean()) {
+				this.nextOcean = this.findBestNext(true);
+			}
+		}else {
+			this.nextAir = this.findBestNext(false);
+		}
 	}
 
 	public boolean intersects (Vector2f vect, Edge e) {

@@ -100,6 +100,12 @@ public class Main {
 			case 7:
 				areaRenderer.drawSeaTemp();
 				break;
+			case 8 :
+				areaRenderer.drawAirTemp();
+				break;
+			case 9 :
+				areaRenderer.drawRainfall();
+				break;
 			}
 			if (checkInput() != -1) {
 				active = checkInput();
@@ -126,6 +132,10 @@ public class Main {
 			return 6;
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_Y)) { // ocean heat
 			return 7;
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_U)) { // air heat
+			return 8;
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_I)) { // rainfall
+			return 9;
 		}
 		return -1;
 
@@ -182,6 +192,7 @@ public class Main {
 		plateRenderer = new PlateRenderer(plateMap, window);
 		heightRenderer = new HeightRenderer(window, heightMap);
 
+		heightRenderer.drawSimpleTerrain();
 		start = System.nanoTime();
 		areaMap = new AreaMap(heightMap, window, heightRenderer);
 		end = System.nanoTime();

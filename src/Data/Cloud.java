@@ -1,40 +1,69 @@
 package Data;
 
+import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector3f;
+
+import Main.GraphicalFunctions;
+import Main.Window;
+import Renderers.AreaRenderer;
+
 public class Cloud extends Weather {
-	
+
 	protected Area lastArea;
 	protected Area area;
 	private float heat;
 	private float water;
-	protected float ttl;
-	
-	public Cloud (Area a) {
-		// give the current an amount of heat 
+	protected int ttl;
+
+	public Cloud(Area a) {
+
+		// give the current an amount of heat
 		this.area = a;
-		this.heat = a.getOceanTemp();
+		this.heat = a.getAirTemp() * 5;
 		if (a.isOcean()) {
-			this.water = this.heat;
-		}else {
-			this.water = this.heat * a.getWater();
+			this.water = a.getOceanTemp();
+		} else {
+			this.water = 0;
 		}
-		this.ttl = 50;
+		this.ttl = 5;
+		// System.out.println("New cuurent\nheat = " + heat);
 	}
-	
-	protected Area findNext () {
-		return area.getNextOcean();
+
+	public void walk() {
+		if (findNext() != null) {
+			if (ttl > 0) {
+				// System.out.println(ttl);
+				ttl = ttl - 1;
+				lastArea = area;
+				area = findNext();
+				changeClimate();
+				walk();
+			}
+		}
+
 	}
-	
-	protected void changeClimate () {
-		// put some new heat into the local area
-		area.setOceanTemp((float) (area.getOceanTemp() + this.heat + 0.03));
-		this.heat = this.heat * (float)0.97;
-	
-		if (area.getAltitude() > lastArea.getAltitude() || this.water > 0) {
-			area.setWater(area.getWater() + (this.water * 10 * (area.getAltitude() - lastArea.getAltitude())));
-			this.water = this.water * 10 * (1 - (area.getAltitude() - lastArea.getAltitude()));
-		}area.setWater((float) (area.getWater() + 0.05 * this.water));
-		this.water = this.water * 95;
-		
+
+	protected Area findNext() {
+		return area.getNextAir();
 	}
-	
+
+	protected void changeClimate() {
+
+		if (lastArea != null) {
+
+			area.setAirTemp((float) (area.getAirTemp() + heat * 0.05));
+			// System.out.println("Temp + " + this.heat * 0.03 + ". ttl = " + ttl);
+			this.heat = (float) (this.heat * 0.95);
+
+			if (water > 0) {
+				if (area.getAltitude() > lastArea.getAltitude()) {
+					area.setWater(area.getWater() + this.water * (area.getAltitude() - lastArea.getAltitude()));
+					this.water = this.water * (1 - (area.getAltitude() - lastArea.getAltitude()));
+				}
+				area.setWater((float) (area.getWater() + this.water * 0.05));
+				this.water = (float) (this.water * 0.95);
+			}
+		}
+	}
+
 }

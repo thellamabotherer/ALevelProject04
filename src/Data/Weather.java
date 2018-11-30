@@ -1,5 +1,7 @@
 package Data;
 
+import Main.Window;
+
 public class Weather {
 
 	protected Area lastArea;
@@ -8,20 +10,21 @@ public class Weather {
 
 	public Weather() {
 		// I think the subclases handle this
+		this.ttl = 50;
 	}
 
 	public void walk() {
-		if (ttl > 0) {
-			this.lastArea = this.area;
-			try {
-				this.area = this.findNext();
-				this.changeClimate();
-				ttl--;
-				this.walk();
-			} catch (NullPointerException e) {
-				ttl = 0;
+		if (findNext() != null) {
+			if (ttl > 0) {
+				//System.out.println(ttl);
+				ttl = ttl - 1;
+				lastArea = area;
+				area = findNext();
+				changeClimate();
+				walk();
 			}
 		}
+		
 	}
 
 	protected Area findNext() {
@@ -32,7 +35,7 @@ public class Weather {
 	}
 
 	protected void changeClimate() {
-
+		System.out.println("Climate change in the weather class");
 	}
 
 }
