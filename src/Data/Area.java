@@ -40,6 +40,8 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private ArrayList<Float> airPrefs;
 	private ArrayList<Float> oceanPrefs;
 
+	private float tempTemp;
+	
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
 		this.altitude = altitude;
 		this.latitude = latitude;
@@ -100,30 +102,31 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			tempVectX = tempVectX / relX;
 			tempVectY = tempVectY / relX;
 
-			if (this.longditude < e.getCoords().x) {
-				if (e.getSpin() == WeatherSystem.clockwise) { // to the left
+			if (this.longditude > e.getCoords().x) {
+				if (e.getSpin() == e.clockwise) {
 					tempVectY = Math.abs(tempVectY);
-				} else {
+				}else {
 					tempVectY = -Math.abs(tempVectY);
 				}
-			} else {
-				if (e.getSpin() == WeatherSystem.clockwise) { // to the right
-					tempVectY = -Math.abs(tempVectY);
-				} else {
+			}else {
+				if (e.getSpin() != e.clockwise) {
 					tempVectY = Math.abs(tempVectY);
+				}else {
+					tempVectY = -Math.abs(tempVectY);
 				}
 			}
-			if (this.getLatitude() < e.getCoords().y) {
-				if (e.getSpin() == WeatherSystem.clockwise) {
+			
+			if (this.latitude < e.getCoords().y) {
+				if (e.getSpin() == e.clockwise) {
 					tempVectX = Math.abs(tempVectX);
-				} else {
+				}else {
 					tempVectX = -Math.abs(tempVectX);
 				}
-			} else {
-				if (e.getSpin() == WeatherSystem.clockwise) {
-					tempVectX = -Math.abs(tempVectX);
-				} else {
+			}else {
+				if (e.getSpin() != e.clockwise) {
 					tempVectX = Math.abs(tempVectX);
+				}else {
+					tempVectX = -Math.abs(tempVectX);
 				}
 			}
 			
@@ -174,30 +177,31 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			tempVectX = tempVectX / relX;
 			tempVectY = tempVectY / relX;
 
-			if (this.longditude < e.getCoords().x) {
-				if (e.getSpin() == WeatherSystem.clockwise) { // to the left
+			if (this.longditude > e.getCoords().x) {
+				if (e.getSpin() == e.clockwise) {
 					tempVectY = Math.abs(tempVectY);
-				} else {
+				}else {
 					tempVectY = -Math.abs(tempVectY);
 				}
-			} else {
-				if (e.getSpin() == WeatherSystem.clockwise) { // to the right
-					tempVectY = -Math.abs(tempVectY);
-				} else {
+			}else {
+				if (e.getSpin() != e.clockwise) {
 					tempVectY = Math.abs(tempVectY);
+				}else {
+					tempVectY = -Math.abs(tempVectY);
 				}
 			}
-			if (this.getLatitude() < e.getCoords().y) {
-				if (e.getSpin() == WeatherSystem.clockwise) {
+			
+			if (this.latitude > e.getCoords().y) {
+				if (e.getSpin() == e.clockwise) {
 					tempVectX = Math.abs(tempVectX);
-				} else {
+				}else {
 					tempVectX = -Math.abs(tempVectX);
 				}
-			} else {
-				if (e.getSpin() == WeatherSystem.clockwise) {
-					tempVectX = -Math.abs(tempVectX);
-				} else {
+			}else {
+				if (e.getSpin() != e.clockwise) {
 					tempVectX = Math.abs(tempVectX);
+				}else {
+					tempVectX = -Math.abs(tempVectX);
 				}
 			}
 			
@@ -281,7 +285,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	public void getSeaConditions () {
 		this.oceanTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT)/2;
 	}public void getAirConditions () {
-		this.oceanTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT)/2;
+		this.airTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT)/2;
 	}
 	
 	
@@ -422,6 +426,14 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	public void setWater(float water) {
 		this.water = water;
+	}
+
+	public float getTempTemp() {
+		return tempTemp;
+	}
+
+	public void setTempTemp(float tempTemp) {
+		this.tempTemp = tempTemp;
 	}
 	
 	

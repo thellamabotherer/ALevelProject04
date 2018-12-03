@@ -71,7 +71,7 @@ public class Main {
 
 		// int active = 4;
 
-		int active = 5;
+		int active = 7;
 		// for (int active = 5; active < 7; active++) {
 		while (instance.run()) {
 			// checkInput();

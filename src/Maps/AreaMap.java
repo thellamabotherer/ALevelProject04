@@ -58,7 +58,7 @@ public class AreaMap {
 			runCurrentSim();
 		}
 		for (int i = 0; i < WorldConstraints.airSims; i++) {
-			runAirSim();
+			//runAirSim();
 		}
 		smoothSeaTemp();
 		smoothAirTemp();
@@ -131,6 +131,30 @@ public class AreaMap {
 		float maxHeight = Float.MIN_VALUE;
 		float minHeight = Float.MIN_VALUE;
 
+		float buffer1;
+		int buffer2;
+
+		for (Area a : this.areas) {
+			buffer1 = 0;
+			buffer2 = 0;
+			for (Area b : a.getAdjacencies()) {
+				if (b.isOcean()) {
+					buffer1 = buffer1 + b.getOceanTemp();
+					buffer2++;
+				}
+			}
+			
+			if (buffer2 != 0) {
+				a.setTempTemp(buffer1/buffer2);
+			}else {
+				a.setTempTemp(a.getOceanTemp());
+			}
+		}
+		
+		for (Area a : this.areas) {
+			a.setOceanTemp(a.getTempTemp());
+		}
+
 		for (Area a : this.areas) {
 
 			if (a.getOceanTemp() > maxHeight) {
@@ -141,32 +165,21 @@ public class AreaMap {
 			}
 
 		}
+		
+		System.out.println(maxHeight);
+		System.out.println(minHeight);
+		
+		
 		for (Area a : this.areas) {
 
 			if (a.getOceanTemp() > 0) {
-				a.setOceanTemp(a.getOceanTemp() / maxHeight);
+				a.setOceanTemp((float) Math.sqrt(a.getOceanTemp() / (maxHeight)));
 			} else {
-				a.setOceanTemp(a.getOceanTemp() / -minHeight);
-			}
-		}
-		
-		for (Area a : this.areas) {
-			if (a.getOceanTemp() < 0.1) {
-				int n=0;
-				float t=0;
-				for (Area b : a.getAdjacencies()) {
-					if (b.isOcean()) {
-						n++;
-						t = t + b.getOceanTemp();
-					}
-				}if (n == 0) {
-					a.getSeaConditions();
-				}else {
-					a.setOceanTemp(t/n);
-				}
+				a.setOceanTemp((float) -Math.sqrt(a.getOceanTemp() / (minHeight)));
 			}
 		}
 	}
+
 	private void smoothAirTemp() {
 
 		float maxHeight = Float.MIN_VALUE;
@@ -190,24 +203,26 @@ public class AreaMap {
 				a.setAirTemp(a.getAirTemp() / -minHeight);
 			}
 		}
-		
+
 		for (Area a : this.areas) {
 			if (a.getAirTemp() < 0.1) {
-				int n=0;
-				float t=0;
+				int n = 0;
+				float t = 0;
 				for (Area b : a.getAdjacencies()) {
 					if (b.isOcean()) {
 						n++;
 						t = t + b.getAirTemp();
 					}
-				}if (n == 0) {
+				}
+				if (n == 0) {
 					a.setAirTemp(1);
-				}else {
-					a.setAirTemp(t/n);
+				} else {
+					a.setAirTemp(t / n);
 				}
 			}
 		}
 	}
+
 	private void smoothRainfall() {
 
 		float maxHeight = Float.MIN_VALUE;
@@ -231,20 +246,21 @@ public class AreaMap {
 				a.setWater(a.getWater() / -minHeight);
 			}
 		}
-		
+
 		for (Area a : this.areas) {
 			if (a.getOceanTemp() < 0.1) {
-				int n=0;
-				float t=0;
+				int n = 0;
+				float t = 0;
 				for (Area b : a.getAdjacencies()) {
 					if (b.isOcean()) {
 						n++;
 						t = t + b.getWater();
 					}
-				}if (n == 0) {
+				}
+				if (n == 0) {
 					a.setWater(1);
-				}else {
-					a.setWater(t/n);
+				} else {
+					a.setWater(t / n);
 				}
 			}
 		}
