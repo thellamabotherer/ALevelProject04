@@ -38,17 +38,17 @@ public class AreaMap {
 			}
 		}
 		end = System.nanoTime();
-		System.out.println("Setup area map takes " + (end - start));
+		//System.out.println("Setup area map takes " + (end - start));
 		start = System.nanoTime();
 		for (Area a : areas) {
 			a.setupAdjacencies();
 		}
 		end = System.nanoTime();
-		System.out.println("Setup adj takes " + (end - start));
+		//System.out.println("Setup adj takes " + (end - start));
 		start = System.nanoTime();
 		this.simWeather();
 		end = System.nanoTime();
-		System.out.println("Weather sim 	takes " + (end - start));
+		//System.out.println("Weather sim 	takes " + (end - start));
 		for (Area a : areas) {
 			a.getStartConditions();
 			a.setupNext(true);
@@ -56,9 +56,11 @@ public class AreaMap {
 		}
 		for (int i = 0; i < WorldConstraints.currentSims; i++) {
 			runCurrentSim();
+			//System.out.println("Current sim");
 		}
 		for (int i = 0; i < WorldConstraints.airSims; i++) {
-			//runAirSim();
+			runAirSim();
+			//System.out.println("Air sim");
 		}
 		smoothSeaTemp();
 		smoothAirTemp();
@@ -71,7 +73,6 @@ public class AreaMap {
 			if (a.isOcean()) {
 				weathers.add(new Current(a));
 			}
-			weathers.add(new Cloud(a));
 		}
 		for (Weather c : weathers) {
 			c.walk();
@@ -96,9 +97,34 @@ public class AreaMap {
 				a.getCurrentVect(epicentres);
 			}
 		}
-		epicentres = genCentres(WorldConstraints.seaCentres, false);
+		epicentres = genCentres(WorldConstraints.airCentres, false);
 		for (Area a : this.getAreas()) {
 			a.getWindVect(epicentres);
+		}
+		
+		for (Area a : areas) {
+			if (a.isOcean()) {
+				a.setWater(a.getOceanTemp());
+			}else {
+				a.setWater(0);
+			}
+		}
+		float x;
+		int n;
+		float t;
+		for (int i = 0; i < WorldConstraints.waterPasses; i++) {
+			for (Area a : this.areas) {
+				x = a.getWater();
+				n = 1;
+				for (Area b : a.getAdjacencies()) {
+					x = x + b.getWater();
+					n++;
+				}t = x/n;
+				a.setWater(t);
+				for (Area b : a.getAdjacencies()) {
+					b.setWater(t);
+				}
+			}
 		}
 
 		// walk this area's weather object from here and deposit heat and moisture based
@@ -135,6 +161,12 @@ public class AreaMap {
 		int buffer2;
 
 		for (Area a : this.areas) {
+			if (a.isOcean()) {
+				a.setOceanTemp(a.getOceanTemp() * (2 + a.getAltitude()));
+			}
+		}
+
+		for (Area a : this.areas) {
 			buffer1 = 0;
 			buffer2 = 0;
 			for (Area b : a.getAdjacencies()) {
@@ -143,14 +175,14 @@ public class AreaMap {
 					buffer2++;
 				}
 			}
-			
+
 			if (buffer2 != 0) {
-				a.setTempTemp(buffer1/buffer2);
-			}else {
+				a.setTempTemp(buffer1 / buffer2);
+			} else {
 				a.setTempTemp(a.getOceanTemp());
 			}
 		}
-		
+
 		for (Area a : this.areas) {
 			a.setOceanTemp(a.getTempTemp());
 		}
@@ -165,11 +197,10 @@ public class AreaMap {
 			}
 
 		}
-		
-		System.out.println(maxHeight);
-		System.out.println(minHeight);
-		
-		
+
+		//System.out.println(maxHeight);
+		//System.out.println(minHeight);
+
 		for (Area a : this.areas) {
 
 			if (a.getOceanTemp() > 0) {
@@ -177,6 +208,9 @@ public class AreaMap {
 			} else {
 				a.setOceanTemp((float) -Math.sqrt(a.getOceanTemp() / (minHeight)));
 			}
+			
+			a.setOceanTemp((float) (1.5 * a.getOceanTemp() * Math.sqrt(1 - Math.abs(WorldConstraints.HEIGHT/2 - a.getLatitude()) / WorldConstraints.HEIGHT)));
+			
 		}
 	}
 
@@ -184,6 +218,35 @@ public class AreaMap {
 
 		float maxHeight = Float.MIN_VALUE;
 		float minHeight = Float.MIN_VALUE;
+
+		float buffer1;
+		int buffer2;
+
+		for (Area a : this.areas) {
+			if (!a.isOcean()) {
+				a.setAirTemp(a.getAirTemp() * (1 - a.getAltitude()));
+			}
+		}
+
+		for (Area a : this.areas) {
+
+			buffer1 = 0;
+			buffer2 = 0;
+			for (Area b : a.getAdjacencies()) {
+				buffer1 = buffer1 + b.getAirTemp();
+				buffer2++;
+			}
+
+			if (buffer2 != 0) {
+				a.setTempTemp(buffer1 / buffer2);
+			} else {
+				a.setTempTemp(a.getAirTemp());
+			}
+		}
+
+		for (Area a : this.areas) {
+			a.setAirTemp(a.getTempTemp());
+		}
 
 		for (Area a : this.areas) {
 
@@ -195,31 +258,22 @@ public class AreaMap {
 			}
 
 		}
+
+		//System.out.println(maxHeight);
+		//System.out.println(minHeight);
+
 		for (Area a : this.areas) {
 
 			if (a.getAirTemp() > 0) {
-				a.setAirTemp(a.getAirTemp() / maxHeight);
+				a.setAirTemp((float) Math.sqrt(a.getAirTemp() / (maxHeight)));
 			} else {
-				a.setAirTemp(a.getAirTemp() / -minHeight);
+				a.setAirTemp((float) -Math.sqrt(a.getAirTemp() / (minHeight)));
 			}
-		}
+		
 
-		for (Area a : this.areas) {
-			if (a.getAirTemp() < 0.1) {
-				int n = 0;
-				float t = 0;
-				for (Area b : a.getAdjacencies()) {
-					if (b.isOcean()) {
-						n++;
-						t = t + b.getAirTemp();
-					}
-				}
-				if (n == 0) {
-					a.setAirTemp(1);
-				} else {
-					a.setAirTemp(t / n);
-				}
-			}
+			a.setAirTemp((float) (1.5 * a.getAirTemp() * Math.sqrt(1 - Math.abs(WorldConstraints.HEIGHT/2 - a.getLatitude()) / WorldConstraints.HEIGHT)));
+			
+		
 		}
 	}
 

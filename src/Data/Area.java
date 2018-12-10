@@ -229,14 +229,14 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	}
 
 	public Area findBestNext(boolean type) { // true for current, false for wind
-		
+		Area next = null;
 		if (type) { // then current
 			for (Edge e : this.getPoly().getEdges()) {
 				if (intersects(this.currents, e)) {
 					if (this.getPoly() == e.getLeftSite().getPoly()) {
-						return e.getRightSite().getPoly().getArea();
+						next = e.getRightSite().getPoly().getArea();
 					}else {
-						return e.getLeftSite().getPoly().getArea();
+						next = e.getLeftSite().getPoly().getArea();
 					}
 				}
 			}
@@ -251,7 +251,16 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 				}
 			}
 		}
-		return null;
+		if (next == null) {
+			return null;
+		}
+		if (next.isOcean()) {
+			return next;
+		}for (Area a : this.getAdjacencies()) {
+			if (a.isOcean()) {
+				return a;
+			}
+		}return null;
 
 	}public void setupNext (boolean type) {
 		if (type) {

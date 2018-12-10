@@ -1,9 +1,12 @@
 package Main;
 
+import java.util.Random;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import Data.Area;
 import Data.Matrix2d;
 import Data.Plate;
 import Data.Point;
@@ -95,15 +98,17 @@ public class Main {
 				areaRenderer.drawCurrents();
 				/* I want to */ break; // free
 			case 6:
+			
 				areaRenderer.drawWinds();
+				
 				break;
 			case 7:
 				areaRenderer.drawSeaTemp();
 				break;
-			case 8 :
+			case 8:
 				areaRenderer.drawAirTemp();
 				break;
-			case 9 :
+			case 9:
 				areaRenderer.drawRainfall();
 				break;
 			}
@@ -150,43 +155,44 @@ public class Main {
 
 	private static void newMap(int numSites, int numRelaxations, float relaxDist, int bigPlateMax, int bigPlateMin,
 			int smallPlateMax, int smallPlateMin) {
-		
+
 		double start;
 		double end;
-		
+
 		start = System.nanoTime();
 		testMap = new TestMap(WIDTH, HEIGHT, numSites);
 		end = System.nanoTime();
-		System.out.println("Test map takes " + (end - start));
-		
+		// System.out.println("Test map takes " + (end - start));
+
 		start = System.nanoTime();
 		meshMap = new MeshMap(WIDTH, HEIGHT, testMap.getSites(), window, false, testMap.getRoot());
 		end = System.nanoTime();
-		System.out.println("Mesh map takes " + (end - start));
-		
+		// System.out.println("Mesh map takes " + (end - start));
+
 		start = System.nanoTime();
 		for (int i = 0; i < numRelaxations; i++) {
 			polyMap = new PolyMap(meshMap.getSites().get(0), meshMap.getEdges(), meshMap.getSites());
 			testMap = new TestMap(polyMap.relax(relaxDist));
 			meshMap = new MeshMap(WIDTH, HEIGHT, testMap.getSites(), window, false, testMap.getRoot());
-		}end = System.nanoTime();
-		System.out.println("Relaxed map takes " + (end - start));
-		
+		}
+		end = System.nanoTime();
+		// System.out.println("Relaxed map takes " + (end - start));
+
 		start = System.nanoTime();
 		polyMap = new PolyMap(meshMap.getSites().get(0), meshMap.getEdges(), meshMap.getSites());
 		end = System.nanoTime();
-		System.out.println("Poly map takes " + (end - start));
-		
+		// System.out.println("Poly map takes " + (end - start));
+
 		start = System.nanoTime();
 		plateMap = new PlateMap(polyMap, bigPlateMin, bigPlateMax, smallPlateMin, smallPlateMax);
 		end = System.nanoTime();
-		System.out.println("Plate map takes " + (end - start));
-		
+		// System.out.println("Plate map takes " + (end - start));
+
 		start = System.nanoTime();
 		heightMap = new HeightMap(plateMap.getPlates());
 		end = System.nanoTime();
-		System.out.println("Height map takes " + (end - start));
-		
+		// System.out.println("Height map takes " + (end - start));
+
 		testRenderer = new TestRenderer();
 		meshRenderer = new MeshRenderer(meshMap, window);
 		plateRenderer = new PlateRenderer(plateMap, window);
@@ -196,8 +202,8 @@ public class Main {
 		start = System.nanoTime();
 		areaMap = new AreaMap(heightMap, window, heightRenderer);
 		end = System.nanoTime();
-		System.out.println("Area map takes " + (end - start));
-		
+		// System.out.println("Area map takes " + (end - start));
+
 		areaRenderer = new AreaRenderer(areaMap, window);
 		areaRenderer.setSimpleTerrain();
 
