@@ -42,6 +42,8 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	private float tempTemp;
 	
+	private boolean checked = false;
+	
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
 		this.altitude = altitude;
 		this.latitude = latitude;
@@ -80,6 +82,43 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 	}
 
+	public float weightedDistToSea (float distSoFar, float best) {
+		checked = true;
+		if (this.isOcean()) {
+			return distSoFar;
+		}
+		if (distSoFar >= best) {
+			return best;
+		}float localBest = best;
+		for (Area a : this.adjacencies) {
+			if (!a.checked) {
+				float d = a.weightedDistToSea(distSoFar + this.weatherWeight(a), best);
+				if (d < localBest) {
+					localBest = d;
+				}
+			}
+		}
+		return localBest;
+	}
+	
+	private float weatherWeight (Area a) {
+		float w = WorldConstraints.baseWeight;
+		Vector2f relPos = new Vector2f (a.getLongditude() - this.getLongditude(),a.getLatitude() - this.getLatitude());
+		if (dotProd(relPos, this.winds) < 0) {
+			w = w * WorldConstraints.windPower;
+		}else {
+			w = w / WorldConstraints.windPower;
+		}
+		
+		w = w * (1 + WorldConstraints.heightPower * (a.getAltitude() - this.getAltitude()));
+		return w;
+		
+	}
+	
+	public void checkFalse () {
+		this.checked = false;
+	}
+	
 	public void getCurrentVect(WeatherSystem[] epicentres) {
 
 		float weight = 0;

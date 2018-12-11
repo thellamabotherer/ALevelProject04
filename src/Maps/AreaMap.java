@@ -102,29 +102,9 @@ public class AreaMap {
 			a.getWindVect(epicentres);
 		}
 		
-		for (Area a : areas) {
-			if (a.isOcean()) {
-				a.setWater(a.getOceanTemp());
-			}else {
-				a.setWater(0);
-			}
-		}
-		float x;
-		int n;
-		float t;
-		for (int i = 0; i < WorldConstraints.waterPasses; i++) {
-			for (Area a : this.areas) {
-				x = a.getWater();
-				n = 1;
-				for (Area b : a.getAdjacencies()) {
-					x = x + b.getWater();
-					n++;
-				}t = x/n;
-				a.setWater(t);
-				for (Area b : a.getAdjacencies()) {
-					b.setWater(t);
-				}
-			}
+		for (Area a : this.areas) {
+			System.out.println(a.weightedDistToSea(0, 100));
+			a.setWater(1 / a.weightedDistToSea(0, 100));
 		}
 
 		// walk this area's weather object from here and deposit heat and moisture based

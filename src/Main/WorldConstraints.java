@@ -55,7 +55,10 @@ public class WorldConstraints {
 	
 	public static final int currentSims = 1;
 	public static final int airSims = 1;
-	public static final int waterPasses = 10;
+	
+	public static final float baseWeight = 1;
+	public static final float windPower = 2;
+	public static final float heightPower = 2;
 	
 	
 	
