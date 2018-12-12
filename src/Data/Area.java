@@ -41,9 +41,9 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private ArrayList<Float> oceanPrefs;
 
 	private float tempTemp;
-	
-	private boolean checked = false;
-	
+
+	private float distToSea;
+
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
 		this.altitude = altitude;
 		this.latitude = latitude;
@@ -82,43 +82,40 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 	}
 
-	public float weightedDistToSea (float distSoFar, float best) {
-		checked = true;
-		if (this.isOcean()) {
-			return distSoFar;
-		}
-		if (distSoFar >= best) {
-			return best;
-		}float localBest = best;
-		for (Area a : this.adjacencies) {
-			if (!a.checked) {
-				float d = a.weightedDistToSea(distSoFar + this.weatherWeight(a), best);
-				if (d < localBest) {
-					localBest = d;
+	public void distToSea() {
+		if (this.distToSea == 0.0f) {
+			float best = Float.MAX_VALUE;
+			for (Area a : this.adjacencies) {
+				float d = distTo(a) + getDist(a);
+				if (d < best) {
+					best = d;
 				}
 			}
+			this.distToSea = best;
 		}
-		return localBest;
 	}
-	
-	private float weatherWeight (Area a) {
-		float w = WorldConstraints.baseWeight;
-		Vector2f relPos = new Vector2f (a.getLongditude() - this.getLongditude(),a.getLatitude() - this.getLatitude());
-		if (dotProd(relPos, this.winds) < 0) {
-			w = w * WorldConstraints.windPower;
-		}else {
-			w = w / WorldConstraints.windPower;
+
+	public float distTo(Area a) {
+		float d = 1;
+		Vector2f rel = new Vector2f(a.getLongditude() - this.getLongditude(), a.getLatitude() - this.getLatitude());
+		if (dotProd(rel, this.winds) < 0) {
+			d = d * WorldConstraints.windPower;
 		}
-		
-		w = w * (1 + WorldConstraints.heightPower * (a.getAltitude() - this.getAltitude()));
-		return w;
-		
+		if (this.getAltitude() > a.getAltitude()) {
+			d = d * (1 - ((this.getAltitude() - a.getAltitude()) * WorldConstraints.heightPower));
+		}
+		if (d < 0)
+			d = 0;
+		return d;
 	}
-	
-	public void checkFalse () {
-		this.checked = false;
+
+	public float getDist(Area a) {
+		if (this.distToSea == 0.0f) {
+			distToSea();
+		}
+		return this.distToSea;
 	}
-	
+
 	public void getCurrentVect(WeatherSystem[] epicentres) {
 
 		float weight = 0;
@@ -144,32 +141,33 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			if (this.longditude > e.getCoords().x) {
 				if (e.getSpin() == e.clockwise) {
 					tempVectY = Math.abs(tempVectY);
-				}else {
+				} else {
 					tempVectY = -Math.abs(tempVectY);
 				}
-			}else {
+			} else {
 				if (e.getSpin() != e.clockwise) {
 					tempVectY = Math.abs(tempVectY);
-				}else {
+				} else {
 					tempVectY = -Math.abs(tempVectY);
 				}
 			}
-			
+
 			if (this.latitude < e.getCoords().y) {
 				if (e.getSpin() == e.clockwise) {
 					tempVectX = Math.abs(tempVectX);
-				}else {
+				} else {
 					tempVectX = -Math.abs(tempVectX);
 				}
-			}else {
+			} else {
 				if (e.getSpin() != e.clockwise) {
 					tempVectX = Math.abs(tempVectX);
-				}else {
+				} else {
 					tempVectX = -Math.abs(tempVectX);
 				}
 			}
-			
-			float tempWeight = (float) (Math.sqrt((double) ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x)
+
+			float tempWeight = (float) (Math
+					.sqrt((double) ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x)
 							+ (this.latitude - e.getCoords().y) * (this.latitude - e.getCoords().y))));
 			weight = weight + tempWeight;
 
@@ -182,7 +180,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 			vectX = vectX + tempVectX;
 			vectY = vectY + tempVectY;
-			
+
 		}
 
 		vectX = 10 * vectX / weight;
@@ -219,32 +217,33 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			if (this.longditude > e.getCoords().x) {
 				if (e.getSpin() == e.clockwise) {
 					tempVectY = Math.abs(tempVectY);
-				}else {
+				} else {
 					tempVectY = -Math.abs(tempVectY);
 				}
-			}else {
+			} else {
 				if (e.getSpin() != e.clockwise) {
 					tempVectY = Math.abs(tempVectY);
-				}else {
+				} else {
 					tempVectY = -Math.abs(tempVectY);
 				}
 			}
-			
+
 			if (this.latitude > e.getCoords().y) {
 				if (e.getSpin() == e.clockwise) {
 					tempVectX = Math.abs(tempVectX);
-				}else {
+				} else {
 					tempVectX = -Math.abs(tempVectX);
 				}
-			}else {
+			} else {
 				if (e.getSpin() != e.clockwise) {
 					tempVectX = Math.abs(tempVectX);
-				}else {
+				} else {
 					tempVectX = -Math.abs(tempVectX);
 				}
 			}
-			
-			float tempWeight = (float) (Math.sqrt((double) ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x)
+
+			float tempWeight = (float) (Math
+					.sqrt((double) ((this.longditude - e.getCoords().x) * (this.longditude - e.getCoords().x)
 							+ (this.latitude - e.getCoords().y) * (this.latitude - e.getCoords().y))));
 			weight = weight + tempWeight;
 
@@ -257,7 +256,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 			vectX = vectX + tempVectX;
 			vectY = vectY + tempVectY;
-			
+
 		}
 
 		vectX = 10 * vectX / weight;
@@ -274,17 +273,17 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 				if (intersects(this.currents, e)) {
 					if (this.getPoly() == e.getLeftSite().getPoly()) {
 						next = e.getRightSite().getPoly().getArea();
-					}else {
+					} else {
 						next = e.getLeftSite().getPoly().getArea();
 					}
 				}
 			}
-		}else {
+		} else {
 			for (Edge e : this.getPoly().getEdges()) {
 				if (intersects(this.winds, e)) {
 					if (this.getPoly() == e.getLeftSite().getPoly()) {
 						return e.getRightSite().getPoly().getArea();
-					}else {
+					} else {
 						return e.getLeftSite().getPoly().getArea();
 					}
 				}
@@ -295,48 +294,55 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 		if (next.isOcean()) {
 			return next;
-		}for (Area a : this.getAdjacencies()) {
+		}
+		for (Area a : this.getAdjacencies()) {
 			if (a.isOcean()) {
 				return a;
 			}
-		}return null;
+		}
+		return null;
 
-	}public void setupNext (boolean type) {
+	}
+
+	public void setupNext(boolean type) {
 		if (type) {
 			if (this.isOcean()) {
 				this.nextOcean = this.findBestNext(true);
 			}
-		}else {
+		} else {
 			this.nextAir = this.findBestNext(false);
 		}
 	}
 
-	public boolean intersects (Vector2f vect, Edge e) {
+	public boolean intersects(Vector2f vect, Edge e) {
 
-		// get y = mx + c  for edge 
+		// get y = mx + c for edge
 		float mE = (float) ((e.getEnd().y - e.getStart().y) / (e.getEnd().x - e.getStart().x));
 		float cE = (float) (e.getStart().y - mE * e.getStart().x);
-		float mV = vect.y/vect.x;
+		float mV = vect.y / vect.x;
 		float cV = this.getLatitude() - mV * this.getLongditude();
 		float xInt = (cV - cE) / (mE - mV);
 		if (xInt > e.getStart().x && xInt < e.getEnd().y || xInt < e.getStart().x && xInt > e.getEnd().y) {
 			return true;
-		}return false;
+		}
+		return false;
 	}
 
-	public void getStartConditions () {
+	public void getStartConditions() {
 		if (this.isOcean()) {
 			this.getSeaConditions();
-		}this.getAirConditions();
+		}
+		this.getAirConditions();
 	}
-	
-	public void getSeaConditions () {
-		this.oceanTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT)/2;
-	}public void getAirConditions () {
-		this.airTemp = (1 - Math.abs(WorldConstraints.HEIGHT/2 - this.latitude) / WorldConstraints.HEIGHT)/2;
+
+	public void getSeaConditions() {
+		this.oceanTemp = (1 - Math.abs(WorldConstraints.HEIGHT / 2 - this.latitude) / WorldConstraints.HEIGHT) / 2;
 	}
-	
-	
+
+	public void getAirConditions() {
+		this.airTemp = (1 - Math.abs(WorldConstraints.HEIGHT / 2 - this.latitude) / WorldConstraints.HEIGHT) / 2;
+	}
+
 	public float dotProd(Vector2f a, Vector2f b) {
 		return (a.x * b.x + a.y + b.y);
 	}
@@ -483,7 +489,5 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	public void setTempTemp(float tempTemp) {
 		this.tempTemp = tempTemp;
 	}
-	
-	
 
 }
