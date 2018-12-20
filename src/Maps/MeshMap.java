@@ -62,22 +62,6 @@ public class MeshMap {
 			} else {
 				handleIntersection(e);
 			}
-
-			/*if (drawGen) {
-				drawAll(window);
-				try {
-<<<<<<< HEAD
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			}
-=======
-					//Thread.sleep(1);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			}*/
 		}
 		
 		

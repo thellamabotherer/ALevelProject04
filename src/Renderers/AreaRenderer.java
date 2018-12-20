@@ -50,7 +50,8 @@ public class AreaRenderer {
 	public void setSimpleTerrain() {
 		Random rand = new Random();
 		for (Area a : this.areas.getAreas()) {
-			if (a.getLatitude() < (float) (WorldConstraints.HEIGHT * 0.05) || a.getLatitude() > (float) (WorldConstraints.HEIGHT * 0.95)) {
+			if (a.getLatitude() < (float) (WorldConstraints.HEIGHT * 0.05)
+					|| a.getLatitude() > (float) (WorldConstraints.HEIGHT * 0.95)) {
 				a.setColour(ColourPalette.white);
 			} else {
 				if (a.getAltitude() < -0.7) {
@@ -73,49 +74,67 @@ public class AreaRenderer {
 			}
 		}
 
-	}public void drawSimpleTerrain () {
+	}
+
+	public void drawSimpleTerrain() {
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
 		}
-	}public void drawCurrents () {
-		//double start = System.nanoTime();
+	}
+
+	public void drawCurrents() {
+		// double start = System.nanoTime();
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, a.getColour());
 			window.changeColour(ColourPalette.red);
 			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getCurrents(), 7);
-			//for (WeatherSystem e : areas.getEpicentres()) {
-				//e.draw(window);
-			//s}//Display.update();
-		}//double end = System.nanoTime();
-		//System.out.println(end - start);
-	}public void drawWinds () {
-		//double start = System.nanoTime();
+			// for (WeatherSystem e : areas.getEpicentres()) {
+			// e.draw(window);
+			// s}//Display.update();
+		} // double end = System.nanoTime();
+			// System.out.println(end - start);
+	}
+
+	public void drawWinds() {
+		// double start = System.nanoTime();
 		this.drawSimpleTerrain();
 		for (Area a : this.areas.getAreas()) {
-			//a.getPoly().draw(window, a.getColour());
+			// a.getPoly().draw(window, a.getColour());
 			window.changeColour(ColourPalette.red);
 			GraphicalFunctions.drawArrow(window, new Vector2f(a.getLongditude(), a.getLatitude()), a.getWinds(), 7);
-			//for (WeatherSystem e : areas.getEpicentres()) {
-				//e.draw(window);
-			//}//Display.update();
-		}//double end = System.nanoTime();
-		//System.out.println(end - start);
-	}public void drawSeaTemp() {
+			// for (WeatherSystem e : areas.getEpicentres()) {
+			// e.draw(window);
+			// }//Display.update();
+		} // double end = System.nanoTime();
+			// System.out.println(end - start);
+	}
+
+	public void drawSeaTemp() {
 		for (Area a : this.areas.getAreas()) {
 			if (a.isOcean()) {
 				a.getPoly().draw(window, getHeat(a.getOceanTemp()));
-			}else {
+			} else {
 				a.getPoly().draw(window, ColourPalette.grey);
 			}
 		}
-	}public void drawAirTemp() {
+	}
+
+	public void drawAirTemp() {
 		for (Area a : this.areas.getAreas()) {
 			a.getPoly().draw(window, getHeat(a.getAirTemp()));
 		}
-	}public void drawRainfall() {
+	}
+
+	public void drawRainfall() {
+
 		for (Area a : this.areas.getAreas()) {
-			a.getPoly().draw(window, getHeat(1 - a.getWater()));
+			if (a.isOcean()) {
+				a.getPoly().draw(window, ColourPalette.grey);
+			} else {
+				a.getPoly().draw(window, getHeat(1- a.getWater()));
+			}
 		}
+
 	}
 
 	public static Vector4f getHeat(float val) { // takes val from 0 to 1, returns heatmap colour

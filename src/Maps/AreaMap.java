@@ -9,6 +9,7 @@ import org.lwjgl.opengl.Display;
 import java.util.Comparator;
 
 import Data.Area;
+import Data.AreaSide;
 import Data.Cloud;
 import Data.Current;
 import Data.Plate;
@@ -19,6 +20,7 @@ import Main.Main;
 import Main.Window;
 import Main.WorldConstraints;
 import Renderers.HeightRenderer;
+import java.util.PriorityQueue;
 
 public class AreaMap {
 
@@ -38,17 +40,20 @@ public class AreaMap {
 			}
 		}
 		end = System.nanoTime();
-		//System.out.println("Setup area map takes " + (end - start));
+		// System.out.println("Setup area map takes " + (end - start));
 		start = System.nanoTime();
 		for (Area a : areas) {
 			a.setupAdjacencies();
 		}
 		end = System.nanoTime();
-		//System.out.println("Setup adj takes " + (end - start));
+		for (Area a : this.areas) {
+			a.setupSides();
+		}
+		// System.out.println("Setup adj takes " + (end - start));
 		start = System.nanoTime();
 		this.simWeather();
 		end = System.nanoTime();
-		//System.out.println("Weather sim 	takes " + (end - start));
+		// System.out.println("Weather sim takes " + (end - start));
 		for (Area a : areas) {
 			a.getStartConditions();
 			a.setupNext(true);
@@ -56,15 +61,18 @@ public class AreaMap {
 		}
 		for (int i = 0; i < WorldConstraints.currentSims; i++) {
 			runCurrentSim();
-			//System.out.println("Current sim");
+			// System.out.println("Current sim");
 		}
 		for (int i = 0; i < WorldConstraints.airSims; i++) {
 			runAirSim();
-			//System.out.println("Air sim");
+			// System.out.println("Air sim");
 		}
 		smoothSeaTemp();
 		smoothAirTemp();
 		smoothRainfall();
+		
+		runRiverSim();
+		
 	}
 
 	private void runCurrentSim() {
@@ -101,15 +109,116 @@ public class AreaMap {
 		for (Area a : this.getAreas()) {
 			a.getWindVect(epicentres);
 		}
-		
+		// --------------------- rain sim ----------------
+
+		ArrayList<Area> active = new ArrayList();
+		ArrayList<Area> notDone = new ArrayList();
+		float dts = 0;
+
 		for (Area a : this.areas) {
-			System.out.println(a.weightedDistToSea(0, 100));
-			a.setWater(1 / a.weightedDistToSea(0, 100));
+			if (!a.isOcean()) {
+				if (a.isCoastal()) {
+					active.add(a);
+				} else {
+					notDone.add(a);
+				}
+			}else {
+				a.setDTS(0);
+			}
+		}
+		while (!notDone.isEmpty()) {
+			// System.out.println("Flood + " + dts);
+			dts = (float) (dts + 0.1);
+			// System.out.println(dts);
+			for (Area a : active) {
+				a.flood(dts, true);
+			}
+			//System.out.println("Notdone len = " + notDone.size());
+			for (int i = 0; i < notDone.size(); i++) {
+				if (notDone.get(i).getDTSFound()) {
+					active.add(notDone.get(i));
+					notDone.remove(i);
+					i--;
+				}
+			}
+			//System.out.println("Active len = " + active.size());
+
+			for (int i = 0; i < active.size(); i++) {
+				if (!active.get(i).stillActive()) {
+					active.remove(i);
+					i--;
+				}
+			}
+
+		}for (Area a : this.areas) {
+			a.setWater(1/(a.getDTS()+3));
+			//System.out.println(a.getWater());
 		}
 
-		// walk this area's weather object from here and deposit heat and moisture based
-		// on change in altitude until weather is depleted
+		// ------------------- end of rain sim -----------
 
+		// ---------raise land a bit for watercourses------
+		
+		// idk why any of this is here but I'm scared to move it 
+		
+		active = new ArrayList();
+		notDone = new ArrayList();
+		dts = 0;
+
+		for (Area a : this.areas) {
+			if (!a.isOcean()) {
+				if (a.isCoastal()) {
+					active.add(a);
+				} else {
+					notDone.add(a);
+				}
+			}else {
+				a.setDTS(0);
+			}
+		}
+		while (!notDone.isEmpty()) {
+			// System.out.println("Flood + " + dts);
+			dts = (float) (dts + 0.1);
+			// System.out.println(dts);
+			for (Area a : active) {
+				a.flood(dts, false);
+			}
+			//System.out.println("Notdone len = " + notDone.size());
+			for (int i = 0; i < notDone.size(); i++) {
+				if (notDone.get(i).getDTSFound()) {
+					active.add(notDone.get(i));
+					notDone.remove(i);
+					i--;
+				}
+			}
+			//System.out.println("Active len = " + active.size());
+
+			for (int i = 0; i < active.size(); i++) {
+				if (!active.get(i).stillActive()) {
+					active.remove(i);
+					i--;
+				}
+			}
+
+		}for (Area a : this.areas) {
+			a.setAltitude(a.getAltitude() + a.getDTS() * 0.02f);
+		}
+		
+		// ---------------end land raising ----------------
+		
+	}
+	
+	private void runRiverSim () {
+		// --------------- rivers & lakes -----------------
+		
+				// make a queue of areas 
+		PriorityQueue<Area> areaQueue = new PriorityQueue();
+		
+		while (!areaQueue.isEmpty()) {
+			
+		}
+		
+				// ---------------end rivers and lakes ------------
 	}
 
 	private WeatherSystem[] genCentres(int num, boolean sea) {
@@ -178,8 +287,8 @@ public class AreaMap {
 
 		}
 
-		//System.out.println(maxHeight);
-		//System.out.println(minHeight);
+		// System.out.println(maxHeight);
+		// System.out.println(minHeight);
 
 		for (Area a : this.areas) {
 
@@ -188,9 +297,10 @@ public class AreaMap {
 			} else {
 				a.setOceanTemp((float) -Math.sqrt(a.getOceanTemp() / (minHeight)));
 			}
-			
-			a.setOceanTemp((float) (1.5 * a.getOceanTemp() * Math.sqrt(1 - Math.abs(WorldConstraints.HEIGHT/2 - a.getLatitude()) / WorldConstraints.HEIGHT)));
-			
+
+			a.setOceanTemp((float) (1.5 * a.getOceanTemp() * Math
+					.sqrt(1 - Math.abs(WorldConstraints.HEIGHT / 2 - a.getLatitude()) / WorldConstraints.HEIGHT)));
+
 		}
 	}
 
@@ -239,8 +349,8 @@ public class AreaMap {
 
 		}
 
-		//System.out.println(maxHeight);
-		//System.out.println(minHeight);
+		// System.out.println(maxHeight);
+		// System.out.println(minHeight);
 
 		for (Area a : this.areas) {
 
@@ -249,18 +359,26 @@ public class AreaMap {
 			} else {
 				a.setAirTemp((float) -Math.sqrt(a.getAirTemp() / (minHeight)));
 			}
-		
 
-			a.setAirTemp((float) (1.5 * a.getAirTemp() * Math.sqrt(1 - Math.abs(WorldConstraints.HEIGHT/2 - a.getLatitude()) / WorldConstraints.HEIGHT)));
-			
-		
+			a.setAirTemp((float) (1.5 * a.getAirTemp() * Math
+					.sqrt(1 - Math.abs(WorldConstraints.HEIGHT / 2 - a.getLatitude()) / WorldConstraints.HEIGHT)));
+
 		}
 	}
 
 	private void smoothRainfall() {
 
+		//System.out.println("Smooth rainfall");
+
 		float maxHeight = Float.MIN_VALUE;
 		float minHeight = Float.MIN_VALUE;
+
+		for (Area a : this.areas) {
+			if (a.getWater() > 1) {
+				a.setWater(1);
+			}
+			 //System.out.println(a.getWater());
+		}
 
 		for (Area a : this.areas) {
 
@@ -272,6 +390,10 @@ public class AreaMap {
 			}
 
 		}
+
+		 //System.out.println("Max water = " + maxHeight);
+		 //System.out.println("Min water = " + minHeight);
+
 		for (Area a : this.areas) {
 
 			if (a.getWater() > 0) {
@@ -281,23 +403,7 @@ public class AreaMap {
 			}
 		}
 
-		for (Area a : this.areas) {
-			if (a.getOceanTemp() < 0.1) {
-				int n = 0;
-				float t = 0;
-				for (Area b : a.getAdjacencies()) {
-					if (b.isOcean()) {
-						n++;
-						t = t + b.getWater();
-					}
-				}
-				if (n == 0) {
-					a.setWater(1);
-				} else {
-					a.setWater(t / n);
-				}
-			}
-		}
+		
 	}
 
 	// ----------------------- graphical stuff :( ----------------------------------

@@ -20,7 +20,9 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private Polygon poly;
 
 	private boolean ocean;
+
 	private boolean lake;
+	private float depth;
 
 	private float oceanTemp;
 	private float airTemp;
@@ -43,6 +45,10 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private float tempTemp;
 
 	private float distToSea;
+	private boolean dtsFound = false;
+	private ArrayList<AreaSide> sides;
+	
+	private boolean sidesCreated = false;
 
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
 		this.altitude = altitude;
@@ -57,22 +63,14 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	}
 
 	public int compareTo(Area a) {
-		if (comparingOcean) {
-			if (this.oceanTemp == a.getOceanTemp()) {
-				return 0;
-			}
-			if (this.oceanTemp > a.oceanTemp) {
-				return -1;
-			}
+		
+		if (this.water > a.getWater()) {
 			return 1;
-		}
-		if (this.airTemp == a.getAirTemp()) {
+		}else if (this.water == a.getWater()) {
 			return 0;
-		}
-		if (this.airTemp > a.getAirTemp()) {
-			return -1;
-		}
-		return 1;
+		}return -1;
+		
+		
 	}
 
 	public void setupAdjacencies() {
@@ -82,39 +80,89 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 	}
 
-	public void distToSea() {
-		if (this.distToSea == 0.0f) {
-			float best = Float.MAX_VALUE;
-			for (Area a : this.adjacencies) {
-				float d = distTo(a) + getDist(a);
-				if (d < best) {
-					best = d;
-				}
-			}
-			this.distToSea = best;
-		}
-	}
+	// -------------------------------------------
 
-	public float distTo(Area a) {
-		float d = 1;
-		Vector2f rel = new Vector2f(a.getLongditude() - this.getLongditude(), a.getLatitude() - this.getLatitude());
-		if (dotProd(rel, this.winds) < 0) {
-			d = d * WorldConstraints.windPower;
+	private float weightTo(Area a) {
+		float d = 1f;
+		Vector2f relP = new Vector2f((this.longditude - a.getLongditude()), (this.latitude - a.getLatitude()));
+		if (dotProd(this.winds, relP) < 0) {
+			d = d * 4;
+		} else {
+			d = d / 4;
 		}
-		if (this.getAltitude() > a.getAltitude()) {
-			d = d * (1 - ((this.getAltitude() - a.getAltitude()) * WorldConstraints.heightPower));
+		float dH = a.getAltitude() - this.altitude;
+		if (dH > 0) {
+			d = d + 20 * dH;
 		}
-		if (d < 0)
-			d = 0;
 		return d;
 	}
 
-	public float getDist(Area a) {
-		if (this.distToSea == 0.0f) {
-			distToSea();
+	public boolean isCoastal() {
+		boolean c = false;
+		for (Area a : this.adjacencies) {
+			if (a.isOcean()) {
+				c = true;
+			}
 		}
-		return this.distToSea;
+		this.dtsFound = c;
+		return c;
 	}
+
+	public void flood(float currentDTS, boolean type) {
+		float power = currentDTS - this.distToSea;
+
+		for (Area a : this.adjacencies) {
+			if (!a.isOcean() && !a.getDTSFound()) {
+				if (type) {
+					if (power > weightTo(a)) {
+						a.setDTS(currentDTS);
+					}
+				}else {
+					if (power > 1) {
+						a.setDTS(currentDTS);
+					}
+				}
+			}
+		}
+
+	}
+
+	public boolean stillActive() {
+		boolean act = false;
+		for (Area a : this.adjacencies) {
+			if (!a.getDTSFound() && !a.isOcean()) {
+				act = true;
+			}
+		}
+		return act;
+	}
+
+	public void setupSides () {
+		this.sides = new ArrayList();
+		for (Area a : this.adjacencies) {
+			if (!a.isSidesCreated()) {
+				for (Edge e : this.getPoly().getEdges()) {
+					if (e.polygons[0] == this.getPoly()) {
+						if (e.polygons[1] == a.getPoly()) {
+							this.sides.add(new AreaSide (e));
+						}
+					}else {
+						if (e.polygons[0] == this.getPoly()) {
+							this.sides.add(new AreaSide(e));
+						}
+					}
+				}
+			}else {
+				for (AreaSide s : a.getSides()) {
+					if (s.getA1() == this || s.getA2() == this) {
+						sides.add(s);
+					}
+				}
+			}
+		}
+	}
+	
+	// -------------------------------------------
 
 	public void getCurrentVect(WeatherSystem[] epicentres) {
 
@@ -489,5 +537,36 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	public void setTempTemp(float tempTemp) {
 		this.tempTemp = tempTemp;
 	}
+
+	public float getDTS() {
+		return this.distToSea;
+	}
+
+	public void setDTS(float dts) {
+		this.dtsFound = true;
+		this.distToSea = dts;
+	}
+
+	public boolean getDTSFound() {
+		return this.dtsFound;
+	}
+
+	public boolean isSidesCreated() {
+		return sidesCreated;
+	}
+
+	public void setSidesCreated(boolean sidesCreated) {
+		this.sidesCreated = sidesCreated;
+	}
+
+	public ArrayList<AreaSide> getSides() {
+		return sides;
+	}
+
+	public void setSides(ArrayList<AreaSide> sides) {
+		this.sides = sides;
+	}
+	
+	
 
 }
