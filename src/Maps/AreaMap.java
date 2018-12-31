@@ -214,17 +214,22 @@ public class AreaMap {
 		// --------------- rivers & lakes -----------------
 		for (Area a : this.areas) {
 			a.activeWater();
+			a.riversSetup();
 		}
 				// make a queue of areas 
 		pQueue areaQueue = new pQueue (this.areas);
 		int n = 100;
 		
 		while (!areaQueue.isEmpty() && n > 0) {
-			System.out.println("drfhgyhujihugjfcgvbhmn");
+			//System.out.println("drfhgyhujihugjfcgvbhmn");
 			Area source = areaQueue.pop();
 			River r = new River (source);
+			r.changeWeights();
+			for (Area a : this.areas) {
+				a.rivWeightAdjust();
+			}
 			n--;
-			System.out.println(n);
+			//System.out.println(n);
 			
 		}
 		

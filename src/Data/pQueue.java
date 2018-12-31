@@ -90,7 +90,7 @@ public class pQueue {
 	private static float decideValue(Area a) {
 		if (a.getAltitude() <= 0) {
 			return 0;
-		}return a.getActiveWater() + 10 * a.getAltitude() ;
+		}return a.getRiverWeight();
 	}
 
 	// push

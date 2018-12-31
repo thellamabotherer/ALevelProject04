@@ -9,6 +9,7 @@ public class River {
 	private float endHeight;
 	private ArrayList<AreaSide> path = new ArrayList();;
 	private River end; // null if ocean or lake
+	private int carves = 10;
 
 	public River(Area a) {
 		// make the river object
@@ -38,7 +39,7 @@ public class River {
 			current.setWater(water);
 			System.out.println(current);
 			path.add(current);
-			this.flow();
+			//this.flow();
 		}
 
 		// if none lower make lake ^^
@@ -54,34 +55,55 @@ public class River {
 		ArrayList<Area> ends = current.ends();
 		Area next;
 		try {
-			if (ends.get(0).getAltitude() < ends.get(1).getAltitude()) {
-				next = ends.get(0);
-			} else {
-				next = ends.get(1);
-			}
-			if (next.isOcean()) {
-				// terminate here
-				// maybe pump a bit of silt into the ocean for a nice delta?
-			} else if (next.getAltitude() > current.a1.getAltitude() && next.getAltitude() > current.a2.getAltitude()) {
-				if (current.a1.getAltitude() < current.a2.getAltitude()) {
-					current.a1.setLake(true);
-				}else {
-					current.a2.setLake(true);
-				}
-			} else {
+			
+			// if end0 lowest
+			if (ends.get(0).getAltitude() < ends.get(1).getAltitude()) {	
 				// find the next edge 
+				next = ends.get(0);
 				if (current.a1.getAltitude() < current.a2.getAltitude()) {
 					current = current.a1.sideBetween(next);
 				}else {
 					current = current.a2.sideBetween(next);
 				}
-				current.setR(this);
-				// drain new water 
-				this.water = this.water + drain(next);
-				current.setWater(this.water);
-				//this.flow();
+				// check if next edge  is in the path somewhere
+				boolean found = false;
+				for (int i = 0; i < path.size(); i++) {
+					if (found) {
+						path.remove(i);
+						i--;
+					}else {
+						if (path.get(i) == current) {
+							if (current.a1.getAltitude() < current.a2.getAltitude()) {
+								current.a1.setLake (true);
+							}else {
+								current.a2.setLake(true);
+							}
+						}found = true;
+					}
+				}
+					// if so, make a lake 
+				// check if this'll go into the sea
+				if (current.a1.isOcean() || current.a2.isOcean()) {
+					// terminate river 
+				}
+				// check if this'll go into another river
+				else if (current.hasRiver()) {
+					// add water to this river (everything down the path from here)
+					current.getR().addWater (current, this.water) ;
+					// terminate river 
+				}
+				// if carves > 0 and next not too much higher 
+				if (carves > 0) {
+					carves --;
+					// decrement carves
+					// make the next poly lower to let river through 
+				}
+				// else 
+					// start a new lake 
+			// same but for end1 when that's lower 
+					
 				
-			}
+			
 		} catch (NullPointerException ex) {
 			System.out.println("No next destintion for river");
 			// termintate river here
@@ -91,6 +113,19 @@ public class River {
 		// water
 		// else flow into edge between lower end poly and lowest adj poly
 		// absord more water
+	}
+
+	private void addWater(AreaSide current2, float water2) {
+		boolean f = false;
+		for (AreaSide s : this.path) {
+			if (f) {
+				s.setWater(s.getWater() + water2);
+			}else if (current2 == s) {
+				f = true;
+				s.setWater (s.getWater() + water2) ;
+			}
+		}
+		
 	}
 
 	private static float drain(Area a) {
@@ -107,4 +142,12 @@ public class River {
 		}
 		return f;
 	}
+	
+	public void changeWeights() {
+		for (AreaSide s : this.path) {
+			s.a1.rivWeightFlood(1);
+			s.a2.rivWeightFlood(1);
+		}
+	}
+	
 }

@@ -28,7 +28,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private float airTemp;
 	private float water;
 	private float activeWater;
-	
+
 	private Area nextOcean;
 	private Area nextAir;
 
@@ -48,8 +48,12 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private float distToSea;
 	private boolean dtsFound = false;
 	private ArrayList<AreaSide> sides;
-	
+
 	private boolean sidesCreated = false;
+
+	private float riverWeight;
+	private boolean rivDistChecked = false;
+	private int rivDist;
 
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
 		this.altitude = altitude;
@@ -64,18 +68,18 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	}
 
 	public int compareTo(Area a) {
-		
+
 		if (this.water > a.getWater()) {
 			return 1;
-		}else if (this.water == a.getWater()) {
+		} else if (this.water == a.getWater()) {
 			return 0;
-		}return -1;
-		
-		
+		}
+		return -1;
+
 	}
 
 	public void setupAdjacencies() {
-		//System.out.println("adjey boy");
+		// System.out.println("adjey boy");
 		this.adjacencies = new ArrayList();
 		for (Polygon p : this.poly.getAdjacencies()) {
 			this.adjacencies.add(p.getArea());
@@ -119,7 +123,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 					if (power > weightTo(a)) {
 						a.setDTS(currentDTS);
 					}
-				}else {
+				} else {
 					if (power > 1) {
 						a.setDTS(currentDTS);
 					}
@@ -139,27 +143,29 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		return act;
 	}
 
-	public void setupSides () {
+	public void setupSides() {
 		this.sidesCreated = true;
 		this.sides = new ArrayList();
 		for (Area a : this.adjacencies) {
 			if (!a.isSidesCreated()) {
 				// new side between
-				this.sides.add(new AreaSide (this, a));
-			}else {
+				this.sides.add(new AreaSide(this, a));
+			} else {
 				// find side between and add to list
 				this.sides.add(sideBetween(a));
 			}
 		}
 	}
-	public AreaSide sideBetween (Area a) {
+
+	public AreaSide sideBetween(Area a) {
 		for (int i = 0; i < a.getAdjacencies().size(); i++) {
-			if (a.getAdjacencies().get(i)==this) {
+			if (a.getAdjacencies().get(i) == this) {
 				return a.getSides().get(i);
 			}
-		}System.out.println("return3ed null");
+		}
+		System.out.println("return3ed null");
 		return null;
-		
+
 	}
 	// -------------------------------------------
 
@@ -398,10 +404,36 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		return (float) Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 	}
 
-	public void activeWater () {
+	public void activeWater() {
 		this.activeWater = this.water;
 	}
+
+	public void riversSetup() {
+		this.riverWeight = this.water + 10 * this.altitude;
+	}
+
+	public void rivWeightFlood(int dist) {
+		if (!this.rivDistChecked || dist < this.rivDist) {
+			this.rivDistChecked = true;
+			this.rivDist = dist;
+			if (dist < 5) {
+				for (Area a : this.adjacencies) {
+					//System.out.println(dist);
+					a.rivWeightFlood(dist + 1);
+				}
+			}
+		}
+	}
 	
+	public void rivWeightAdjust () {
+		if (this.rivDistChecked) {
+			System.out.println("adj");
+			System.out.println(rivDist	);
+			this.riverWeight = (float) (this.riverWeight * (1 - Math.pow(Math.E, - rivDist * 0.5)));
+			this.rivDistChecked = false;
+		}
+	}
+
 	// ---------------------------------getters and setters
 	// ----------------------------------
 
@@ -585,7 +617,29 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	public void setLake(boolean lake) {
 		this.lake = lake;
 	}
-	
-	
+
+	public float getRiverWeight() {
+		return riverWeight;
+	}
+
+	public void setRiverWeight(float riverWeight) {
+		this.riverWeight = riverWeight;
+	}
+
+	public boolean isRivDistChecked() {
+		return rivDistChecked;
+	}
+
+	public void setRivDistChecked(boolean rivDistChecked) {
+		this.rivDistChecked = rivDistChecked;
+	}
+
+	public int getRivDist() {
+		return rivDist;
+	}
+
+	public void setRivDist(int rivDist) {
+		this.rivDist = rivDist;
+	}
 
 }
