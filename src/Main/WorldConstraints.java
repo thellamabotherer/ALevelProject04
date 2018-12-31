@@ -27,7 +27,7 @@ public class WorldConstraints {
 	
 	public static final float oceanOnOceanHeight = (float)0.4;
 	public static final float oceanOnOceanSteep = 1;
-	public static final float islandArcHeight = (float)0.3;
+	public static final float islandArcHeight = (float)0.5;
 	public static final float islandArcSudden = 2;
 	
 	public static final float riftValleyHeight = (float) 0.2;

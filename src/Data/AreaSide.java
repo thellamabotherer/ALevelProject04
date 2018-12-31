@@ -6,15 +6,32 @@ public class AreaSide {
 
 	Point p1;
 	float h1;
-	
+
 	Point p2;
 	float h2;
-	
+
 	Area a1;
 	Area a2;
 
 	private ArrayList<AreaSide> adj1;
 	private ArrayList<AreaSide> adj2;
+
+	private River R;
+	private float water ;
+	private AreaSide next;
+	private boolean r = false;
+	
+	public AreaSide(Area a1, Area a2) {
+		for (Edge e : a1.getPoly().getEdges()) {
+			if (e.leftSite == a1.getPoly().getSite() && e.rightSite == a2.getPoly().getSite()
+					|| e.leftSite == a2.getPoly().getSite() && e.rightSite == a1.getPoly().getSite()) {
+				this.p1 = e.start;
+				this.p2 = e.end;
+				this.a1 = a1;
+				this.a2 = a2;
+			}
+		}
+	}
 
 	public AreaSide(Point p1, Point p2, Area a1, Area a2) {
 		this.p1 = p1;
@@ -62,6 +79,21 @@ public class AreaSide {
 			}
 		}
 	}
+	
+	public ArrayList<Area> ends () {
+		ArrayList<Area> l = new ArrayList();
+		for (Area a : this.a1.getAdjacencies()) {
+			for (Area b : this.a2.getAdjacencies()) {
+				if (a == b) {
+					l.add(a);
+				}
+			}
+		}return l;
+	}
+	
+	public boolean hasRiver () {
+		return r;
+	}
 
 	public Point getP1() {
 		return p1;
@@ -95,4 +127,29 @@ public class AreaSide {
 		this.a2 = a2;
 	}
 
+	public River getR() {
+		return R;
+	}
+
+	public void setR(River r) {
+		R = r;
+		this.r = true;
+	}
+
+	public float getWater() {
+		return water;
+	}
+
+	public void setWater(float water) {
+		this.water = water;
+	}
+
+	public AreaSide getNext() {
+		return next;
+	}
+
+	public void setNext(AreaSide next) {
+		this.next = next;
+	}
+	
 }

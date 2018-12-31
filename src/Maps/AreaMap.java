@@ -14,8 +14,10 @@ import Data.Cloud;
 import Data.Current;
 import Data.Plate;
 import Data.Polygon;
+import Data.River;
 import Data.Weather;
 import Data.WeatherSystem;
+import Data.pQueue;
 import Main.Main;
 import Main.Window;
 import Main.WorldConstraints;
@@ -210,11 +212,19 @@ public class AreaMap {
 	
 	private void runRiverSim () {
 		// --------------- rivers & lakes -----------------
-		
+		for (Area a : this.areas) {
+			a.activeWater();
+		}
 				// make a queue of areas 
-		PriorityQueue<Area> areaQueue = new PriorityQueue();
+		pQueue areaQueue = new pQueue (this.areas);
+		int n = 100;
 		
-		while (!areaQueue.isEmpty()) {
+		while (!areaQueue.isEmpty() && n > 0) {
+			System.out.println("drfhgyhujihugjfcgvbhmn");
+			Area source = areaQueue.pop();
+			River r = new River (source);
+			n--;
+			System.out.println(n);
 			
 		}
 		

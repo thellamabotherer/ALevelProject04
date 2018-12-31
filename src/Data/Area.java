@@ -21,13 +21,14 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	private boolean ocean;
 
-	private boolean lake;
+	private boolean lake = false;
 	private float depth;
 
 	private float oceanTemp;
 	private float airTemp;
 	private float water;
-
+	private float activeWater;
+	
 	private Area nextOcean;
 	private Area nextAir;
 
@@ -74,6 +75,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	}
 
 	public void setupAdjacencies() {
+		//System.out.println("adjey boy");
 		this.adjacencies = new ArrayList();
 		for (Polygon p : this.poly.getAdjacencies()) {
 			this.adjacencies.add(p.getArea());
@@ -138,30 +140,27 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	}
 
 	public void setupSides () {
+		this.sidesCreated = true;
 		this.sides = new ArrayList();
 		for (Area a : this.adjacencies) {
 			if (!a.isSidesCreated()) {
-				for (Edge e : this.getPoly().getEdges()) {
-					if (e.polygons[0] == this.getPoly()) {
-						if (e.polygons[1] == a.getPoly()) {
-							this.sides.add(new AreaSide (e));
-						}
-					}else {
-						if (e.polygons[0] == this.getPoly()) {
-							this.sides.add(new AreaSide(e));
-						}
-					}
-				}
+				// new side between
+				this.sides.add(new AreaSide (this, a));
 			}else {
-				for (AreaSide s : a.getSides()) {
-					if (s.getA1() == this || s.getA2() == this) {
-						sides.add(s);
-					}
-				}
+				// find side between and add to list
+				this.sides.add(sideBetween(a));
 			}
 		}
 	}
-	
+	public AreaSide sideBetween (Area a) {
+		for (int i = 0; i < a.getAdjacencies().size(); i++) {
+			if (a.getAdjacencies().get(i)==this) {
+				return a.getSides().get(i);
+			}
+		}System.out.println("return3ed null");
+		return null;
+		
+	}
 	// -------------------------------------------
 
 	public void getCurrentVect(WeatherSystem[] epicentres) {
@@ -399,6 +398,10 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		return (float) Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 	}
 
+	public void activeWater () {
+		this.activeWater = this.water;
+	}
+	
 	// ---------------------------------getters and setters
 	// ----------------------------------
 
@@ -565,6 +568,22 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 
 	public void setSides(ArrayList<AreaSide> sides) {
 		this.sides = sides;
+	}
+
+	public float getActiveWater() {
+		return activeWater;
+	}
+
+	public void setActiveWater(float activeWater) {
+		this.activeWater = activeWater;
+	}
+
+	public boolean isLake() {
+		return lake;
+	}
+
+	public void setLake(boolean lake) {
+		this.lake = lake;
 	}
 	
 	

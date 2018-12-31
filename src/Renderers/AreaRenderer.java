@@ -4,9 +4,11 @@ import java.util.Random;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import Data.Area;
+import Data.AreaSide;
 import Data.Edge;
 import Data.WeatherSystem;
 import Main.ColourPalette;
@@ -78,7 +80,26 @@ public class AreaRenderer {
 
 	public void drawSimpleTerrain() {
 		for (Area a : this.areas.getAreas()) {
-			a.getPoly().draw(window, a.getColour());
+			if (a.isLake()) {
+				a.getPoly().draw(window, ColourPalette.lightBlue);
+			} else {
+				a.getPoly().draw(window, a.getColour());
+			}
+			for (AreaSide s : a.getSides()) {
+				if (s.hasRiver()) {
+					window.beginRender();
+					window.changeColour(new Vector4f(1, 0, 0, 0));
+					window.addVertex(new Vector3f((float) s.getP1().getX() - 5, (float) s.getP1().getY(), (float) 0));
+					window.addVertex(new Vector3f((float) s.getP1().getX(), (float) s.getP1().getY() + 5, (float) 0));
+					window.addVertex(new Vector3f((float) s.getP1().getX() + 5, (float) s.getP1().getY(), (float) 0));
+					window.beginLineRender();
+					window.changeColour(new Vector4f(0, 0, 1, 0));
+					window.addVertex(new Vector3f((float) s.getP1().getX(), (float) s.getP1().getY(), (float) 0));
+					window.addVertex(new Vector3f((float) s.getP2().getX(), (float) s.getP2().getY(), (float) 0));
+					window.addVertex(new Vector3f((float) s.getP1().getX(), (float) s.getP1().getY(), (float) 0));
+					window.endRender();
+				}
+			}
 		}
 	}
 
@@ -131,7 +152,7 @@ public class AreaRenderer {
 			if (a.isOcean()) {
 				a.getPoly().draw(window, ColourPalette.grey);
 			} else {
-				a.getPoly().draw(window, getHeat(1- a.getWater()));
+				a.getPoly().draw(window, getHeat(1 - a.getWater()));
 			}
 		}
 
