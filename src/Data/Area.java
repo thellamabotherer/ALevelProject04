@@ -427,8 +427,8 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	
 	public void rivWeightAdjust () {
 		if (this.rivDistChecked) {
-			System.out.println("adj");
-			System.out.println(rivDist	);
+			//System.out.println("adj");
+			//System.out.println(rivDist	);
 			this.riverWeight = (float) (this.riverWeight * (1 - Math.pow(Math.E, - rivDist * 0.5)));
 			this.rivDistChecked = false;
 		}

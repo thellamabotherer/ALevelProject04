@@ -166,7 +166,7 @@ public class Polygon {
 						if (dist < 3) {
 							if (!adjLand()) {
 								// System.out.println("yjrhtsgerafwe");
-								heightDiff = (float) ((rand.nextFloat() * (WorldConstraints.islandArcHeight) * 1.5)
+								heightDiff = (float) ((rand.nextFloat() * (WorldConstraints.islandArcHeight) * 1)
 										+ (WorldConstraints.islandArcHeight
 												/ (WorldConstraints.islandArcSudden * dist + 1))
 										- (WorldConstraints.islandArcHeight

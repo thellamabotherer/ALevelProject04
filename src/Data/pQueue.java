@@ -88,7 +88,7 @@ public class pQueue {
 	}
 				  
 	private static float decideValue(Area a) {
-		if (a.getAltitude() <= 0) {
+		if (a.getAltitude() <= 0 || a.isCoastal()) {
 			return 0;
 		}return a.getRiverWeight();
 	}

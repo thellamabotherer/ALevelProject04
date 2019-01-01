@@ -85,18 +85,20 @@ public class AreaRenderer {
 			} else {
 				a.getPoly().draw(window, a.getColour());
 			}
+		}for (Area a : this.areas.getAreas()) {
 			for (AreaSide s : a.getSides()) {
 				if (s.hasRiver()) {
 					window.beginRender();
-					window.changeColour(new Vector4f(1, 0, 0, 0));
-					window.addVertex(new Vector3f((float) s.getP1().getX() - 5, (float) s.getP1().getY(), (float) 0));
-					window.addVertex(new Vector3f((float) s.getP1().getX(), (float) s.getP1().getY() + 5, (float) 0));
-					window.addVertex(new Vector3f((float) s.getP1().getX() + 5, (float) s.getP1().getY(), (float) 0));
-					window.beginLineRender();
-					window.changeColour(new Vector4f(0, 0, 1, 0));
-					window.addVertex(new Vector3f((float) s.getP1().getX(), (float) s.getP1().getY(), (float) 0));
-					window.addVertex(new Vector3f((float) s.getP2().getX(), (float) s.getP2().getY(), (float) 0));
-					window.addVertex(new Vector3f((float) s.getP1().getX(), (float) s.getP1().getY(), (float) 0));
+					window.changeColour(ColourPalette.red);
+					window.addVertex(new Vector3f((float)s.getP1().getX() - 1,(float)s.getP1().getY()+1, (float)0));
+					window.addVertex(new Vector3f((float)s.getP2().getX() - 1,(float)s.getP2().getY()+1, (float)0));
+					window.addVertex(new Vector3f((float)s.getP1().getX() + 1,(float)s.getP1().getY()-1, (float)0));
+					window.endRender();
+					window.beginRender();
+					window.changeColour(ColourPalette.red);
+					window.addVertex(new Vector3f((float)s.getP2().getX() + 1,(float)s.getP1().getY()-1, (float)0));
+					window.addVertex(new Vector3f((float)s.getP1().getX() + 1,(float)s.getP2().getY()-1, (float)0));
+					window.addVertex(new Vector3f((float)s.getP2().getX() - 1,(float)s.getP1().getY()+1, (float)0));
 					window.endRender();
 				}
 			}

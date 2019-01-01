@@ -227,6 +227,9 @@ public class AreaMap {
 			r.changeWeights();
 			for (Area a : this.areas) {
 				a.rivWeightAdjust();
+				for (AreaSide s : a.getSides()) {
+					s.setTried(false);
+				}
 			}
 			n--;
 			//System.out.println(n);

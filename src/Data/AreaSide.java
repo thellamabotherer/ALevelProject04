@@ -20,6 +20,7 @@ public class AreaSide {
 	private float water ;
 	private AreaSide next;
 	private boolean r = false;
+	private boolean tried = false;
 	
 	public AreaSide(Area a1, Area a2) {
 		for (Edge e : a1.getPoly().getEdges()) {
@@ -134,6 +135,12 @@ public class AreaSide {
 	public void setR(River r) {
 		R = r;
 		this.r = true;
+		tried = true;
+	}
+	
+	public void deleteR() {
+		R = null;
+		r = false;
 	}
 
 	public float getWater() {
@@ -150,6 +157,14 @@ public class AreaSide {
 
 	public void setNext(AreaSide next) {
 		this.next = next;
+	}
+
+	public boolean isTried() {
+		return tried;
+	}
+
+	public void setTried(boolean tried) {
+		this.tried = tried;
 	}
 	
 }
