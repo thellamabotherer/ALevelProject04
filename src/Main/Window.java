@@ -16,6 +16,10 @@ public class Window {
 	private int WIDTH;
 	private int HEIGHT;
 	private String title;
+	
+	private float zoom = (float) 1; // 1 = max zoom out, 0.1 = 10x size etc
+	private float leftX = 0;
+	private float lowY = 0;
 
 	public Window(int wIDTH, int hEIGHT, String title) {
 		WIDTH = wIDTH;
@@ -46,6 +50,56 @@ public class Window {
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	}
+	
+	public void zoom (int mouseX, int mouseY, boolean zoomIn) {
+		if (zoomIn) {
+			if (this.zoom > 0.1) {
+				float w1 = Settings.screenWidth * zoom;
+				float h1 = Settings.screenHeight * zoom;
+				float x = (mouseX*zoom + leftX)/Settings.screenWidth;
+				float y = (mouseY*zoom + lowY)/Settings.screenHeight;
+				zoom = (float) (zoom - 0.1);
+				float w2 = Settings.screenWidth * zoom;
+				float h2 = Settings.screenHeight * zoom;
+				float dw = w1 - w2;
+				float dh = h1 - h2;
+				leftX = leftX + x * dw;
+				lowY = lowY + y * dh;
+				if (leftX < 0) {
+					leftX = 0;
+				}if (lowY < 0) {
+					lowY = 0;
+				}if (leftX + zoom * Display.getWidth() > Settings.screenWidth) {
+					leftX = Settings.screenWidth - zoom * Display.getWidth();
+				}if (lowY + zoom * Display.getHeight() > Settings.screenHeight) {
+					lowY = Settings.screenHeight - zoom * Display.getHeight();
+				}
+			}
+		}else {
+			if (this.zoom < 1) {
+				float w1 = Settings.screenWidth * zoom;
+				float h1 = Settings.screenHeight * zoom;
+				float x = (mouseX*zoom + leftX)/Settings.screenWidth;
+				float y = (mouseY*zoom + lowY)/Settings.screenHeight;
+				zoom = (float) (zoom + 0.1);
+				float w2 = Settings.screenWidth * zoom;
+				float h2 = Settings.screenHeight * zoom;
+				float dw = w1 - w2;
+				float dh = h1 - h2;
+				leftX = leftX + x * dw;
+				lowY = lowY + y * dh;
+				if (leftX < 0) {
+					leftX = 0;
+				}if (lowY < 0) {
+					lowY = 0;
+				}if (leftX + zoom * Display.getWidth() > Settings.screenWidth) {
+					leftX = Settings.screenWidth - zoom * Display.getWidth();
+				}if (lowY + zoom * Display.getHeight() > Settings.screenHeight) {
+					lowY = Settings.screenHeight - zoom * Display.getHeight();
+				}
+			}
+		}
+	}
 
 
 	public void beginRender() {
@@ -70,7 +124,10 @@ public class Window {
 	}
 
 	public void addVertex(Vector3f vertex) {
-		GL11.glVertex3f(vertex.x, vertex.y, vertex.z);
+		
+		float x = (vertex.x - leftX) / zoom;
+		float y = (vertex.y - lowY) / zoom;
+		GL11.glVertex3f(x, y, 0);
 
 	}
 

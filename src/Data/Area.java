@@ -416,7 +416,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		if (!this.rivDistChecked || dist < this.rivDist) {
 			this.rivDistChecked = true;
 			this.rivDist = dist;
-			if (dist < 5) {
+			if (dist < 8) {
 				for (Area a : this.adjacencies) {
 					//System.out.println(dist);
 					a.rivWeightFlood(dist + 1);
@@ -429,7 +429,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		if (this.rivDistChecked) {
 			//System.out.println("adj");
 			//System.out.println(rivDist	);
-			this.riverWeight = (float) (this.riverWeight * (1 - Math.pow(Math.E, - rivDist * 0.5)));
+			this.riverWeight = (float) (this.riverWeight * (1 - Math.pow(Math.E, - rivDist * 0.3)));
 			this.rivDistChecked = false;
 		}
 	}

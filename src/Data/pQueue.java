@@ -24,6 +24,7 @@ public class pQueue {
 			queue = sortI (queue);
 		}Area buffer = queue.get(queue.size() - 1);
 		queue.remove(queue.size() -1);
+		System.out.println(decideValue(buffer));
 		return buffer ;
 	}
 	
@@ -66,7 +67,7 @@ public class pQueue {
 	
 	private static ArrayList<Area> sortI (ArrayList<Area> l) { // insertion sort better when list almost in order
 		
-		System.out.println("Insertion sort , start len " + l.size());
+		//System.out.println("Insertion sort , start len " + l.size());
 		
 		ArrayList<Area> sorted = new ArrayList();
 		sorted.add(l.get(0));
@@ -83,12 +84,12 @@ public class pQueue {
 			}
 		}
 		
-		System.out.println("Insertion sort , end len " + sorted.size());
+		//System.out.println("Insertion sort , end len " + sorted.size());
 		return sorted;
 	}
 				  
 	private static float decideValue(Area a) {
-		if (a.getAltitude() <= 0 || a.isCoastal()) {
+		if (a.isOcean() || a.isCoastal()) {
 			return 0;
 		}return a.getRiverWeight();
 	}
@@ -98,7 +99,7 @@ public class pQueue {
 	// pop
 
 	public boolean isEmpty () {
-		System.out.println(queue.size());
+		//System.out.println(queue.size());
 		if (queue.size() < 1) {
 			return true;
 		}return false;

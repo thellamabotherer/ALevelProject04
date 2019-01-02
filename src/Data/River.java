@@ -10,45 +10,78 @@ public class River {
 	private ArrayList<AreaSide> path = new ArrayList();;
 	private River end; // null if ocean or lake
 	private int carves = 10;
-
+	private River downstream ;
+	private AreaSide downstreamNode ;
+	private boolean valid = true;
+	
 	public River(Area a) {
-		// make the river object
-		// put in side between this poly and lowest adj
-		System.out.println("Making a river");
-		float lowest = a.getAltitude();
-		Area low = a;
-		for (Area r : a.getAdjacencies()) {
-			if (r.getAltitude() < lowest) {
-				low = r;
-				lowest = low.getAltitude();
+		System.out.println("New river");
+		
+		
+		// start with polygon 
+		
+		// find lowest adj
+		Area l = a.getAdjacencies().get(0);
+		for (Area b : a.getAdjacencies()) {
+			if (b.getAltitude() < l.getAltitude()) {
+				l = b;
 			}
 		}
-		if (low == a) {
-			// make a lake here
-			a.setLake(true);
-			// still go about draining the water though
-
-			this.water = this.water + drain(low);
-
-			// some day I've got to work out how to make lakes bigger than just a single
-			// tile but it'll do for now
-		} else {
-			current = low.sideBetween(a);
-			this.flow();
+		// find first edge 
+		current = a.sideBetween(l);
+		// add that edge to the river 
+		current.setR(this);
+		path.add(current);
+		this.water = this.water + drain(current.getA1()) + drain(current.getA2());
+		current.setWater(this.water);
+		
+		int tries = 100;
+		while (flow() && tries > 0) {
+			tries -- ;
+			water = water + drain(current.a1) + drain(current.a2);
+		}//this.changeWeights();
+		if (!valid) {
+			// delete
 		}
-
-		// if none lower make lake ^^
-
-		// absorb surrounding water
-
-		// start trying to flow
 
 	}
 
-	public void flow() {
-		// find polys at both ends
+	public boolean flow () {
+		//System.out.println("Flow");
+		boolean flowing = true;
 		
+		// find polys at each end of current edge 
+		
+		// discard the poly we just came from 
+		
+		// if next poly ocean or lake
+			// end river here 
+		
+		// find the two edges we can go to 
+		
+		// find the polys at the ends of each of those 
+		
+		// take edge between end of this edge and the lower of these 
+		
+		// if that poly lower than the current one 
+			// if this river has enough water 
+				// make lake  on lower poly 
+				// if one of poly's neighbours is lower than both of those next to the river in 
+					// make a new river between that and it's lowest neighbour 
+		
+		
+		// if no river in this edge 
+			// keep flowing 
+		
+		// if another river in this edge 
+			// add this river's water to that river 
+			// end this river
+		
+		// if back into this river
+			// delete this river 
 
+		
+		return flowing ;
 	}
 
 	private void addWater(AreaSide current2, float water2) {
@@ -82,7 +115,6 @@ public class River {
 	public void changeWeights() {
 		for (AreaSide s : this.path) {
 			s.a1.rivWeightFlood(1);
-			s.a2.rivWeightFlood(1);
 		}
 	}
 

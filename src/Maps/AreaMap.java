@@ -378,8 +378,7 @@ public class AreaMap {
 				a.setAirTemp((float) -Math.sqrt(a.getAirTemp() / (minHeight)));
 			}
 
-			a.setAirTemp((float) (1.5 * a.getAirTemp() * Math
-					.sqrt(1 - Math.abs(WorldConstraints.HEIGHT / 2 - a.getLatitude()) / WorldConstraints.HEIGHT)));
+			a.setAirTemp((float) (2 * a.getAirTemp() * (1 - Math.abs(WorldConstraints.HEIGHT / 2 - a.getLatitude()) / WorldConstraints.HEIGHT)));
 
 		}
 	}

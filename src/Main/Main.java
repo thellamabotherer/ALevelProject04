@@ -3,6 +3,7 @@ package Main;
 import java.util.Random;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
@@ -62,7 +63,7 @@ public class Main {
 
 		newMap(
 
-				20000, // number of sites
+				16000, // number of sites
 				2, // number of passes of the lloyd relaxation
 				(float) 0.5, // strength of each relaxation
 				20, 30, // range of possible major plate numbers
@@ -72,12 +73,10 @@ public class Main {
 		double end = System.nanoTime();
 		System.out.println(end - start);
 
-		// int active = 4;
-
-		int active = 7;
-		// for (int active = 5; active < 7; active++) {
+		int active = 4;
 		while (instance.run()) {
 			// checkInput();
+			checkZoom();
 			switch (active) {
 			case 0:
 				testRenderer.draw(testMap.getSites(), window);
@@ -98,9 +97,7 @@ public class Main {
 				areaRenderer.drawCurrents();
 				/* I want to */ break; // free
 			case 6:
-			
 				areaRenderer.drawWinds();
-				
 				break;
 			case 7:
 				areaRenderer.drawSeaTemp();
@@ -117,6 +114,15 @@ public class Main {
 			}
 		}
 		// }
+	}
+	
+	private static void checkZoom () {
+		int scroll = Mouse.getDWheel();
+		if (scroll > 0) {
+			window.zoom(Mouse.getX(), Mouse.getY(), true);
+		}else if (scroll < 0) {
+			window.zoom(Mouse.getX(), Mouse.getY(), false);
+		}
 	}
 
 	private static int checkInput() {
@@ -202,7 +208,6 @@ public class Main {
 		start = System.nanoTime();
 		areaMap = new AreaMap(heightMap, window, heightRenderer);
 		end = System.nanoTime();
-		// System.out.println("Area map takes " + (end - start));
 
 		areaRenderer = new AreaRenderer(areaMap, window);
 		areaRenderer.setSimpleTerrain();
