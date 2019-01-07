@@ -67,6 +67,19 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		this.ocean = false;
 	}
 
+	public ArrayList<AreaSide> routeAround (AreaSide start, AreaSide end) { // maybe between two areas ?
+		ArrayList<AreaSide> path = new ArrayList();
+		AreaSide current = start;
+		boolean found = false;
+		while (!found) {
+			if () {
+				// find path around the edge of this area until we find the end side and add each side we go through to the list
+				// don't let it go through an existing river unless we have to 
+				
+			}
+		}
+	}
+	
 	public int compareTo(Area a) {
 
 		if (this.water > a.getWater()) {

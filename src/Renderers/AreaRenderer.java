@@ -84,21 +84,20 @@ public class AreaRenderer {
 				a.getPoly().draw(window, ColourPalette.lightBlue);
 			} else {
 				a.getPoly().draw(window, a.getColour());
-			}
-		}for (Area a : this.areas.getAreas()) {
-			for (AreaSide s : a.getSides()) {
+			}for (AreaSide s : a.getSides()) {
 				if (s.hasRiver()) {
-					float x = (float) (s.getP1().getX() + s.getP2().getX() /2);
-					float y = (float) (s.getP1().getY() + s.getP2().getY() /2);
-					
-					window.beginRender();
-					window.changeColour(ColourPalette.red);
-					window.addVertex(new Vector3f(x - 3, y - 2, 0));
-					window.addVertex(new Vector3f(x , y + 4, 0));
-					window.addVertex(new Vector3f(x + 3, y - 2, 0));
+					window.beginLineRender();
+					window.changeColour(ColourPalette.deepBlue);
+					window.addVertex(new Vector3f ((float)s.getP1().getX(), (float)s.getP1().getY(), 0));
+					window.addVertex(new Vector3f ((float)s.getP2().getX(), (float)s.getP2().getY(), 0));
+					window.addVertex(new Vector3f ((float)s.getP1().getX(), (float)s.getP1().getY(), 0));
 					window.endRender();
-					window.beginRender();
-					
+					window.beginLineRender();
+					window.changeColour(ColourPalette.deepBlue);
+					window.addVertex(new Vector3f ((float)s.getP1().getX(), (float)s.getP1().getY(), 0));
+					window.addVertex(new Vector3f ((float)s.getP2().getX(), (float)s.getP2().getY(), 0));
+					window.addVertex(new Vector3f ((float)s.getP1().getX(), (float)s.getP1().getY(), 0));
+					window.endRender();
 				}
 			}
 		}
