@@ -52,9 +52,15 @@ public class River {
 	
 		// find easiest path to the sea (non-optimal and quick)
 		
+		
+		
 		// for each area in the path to next poly 
 		
 			// keep adding these to the river unless we hit another river or a lake 
+		
+			// if we hit another river, add the water in after that point 
+		
+		// end the river 
 		
 		
 	}

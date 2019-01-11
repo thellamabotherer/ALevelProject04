@@ -54,6 +54,8 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private float riverWeight;
 	private boolean rivDistChecked = false;
 	private int rivDist;
+	
+	public boolean checked = false;
 
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
 		this.altitude = altitude;
@@ -99,6 +101,65 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 	}
 
+	public ArrayList<AreaSide> routeAround (AreaSide entry, AreaSide Last, Area target, boolean shortest) {
+		ArrayList<AreaSide> route = new ArrayList();
+		AreaSide last = Last;
+		AreaSide current = entry;
+		boolean searching = true;
+		boolean found;
+		while (searching) {
+			found = false;
+			AreaSide e11 = current.getAdj1().get(0);
+			AreaSide e12 = current.getAdj1().get(1);
+			AreaSide e21 = current.getAdj2().get(0);
+			AreaSide e22 = current.getAdj2().get(1);
+			
+			if (e11.getA1() == this || e11.getA2() == this) { // edge 11 possible
+				if (e11.getP1() != last.getP1() && e11.getP1() != last.getP2() && e11.getP2() != last.getP1() && e11.getP2() != last.getP2()) {
+					last = current;
+					current = e11;
+					route.add(e11);
+					found = true;
+				}
+			}if (!found && (e12.getA1() == this || e12.getA2() == this)) { // 12
+				if (e12.getP1() != last.getP1() && e12.getP1() != last.getP2() && e12.getP2() != last.getP1() && e12.getP2() != last.getP2()) {
+					last = current;
+					current = e12;
+					route.add(e12);
+					found = true;
+				}
+			}if (!found && (e21.getA1() == this || e21.getA2() == this)) { // 21
+				if (e21.getP1() != last.getP1() && e21.getP1() != last.getP2() && e21.getP2() != last.getP1() && e21.getP2() != last.getP2()) {
+					last = current;
+					current = e21;
+					route.add(e21);
+					found = true;
+				}
+			}if (!found && (e22.getA1() == this || e22.getA2() == this)) { // 22
+				if (e22.getP1() != last.getP1() && e22.getP1() != last.getP2() && e22.getP2() != last.getP1() && e22.getP2() != last.getP2()) {
+					last = current;
+					current = e22;
+					route.add(e22);
+					found = true;
+				}
+			}
+			
+			if (!found) {
+				return null;
+			}
+			
+			if (current == this.sideBetween(target)) {
+				searching = false;
+			}
+			
+		}
+		
+		
+		return route;
+	}
+	
+	
+	
 	// -------------------------------------------
 
 	private float weightTo(Area a) {

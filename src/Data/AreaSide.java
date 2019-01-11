@@ -166,5 +166,21 @@ public class AreaSide {
 	public void setTried(boolean tried) {
 		this.tried = tried;
 	}
+
+	public ArrayList<AreaSide> getAdj1() {
+		return adj1;
+	}
+
+	public void setAdj1(ArrayList<AreaSide> adj1) {
+		this.adj1 = adj1;
+	}
+
+	public ArrayList<AreaSide> getAdj2() {
+		return adj2;
+	}
+
+	public void setAdj2(ArrayList<AreaSide> adj2) {
+		this.adj2 = adj2;
+	}
 	
 }
