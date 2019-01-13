@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import Main.Main;
 import Main.Window;
 import Main.WorldConstraints;
 
@@ -54,7 +55,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private float riverWeight;
 	private boolean rivDistChecked = false;
 	private int rivDist;
-	
+
 	public boolean checked = false;
 
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
@@ -69,19 +70,108 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		this.ocean = false;
 	}
 
-	public ArrayList<AreaSide> routeAround (AreaSide start, AreaSide end) { // maybe between two areas ?
-		ArrayList<AreaSide> path = new ArrayList();
-		AreaSide current = start;
-		boolean found = false;
-		while (!found) {
-			if () {
-				// find path around the edge of this area until we find the end side and add each side we go through to the list
-				// don't let it go through an existing river unless we have to 
-				
+	public ArrayList<AreaSide> routeAround(AreaSide entry, Area target, boolean winding) {
+
+		ArrayList<AreaSide> route1 = new ArrayList();
+		boolean r1Active = true;
+		ArrayList<AreaSide> route2 = new ArrayList();
+		boolean r2Active = true;
+		boolean searching = true;
+
+		AreaSide next;
+
+		// get onto the side of this polygon
+
+		// find two possible sides from a1 and a2 of entry
+		route1.add(this.sideBetween(entry.getA1()));
+		route2.add(this.sideBetween(entry.getA2()));
+		// make these the starts or r1 and r2
+
+		while (searching) {
+			System.out.println("target " + target);
+			System.out.println(route1.get(route1.size() - 1).a1);
+			System.out.println(route1.get(route1.size() - 1).a2);
+			// extend route 1 along edge
+			if (r1Active) {
+				if (route1.size() > 1) {
+					if (route1.get(route1.size() - 1).getAdjOnArea(this).get(0) == route1.get(route1.size() - 2)) {
+						next = route1.get(route1.size() - 1).getAdjOnArea(this).get(1);
+					} else {
+						next = route1.get(route1.size() - 1).getAdjOnArea(this).get(0);
+					}
+					if (next.getA1() == target || next.getA2() == target) {
+						r1Active = false;
+					} else {
+						route1.add(next);
+					}
+				} else {
+					System.out.println("finding adj on this area ");
+					if (route1.get(0).getAdjOnArea(this).get(0) == route2.get(0)) {
+						next = route1.get(0).getAdjOnArea(this).get(1);
+					} else {
+						next = route1.get(0).getAdjOnArea(this).get(0);
+					}
+					if (next.getA1() == target || next.getA2() == target) {
+						r1Active = false;
+					} else {
+						route1.add(next);
+					}
+				}
+			}if (r2Active) {
+				if (route2.size() > 1) {
+					if (route2.get(route2.size() - 1).getAdjOnArea(this).get(0) == route2.get(0)) {
+						next = route2.get(route2.size() - 1).getAdjOnArea(this).get(1);
+					} else {
+						next = route2.get(route2.size() - 1).getAdjOnArea(this).get(0);
+					}
+					if (next.getA1() == target || next.getA2() == target) {
+						r1Active = false;
+					} else {
+						route2.add(next);
+					}
+				} else {
+					if (route2.get(route2.size() - 1).getAdjOnArea(this).get(0) == route1.get(route1.size() - 1)) {
+						next = route2.get(route2.size() - 1).getAdjOnArea(this).get(1);
+					} else {
+						next = route2.get(route2.size() - 1).getAdjOnArea(this).get(0);
+					}
+					if (next.getA1() == target || next.getA2() == target) {
+						r1Active = false;
+					} else {
+						route2.add(next);
+					}
+				}
+			}
+
+			if (!r1Active || !r2Active) {
+				if (!winding) {
+					if (!r1Active && !r2Active) {
+						searching = false;
+					}
+				} else {
+					searching = false;
+				}
+			}
+
+		}
+
+		if (winding) {
+			if (route1.size() > route2.size()) {
+				return route1;
+			} else {
+				return route2;
 			}
 		}
+		if (!r1Active) {
+			return route1;
+		}
+		return route2;
 	}
 	
+	public ArrayList<Area> pathToSea (float dts) {
+		
+	}
+
 	public int compareTo(Area a) {
 
 		if (this.water > a.getWater()) {
@@ -101,65 +191,6 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 	}
 
-	public ArrayList<AreaSide> routeAround (AreaSide entry, AreaSide Last, Area target, boolean shortest) {
-		ArrayList<AreaSide> route = new ArrayList();
-		AreaSide last = Last;
-		AreaSide current = entry;
-		boolean searching = true;
-		boolean found;
-		while (searching) {
-			found = false;
-			AreaSide e11 = current.getAdj1().get(0);
-			AreaSide e12 = current.getAdj1().get(1);
-			AreaSide e21 = current.getAdj2().get(0);
-			AreaSide e22 = current.getAdj2().get(1);
-			
-			if (e11.getA1() == this || e11.getA2() == this) { // edge 11 possible
-				if (e11.getP1() != last.getP1() && e11.getP1() != last.getP2() && e11.getP2() != last.getP1() && e11.getP2() != last.getP2()) {
-					last = current;
-					current = e11;
-					route.add(e11);
-					found = true;
-				}
-			}if (!found && (e12.getA1() == this || e12.getA2() == this)) { // 12
-				if (e12.getP1() != last.getP1() && e12.getP1() != last.getP2() && e12.getP2() != last.getP1() && e12.getP2() != last.getP2()) {
-					last = current;
-					current = e12;
-					route.add(e12);
-					found = true;
-				}
-			}if (!found && (e21.getA1() == this || e21.getA2() == this)) { // 21
-				if (e21.getP1() != last.getP1() && e21.getP1() != last.getP2() && e21.getP2() != last.getP1() && e21.getP2() != last.getP2()) {
-					last = current;
-					current = e21;
-					route.add(e21);
-					found = true;
-				}
-			}if (!found && (e22.getA1() == this || e22.getA2() == this)) { // 22
-				if (e22.getP1() != last.getP1() && e22.getP1() != last.getP2() && e22.getP2() != last.getP1() && e22.getP2() != last.getP2()) {
-					last = current;
-					current = e22;
-					route.add(e22);
-					found = true;
-				}
-			}
-			
-			if (!found) {
-				return null;
-			}
-			
-			if (current == this.sideBetween(target)) {
-				searching = false;
-			}
-			
-		}
-		
-		
-		return route;
-	}
-	
-	
-	
 	// -------------------------------------------
 
 	private float weightTo(Area a) {
@@ -492,18 +523,18 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 			this.rivDist = dist;
 			if (dist < 8) {
 				for (Area a : this.adjacencies) {
-					//System.out.println(dist);
+					// System.out.println(dist);
 					a.rivWeightFlood(dist + 1);
 				}
 			}
 		}
 	}
-	
-	public void rivWeightAdjust () {
+
+	public void rivWeightAdjust() {
 		if (this.rivDistChecked) {
-			//System.out.println("adj");
-			//System.out.println(rivDist	);
-			this.riverWeight = (float) (this.riverWeight * (1 - Math.pow(Math.E, - rivDist * 0.3)));
+			// System.out.println("adj");
+			// System.out.println(rivDist );
+			this.riverWeight = (float) (this.riverWeight * (1 - Math.pow(Math.E, -rivDist * 0.3)));
 			this.rivDistChecked = false;
 		}
 	}

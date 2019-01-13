@@ -37,7 +37,7 @@ public class River {
 			this.water = this.water + drain(low);
 			current.setWater(water);
 			path.add(current);
-			this.flow(50);
+			this.flow();
 		}
 
 		// if none lower make lake ^^
@@ -48,8 +48,8 @@ public class River {
 
 	}
 
-	public void flow(int tries) {
-	
+	public void flow() {
+		
 		// find easiest path to the sea (non-optimal and quick)
 		
 		
@@ -65,6 +65,7 @@ public class River {
 		
 	}
 
+	
 	private static float drain(Area a) {
 		float f = a.getActiveWater();
 		if (f == 0) {

@@ -50,6 +50,10 @@ public class AreaMap {
 		end = System.nanoTime();
 		for (Area a : this.areas) {
 			a.setupSides();
+		}for (Area a : this.areas) {
+			for (AreaSide s : a.getSides()) {
+				s.setupAdj();
+			}
 		}
 		// System.out.println("Setup adj takes " + (end - start));
 		start = System.nanoTime();

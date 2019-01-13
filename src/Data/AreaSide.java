@@ -51,30 +51,17 @@ public class AreaSide {
 	public void setupAdj() {
 		Point buffer1 = p1;
 		Point buffer2 = p2;
-		if (adj1 != null) {
-			adj1 = new ArrayList();
-			for (Area a : a1.getAdjacencies()) {
-				for (Area b : a.getAdjacencies()) {
-					if (b == a2) {
-						for (AreaSide s : b.getSides()) {
-							if (s.getA1() == a1 || s.getA1() == a2 || s.getA2() == a1 || s.getA2() == a2) {
-								adj1.add(s);
-							}
-						}
-					}
-				}
-			}
-		}
-		if (adj2 != null) {
-			adj2 = new ArrayList();
-			for (Area a : a2.getAdjacencies()) {
-				for (Area b : a.getAdjacencies()) {
-					if (b == a1) {
-						for (AreaSide s : b.getSides()) {
-							if (s.getA1() == a1 || s.getA1() == a2 || s.getA2() == a1 || s.getA2() == a2) {
-								adj1.add(s);
-							}
-						}
+		for (Area a : a1.getAdjacencies()) {
+			for (Area b : a2.getAdjacencies()) {
+				if (a == b) {
+					if (adj1 == null) {
+						adj1 = new ArrayList();
+						adj1.add(a.sideBetween(a1));
+						adj1.add(a.sideBetween(a2));
+					}else {
+						adj2 = new ArrayList();
+						adj2.add(a.sideBetween(a1));
+						adj2.add(a.sideBetween(a2));
 					}
 				}
 			}
@@ -90,6 +77,20 @@ public class AreaSide {
 				}
 			}
 		}return l;
+	}
+	
+	public ArrayList<AreaSide> getAdjOnArea (Area a) {
+		ArrayList<AreaSide> adj = new ArrayList();
+		for (AreaSide s : adj1) {
+			if (s.a1 == a || s.a2 == a) {
+				adj.add(s);
+			}
+		}for (AreaSide s : adj2) {
+			if (s.a1 == a || s.a2 == a) {
+				adj.add(s);
+			}
+		}
+		return adj;
 	}
 	
 	public boolean hasRiver () {
@@ -181,6 +182,16 @@ public class AreaSide {
 
 	public void setAdj2(ArrayList<AreaSide> adj2) {
 		this.adj2 = adj2;
+	}
+	
+	public Area getEnd () {
+		for (Area a : this.a1.getAdjacencies()) {
+			for (Area b : this.a2.getAdjacencies()) {
+				if (a==b) {
+					return a;
+				}
+			}
+		}return null;
 	}
 	
 }
