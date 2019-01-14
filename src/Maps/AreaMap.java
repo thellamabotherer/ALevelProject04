@@ -77,6 +77,10 @@ public class AreaMap {
 		smoothAirTemp();
 		smoothRainfall();
 		
+		for (Area a : this.areas) {
+			a.setDTS(-1);
+		}
+		
 		runRiverSim();
 		
 	}
@@ -228,6 +232,9 @@ public class AreaMap {
 			//System.out.println("drfhgyhujihugjfcgvbhmn");
 			Area source = areaQueue.pop();
 			River r = new River (source);
+			for (Area a : this.areas) {
+				a.checked = false;
+			}
 			r.changeWeights();
 			for (Area a : this.areas) {
 				a.rivWeightAdjust();

@@ -57,6 +57,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	private int rivDist;
 
 	public boolean checked = false;
+	private ArrayList<Area> routeToSea;
 
 	public Area(float altitude, float latitude, float longditude, Polygon poly) {
 		this.altitude = altitude;
@@ -168,8 +169,28 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		return route2;
 	}
 	
-	public ArrayList<Area> pathToSea (float dts) {
+	public ArrayList<Area> pathToSea () {
+		if (this.isOcean()) {
+			return new ArrayList();
+		}
+		float min = Float.MAX_VALUE;
+		for (Area a : this.adjacencies) {
+			if (a.getDTS() == -1) {
+				a.findPathToSea();
+			}if (a.findPathToSea().get(a.getPathToSea().size() - 1 )) {
+				
+			}
+		}
 		
+		
+	}public void findPathToSea () {
+		for (Area a : this.adjacencies) {
+			if (a.getDTS() == -1) {
+				a.findPathToSea();
+			}else {
+				
+			}
+		}
 	}
 
 	public int compareTo(Area a) {
