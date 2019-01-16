@@ -70,6 +70,7 @@ public class AreaSide {
 	
 	public ArrayList<Area> ends () {
 		ArrayList<Area> l = new ArrayList();
+		System.out.println(this);
 		for (Area a : this.a1.getAdjacencies()) {
 			for (Area b : this.a2.getAdjacencies()) {
 				if (a == b) {
@@ -80,6 +81,7 @@ public class AreaSide {
 	}
 	
 	public ArrayList<AreaSide> getAdjOnArea (Area a) {
+		System.out.println("Adj on area");
 		ArrayList<AreaSide> adj = new ArrayList();
 		for (AreaSide s : adj1) {
 			if (s.a1 == a || s.a2 == a) {
@@ -90,6 +92,8 @@ public class AreaSide {
 				adj.add(s);
 			}
 		}
+		
+		System.out.println("adj size = " + adj.size());
 		return adj;
 	}
 	

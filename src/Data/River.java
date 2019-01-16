@@ -53,6 +53,24 @@ public class River {
 		// find easiest path to the sea (non-optimal and quick)
 		
 		
+		System.out.println(current);
+		
+		
+		ArrayList<Area> route = current.getA1().routeToSea(100);
+		System.out.println(route);
+		
+		for (int i = 0; i < route.size() - 1; i++) {
+			if (i == 0) {
+				for (AreaSide s : route.get(i).routeAround(current.getA2(), route.get(i+1))) {
+					s.setR(this);
+				}
+			}else {
+				for (AreaSide s : route.get(i).routeAround(route.get(i-1), route.get(i+1))) {
+					s.setR(this);
+				}
+			}		
+		}
+		
 		
 		// for each area in the path to next poly 
 		

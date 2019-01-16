@@ -70,127 +70,63 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		}
 		this.ocean = false;
 	}
-
-	public ArrayList<AreaSide> routeAround(AreaSide entry, Area target, boolean winding) {
-
-		ArrayList<AreaSide> route1 = new ArrayList();
-		boolean r1Active = true;
-		ArrayList<AreaSide> route2 = new ArrayList();
-		boolean r2Active = true;
-		boolean searching = true;
-
-		AreaSide next;
-
-		// get onto the side of this polygon
-
-		// find two possible sides from a1 and a2 of entry
-		route1.add(this.sideBetween(entry.getA1()));
-		route2.add(this.sideBetween(entry.getA2()));
-		// make these the starts or r1 and r2
-
-		while (searching) {
-			System.out.println("target " + target);
-			System.out.println(route1.get(route1.size() - 1).a1);
-			System.out.println(route1.get(route1.size() - 1).a2);
-			// extend route 1 along edge
-			if (r1Active) {
-				if (route1.size() > 1) {
-					if (route1.get(route1.size() - 1).getAdjOnArea(this).get(0) == route1.get(route1.size() - 2)) {
-						next = route1.get(route1.size() - 1).getAdjOnArea(this).get(1);
-					} else {
-						next = route1.get(route1.size() - 1).getAdjOnArea(this).get(0);
-					}
-					if (next.getA1() == target || next.getA2() == target) {
-						r1Active = false;
-					} else {
-						route1.add(next);
-					}
-				} else {
-					System.out.println("finding adj on this area ");
-					if (route1.get(0).getAdjOnArea(this).get(0) == route2.get(0)) {
-						next = route1.get(0).getAdjOnArea(this).get(1);
-					} else {
-						next = route1.get(0).getAdjOnArea(this).get(0);
-					}
-					if (next.getA1() == target || next.getA2() == target) {
-						r1Active = false;
-					} else {
-						route1.add(next);
-					}
-				}
-			}if (r2Active) {
-				if (route2.size() > 1) {
-					if (route2.get(route2.size() - 1).getAdjOnArea(this).get(0) == route2.get(0)) {
-						next = route2.get(route2.size() - 1).getAdjOnArea(this).get(1);
-					} else {
-						next = route2.get(route2.size() - 1).getAdjOnArea(this).get(0);
-					}
-					if (next.getA1() == target || next.getA2() == target) {
-						r1Active = false;
-					} else {
-						route2.add(next);
-					}
-				} else {
-					if (route2.get(route2.size() - 1).getAdjOnArea(this).get(0) == route1.get(route1.size() - 1)) {
-						next = route2.get(route2.size() - 1).getAdjOnArea(this).get(1);
-					} else {
-						next = route2.get(route2.size() - 1).getAdjOnArea(this).get(0);
-					}
-					if (next.getA1() == target || next.getA2() == target) {
-						r1Active = false;
-					} else {
-						route2.add(next);
-					}
-				}
-			}
-
-			if (!r1Active || !r2Active) {
-				if (!winding) {
-					if (!r1Active && !r2Active) {
-						searching = false;
-					}
-				} else {
-					searching = false;
-				}
-			}
-
-		}
-
-		if (winding) {
-			if (route1.size() > route2.size()) {
-				return route1;
-			} else {
-				return route2;
-			}
-		}
-		if (!r1Active) {
-			return route1;
-		}
-		return route2;
-	}
 	
-	public ArrayList<Area> pathToSea () {
-		if (this.isOcean()) {
+	
+	public ArrayList<Area> routeToSea (int tries) {
+		if (this.isOcean() || tries == 0) {
 			return new ArrayList();
 		}
-		float min = Float.MAX_VALUE;
-		for (Area a : this.adjacencies) {
-			if (a.getDTS() == -1) {
-				a.findPathToSea();
-			}if (a.findPathToSea().get(a.getPathToSea().size() - 1 )) {
-				
+		
+		Area lowest = this.adjacencies.get(0);
+		for (int i = 1; i < this.getAdjacencies().size(); i++) {
+			if (this.getAdjacencies().get(i).getAltitude() < lowest.getAltitude()) {
+				lowest = this.getAdjacencies().get(i);
 			}
 		}
 		
+		ArrayList<Area> l = lowest.routeToSea(tries - 1);
+		l.add(lowest);
+		return l;
 		
-	}public void findPathToSea () {
-		for (Area a : this.adjacencies) {
-			if (a.getDTS() == -1) {
-				a.findPathToSea();
+	}
+	
+	
+	public ArrayList<AreaSide> routeAround(Area in, Area out) {
+		
+		ArrayList<AreaSide> r1 = new ArrayList();
+		ArrayList<AreaSide> r2 = new ArrayList();
+		
+		r1.add(this.sideBetween(in));
+		System.out.println(r1);
+		r2.add(this.sideBetween(in)); // make this actually do stuff later
+		System.out.println(r2);
+		boolean searching = true;
+		
+		while (searching) {
+			
+			if (r1.size() == 1) {
+				if (r1.get(0).getAdjOnArea(this).get(0) == r2.get(0)) {
+					r1.add(r1.get(0).getAdjOnArea(this).get(1));
+				}else {
+					r1.add(r1.get(0).getAdjOnArea(this).get(0));
+				}
 			}else {
-				
+				if (r1.get(r1.size()).getAdjOnArea(this).get(0) == r1.get(r1.size() - 1)) {
+					r1.add(r1.get(r1.size()).getAdjOnArea(this).get(1));
+				}else {
+					r1.add(r1.get(r1.size()).getAdjOnArea(this).get(0));
+				}
 			}
+			
+			if (r1.get(r1.size()).getA1() == out || r1.get(r1.size()).getA2() == out) {
+				searching = false;
+			}
+			
 		}
+		
+		return r1;
+		
+		
 	}
 
 	public int compareTo(Area a) {
@@ -289,7 +225,7 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 				return a.getSides().get(i);
 			}
 		}
-		System.out.println("return3ed null");
+		System.out.println("returned null");
 		return null;
 
 	}
