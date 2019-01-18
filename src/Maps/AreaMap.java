@@ -25,6 +25,10 @@ import Renderers.HeightRenderer;
 import java.util.PriorityQueue;
 
 public class AreaMap {
+	
+	/* Make the algorithm to find the path of the rivers actually work 
+	 * Make the algorithm that paths the rivers around the outside of their polygons work
+	 */
 
 	private ArrayList<Area> areas = new ArrayList();
 	private HeightRenderer HR;

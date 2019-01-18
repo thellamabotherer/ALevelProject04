@@ -81,7 +81,7 @@ public class AreaSide {
 	}
 	
 	public ArrayList<AreaSide> getAdjOnArea (Area a) {
-		System.out.println("Adj on area");
+		//System.out.println("Adj on area");
 		ArrayList<AreaSide> adj = new ArrayList();
 		for (AreaSide s : adj1) {
 			if (s.a1 == a || s.a2 == a) {
@@ -93,7 +93,7 @@ public class AreaSide {
 			}
 		}
 		
-		System.out.println("adj size = " + adj.size());
+		//System.out.println("adj size = " + adj.size());
 		return adj;
 	}
 	
@@ -195,7 +195,8 @@ public class AreaSide {
 					return a;
 				}
 			}
-		}return null;
+		}System.out.println("Returned null (get end)");
+		return null;
 	}
 	
 }

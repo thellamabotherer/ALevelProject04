@@ -14,7 +14,7 @@ import Main.WorldConstraints;
 public class Area implements Comparable<Area> { // basically the poly from last time but with all the stuff with don't
 												// need
 	// anymore removed
-
+	
 	private float altitude;
 	private float latitude;
 	private float longditude;
@@ -73,58 +73,52 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	
 	
 	public ArrayList<Area> routeToSea (int tries) {
+		
+		ArrayList<Area> l = new ArrayList();
+		l.add(this);
 		if (this.isOcean() || tries == 0) {
-			return new ArrayList();
-		}
-		
-		Area lowest = this.adjacencies.get(0);
-		for (int i = 1; i < this.getAdjacencies().size(); i++) {
-			if (this.getAdjacencies().get(i).getAltitude() < lowest.getAltitude()) {
-				lowest = this.getAdjacencies().get(i);
+			return l;
+		}Area lowest = this.getAdjacencies().get(0);
+		for (Area a : this.adjacencies) {
+			if (a.getAltitude() < lowest.getAltitude()) {
+				lowest = a;
 			}
+		}for (Area a : lowest.routeToSea(tries - 1)) {
+			l.add(a);
 		}
-		
-		ArrayList<Area> l = lowest.routeToSea(tries - 1);
-		l.add(lowest);
 		return l;
 		
 	}
 	
 	
 	public ArrayList<AreaSide> routeAround(Area in, Area out) {
-		
-		ArrayList<AreaSide> r1 = new ArrayList();
-		ArrayList<AreaSide> r2 = new ArrayList();
-		
-		r1.add(this.sideBetween(in));
-		System.out.println(r1);
-		r2.add(this.sideBetween(in)); // make this actually do stuff later
-		System.out.println(r2);
+		ArrayList r = new ArrayList();
+		AreaSide head = this.sideBetween(in);
 		boolean searching = true;
-		
+		int tries = 20;
 		while (searching) {
 			
-			if (r1.size() == 1) {
-				if (r1.get(0).getAdjOnArea(this).get(0) == r2.get(0)) {
-					r1.add(r1.get(0).getAdjOnArea(this).get(1));
-				}else {
-					r1.add(r1.get(0).getAdjOnArea(this).get(0));
-				}
+			if (r.size() == 0) {
+				head = head.getAdjOnArea(this).get(0);
 			}else {
-				if (r1.get(r1.size()).getAdjOnArea(this).get(0) == r1.get(r1.size() - 1)) {
-					r1.add(r1.get(r1.size()).getAdjOnArea(this).get(1));
+				//System.out.println(r.size());
+				if (head.getAdjOnArea(this).get(0) == r.get(r.size() - 1)) {
+					head = head.getAdjOnArea(this).get(1);
 				}else {
-					r1.add(r1.get(r1.size()).getAdjOnArea(this).get(0));
+					head = head.getAdjOnArea(this).get(1);
 				}
 			}
 			
-			if (r1.get(r1.size()).getA1() == out || r1.get(r1.size()).getA2() == out) {
-				searching = false;
+			r.add(head);
+			tries --;
+			if (head.getA1() == out || head.getA2() == out || tries == 0) {
+				return r;
 			}
 			
 		}
 		
-		return r1;
+		
+		return r;
 		
 		
 	}
