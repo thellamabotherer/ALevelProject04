@@ -12,20 +12,26 @@ public class River {
 
 	public River(Area a) {
 
-		a.setLake(true);
-
 		// make the river object
 		// put in side between this poly and lowest adj
 		// System.out.println("Making a river");
 
 		ArrayList<Area> route = a.routeToSea(50);
-
+		path.add(a.getSides().get(0));
 		for (int i = 1; i < route.size() - 1; i++) {
-			for (AreaSide s : route.get(i).routeAround(route.get(i - 1), route.get(i + 1))) {
+			AreaSide l = path.get(path.size()-1);
+			AreaSide b;
+			if (this.path.size() < 2) {
+				b = null;
+			}else {
+				b = path.get(path.size()-2);
+			}
+			for (AreaSide s : route.get(i).routeAround(route.get(i - 1), route.get(i + 1), l, b)) {
 				s.setR(this);
 				path.add(s);
 			}
 		}
+		
 
 		// if none lower make lake ^^
 
@@ -35,44 +41,7 @@ public class River {
 
 	}
 
-	public void flow() {
-
-		// find easiest path to the sea (non-optimal and quick)
-
-		System.out.println("----------------------");
-		System.out.println(current.getEnd());
-		System.out.println(current.getA2().getAdjacencies());
-		System.out.println("----------------------");
-
-		ArrayList<Area> route = current.getEnd().routeToSea(100);
-		System.out.println(current.getA2().getAdjacencies());
-		System.out.println(route.get(0));
-
-		System.out.println("----------------------");
-		System.out.println("----------------------");
-
-		// current.getEnd().setLake(true);
-
-		for (AreaSide s : route.get(1).routeAround(route.get(0), route.get(1))) {
-			s.setR(this);
-		}
-
-		/*
-		 * for (int i = 0; i < route.size() - 1; i++) { if (i == 0) { for (AreaSide s :
-		 * route.get(i).routeAround(current.getA2(), route.get(i+1))) { s.setR(this); }
-		 * }else { for (AreaSide s : route.get(i).routeAround(route.get(i-1),
-		 * route.get(i+1))) { s.setR(this); } } }
-		 */
-
-		// for each area in the path to next poly
-
-		// keep adding these to the river unless we hit another river or a lake
-
-		// if we hit another river, add the water in after that point
-
-		// end the river
-
-	}
+	
 
 	private static float drain(Area a) {
 		float f = a.getActiveWater();

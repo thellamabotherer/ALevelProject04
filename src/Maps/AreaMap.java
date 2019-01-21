@@ -230,7 +230,7 @@ public class AreaMap {
 		}
 				// make a queue of areas 
 		pQueue areaQueue = new pQueue (this.areas);
-		int n = 10;
+		int n = 30;
 		
 		while (!areaQueue.isEmpty() && n > 0) {
 			//System.out.println("drfhgyhujihugjfcgvbhmn");

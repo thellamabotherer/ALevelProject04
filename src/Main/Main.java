@@ -66,7 +66,7 @@ public class Main {
 				16000, // number of sites
 				2, // number of passes of the lloyd relaxation
 				(float) 0.5, // strength of each relaxation
-				20, 30, // range of possible major plate numbers
+				20, 40, // range of possible major plate numbers
 				0, 0 // range of possible minor plate numbers
 		);
 

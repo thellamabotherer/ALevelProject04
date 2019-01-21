@@ -91,35 +91,44 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 	}
 	
 	
-	public ArrayList<AreaSide> routeAround(Area in, Area out) {
-		ArrayList r = new ArrayList();
-		AreaSide head = this.sideBetween(in);
-		boolean searching = true;
-		int tries = 20;
-		while (searching) {
-			
-			if (r.size() == 0) {
-				head = head.getAdjOnArea(this).get(0);
+	public ArrayList<AreaSide> routeAround(Area in, Area out, AreaSide last, AreaSide before) {
+		
+		AreaSide current;
+		AreaSide previous;
+		ArrayList<AreaSide> r = new ArrayList();
+		int tries = 15;
+		
+		if (last == this.sideBetween(in)) {
+			previous = last;
+			if (before == null) {
+				current = previous.getAdjOnArea(this).get(0);
 			}else {
-				//System.out.println(r.size());
-				if (head.getAdjOnArea(this).get(0) == r.get(r.size() - 1)) {
-					head = head.getAdjOnArea(this).get(1);
+				if (previous.getAdjOnArea(this).get(0) == before) {
+					current = previous.getAdjOnArea(this).get(1);
 				}else {
-					head = head.getAdjOnArea(this).get(1);
+					current = previous.getAdjOnArea(this).get(0);
 				}
 			}
+		}else {
+			current = this.sideBetween(in);
+			previous = last;
+		}
+		
+		while (current != this.sideBetween(out) && tries > 0) {
+			tries--;
+			r.add(current);
 			
-			r.add(head);
-			tries --;
-			if (head.getA1() == out || head.getA2() == out || tries == 0) {
-				return r;
+			if (current.getAdjOnArea(this).get(0) == previous) {
+				previous = current;
+				current = current.getAdjOnArea(this).get(1);
+			}else {
+				previous = current;
+				current = current.getAdjOnArea(this).get(0);	
 			}
 			
 		}
 		
-		
-		return r;
-		
+		return r ;
 		
 	}
 
