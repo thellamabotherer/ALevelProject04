@@ -96,6 +96,19 @@ public class AreaSide {
 		//System.out.println("adj size = " + adj.size());
 		return adj;
 	}
+	public ArrayList<AreaSide> getAdj () {
+		//System.out.println("Adj on area");
+		ArrayList<AreaSide> adj = new ArrayList();
+		for (AreaSide s : adj1) {
+			adj.add(s);	
+		}for (AreaSide s : adj2) {
+			adj.add(s);
+		}
+		//System.out.println("adj size = " + adj.size());
+		return adj;
+	}
+	
+	
 	
 	public boolean hasRiver () {
 		return r;

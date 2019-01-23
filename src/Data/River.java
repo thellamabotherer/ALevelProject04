@@ -26,12 +26,14 @@ public class River {
 			}else {
 				b = path.get(path.size()-2);
 			}
-			for (AreaSide s : route.get(i).routeAround(route.get(i - 1), route.get(i + 1), l, b)) {
-				s.setR(this);
-				path.add(s);
+			ArrayList<AreaSide> r = route.get(i).routeAround(route.get(i - 1), route.get(i + 1), l, b);
+			for (int j = 0; j < r.size(); j++) {
+				r.get(j).setR(this);
+				path.add(r.get(j));
 			}
 		}
 		
+		cleanup();
 
 		// if none lower make lake ^^
 
@@ -40,8 +42,20 @@ public class River {
 		// start trying to flow
 
 	}
-
 	
+	private void cleanup () {
+		for (int i = 1; i < path.size()-1; i++) {
+			ArrayList<AreaSide> l = new ArrayList();
+			for (AreaSide s : path.get(i).getAdj()) {
+				l.add(s);
+			}if (true == false) {
+				//path.get(i).setR(null);
+				path.get(i).deleteR();
+				path.remove(i);
+				System.out.println("Removed");
+			}
+		}
+	}
 
 	private static float drain(Area a) {
 		float f = a.getActiveWater();

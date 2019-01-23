@@ -157,9 +157,9 @@ public class Area implements Comparable<Area> { // basically the poly from last 
 		float d = 1f;
 		Vector2f relP = new Vector2f((this.longditude - a.getLongditude()), (this.latitude - a.getLatitude()));
 		if (dotProd(this.winds, relP) < 0) {
-			d = d * 4;
+			d = d * 10;
 		} else {
-			d = d / 4;
+			d = d / 3;
 		}
 		float dH = a.getAltitude() - this.altitude;
 		if (dH > 0) {

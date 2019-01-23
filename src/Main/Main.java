@@ -73,7 +73,7 @@ public class Main {
 		double end = System.nanoTime();
 		System.out.println(end - start);
 
-		int active = 4;
+		int active = 1;
 		while (instance.run()) {
 			// checkInput();
 			checkZoom();
@@ -174,7 +174,7 @@ public class Main {
 		meshMap = new MeshMap(WIDTH, HEIGHT, testMap.getSites(), window, false, testMap.getRoot());
 		end = System.nanoTime();
 		// System.out.println("Mesh map takes " + (end - start));
-
+		
 		start = System.nanoTime();
 		for (int i = 0; i < numRelaxations; i++) {
 			polyMap = new PolyMap(meshMap.getSites().get(0), meshMap.getEdges(), meshMap.getSites());
