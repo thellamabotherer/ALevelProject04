@@ -10,4 +10,9 @@ public class PoliticalMap {
 	 * Add m more cities in the best locations in the countries
 	 */
 
+	public PoliticalMap (BiomeMap B) {
+		
+		
+		
+	}
 }
